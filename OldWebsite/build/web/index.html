@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Welcome to the OWASP Nest</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="color: White; 
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 10pt; 
+	background-color: Black;
+	margin: 0; 
+	padding: 0; 
+	text-align: justify;">
+        
+        <!-- Title div -->
+        <div style="width:760px; 
+             margin-left:auto; 
+             margin-right:auto;">
+            <table>
+                <tr>
+                    <td style="overflow: hidden; width: 660px; text-align: left;">
+                        <h1 style="font-weight: normal; 
+                            letter-spacing: .005em; color: White;  
+                            font-size: 24pt;
+                            text-align: Left;">
+                            The OWASP Nest
+                        </h1>
+                    </td>
+                    <td style="text-align: right;">
+                        Today's date will go here on JSP pages.
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- actual content div -->
+        <div style="width:760px; 
+            margin-left:auto; 
+            margin-right:auto;
+            padding: 5px 0px 5px 0px;">
+            <!-- Using a table to help with alignment. This has nothing to do with the project other than aesthetics -->
+            <table>
+                <tr>
+                    <td style="overflow: hidden; width: 740px; text-align: left; 
+                        padding: 10px;background-color: #363636;vertical-align: top;">
+                        <p style="text-align:center;padding: 10px 0px 15px 0px; background-color: #000000;
+                           font-size: 16pt; margin-bottom: 7px; margin-top: 0;">
+                            <i>Select an OWASP element:</i>
+                        </p>
+                            <!-- Actual project content starts here.-->
+                        <form action="Servlet00" method="post" 
+                            style="padding: 5px 0px 5px 0px;
+                            border-bottom: 1px solid #484848; 
+                            border-top: 1px solid #484848; 
+                            background-color: #222222; 
+                            text-align: left;
+                            font-size: 12pt;">
+                                <input type="radio" name="element" value="01" checked>
+                                <b>A01</b> - Injection <br>
+                                <input type="radio" name="element" value="02">
+                                <b>A02</b> - Broken Authentication and Session Management <br>
+                                <input type="radio" name="element" value="03">
+                                <b>A03</b> - Cross-Site Scripting (XSS) <br>
+                                <input type="radio" name="element" value="04">
+                                <b>A04</b> - Insecure Direct Object References <br>
+                                <input type="radio" name="element" value="05">
+                                <b>A05</b> - Security Misconfiguration <br>
+                                <input type="radio" name="element" value="06">
+                                <b>A06</b> - Sensitive Data Exposure <br>
+                                <input type="radio" name="element" value="07">
+                                <b>A07</b> - Missing Function Level Access Control <br>
+                                <input type="radio" name="element" value="08">
+                                <b>A08</b> - Cross-Site Request Forgery <br>
+                                <input type="radio" name="element" value="09">
+                                <b>A09</b> - Using Components with Known Vulnerabilities <br>
+                                <input type="radio" name="element" value="10">
+                                <b>A10</b> - Unvalidated Redirects and Forwards <br>
+                                <br>
+                                <div style="width:125px; margin-left:auto; margin-right:auto;">
+                                    <input type="submit" value="Submit" style="width:125px;">
+                                </div>
+                        </form>
+                            <p style="padding: 5px 5px 5px 5px;
+                            border-bottom: 1px solid #484848; 
+                            border-top: 1px solid #484848; 
+                            background-color: #222222; 
+                            text-align: left;
+                            font-size: 12pt;">
+                                <a href="makeErrors.jsp" style="color: #76DEFC; text-decoration: none; font-size: 8.5pt; text-align: center;">
+                                        &gt; Follow this link in order to see the error handling capability of this site and for an explanation of the location of all necessary elements. &lt;
+                                </a>
+                            </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
