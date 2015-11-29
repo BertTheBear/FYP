@@ -1,0 +1,26 @@
+{
+	"manifest_version": 2,
+	"name": "Chill with Netflix",
+	"description": "Interface assistant for Netflix",
+	"version": "0.1",
+	"icons": {
+		"128": "128.png",
+		"16" : "16.png"
+	},
+	"app": {
+		"urls": [
+			"http://certification.googleapps.com/app-info/"
+		],
+		"launch": {
+			"web_url": "http://certification.googleapps.com/"
+		}
+	},
+	"permissions": [
+		"unlimitedStorage",
+		"notifications"
+		"http://*.netflix.com/*",
+		"https://*.netflix.com/*",
+		"http://*.netflix.com/*",
+		"https://*.netflix.com/*",
+	]
+}
