@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>"Chill with Netflix" Options Page</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+	<h1>Options Page</h1>
+	<br>
+	<!-- Table for colour settings for overlays -->
+	<table>
+		<tr>
+			<td>
+				Set colour of "Seen" media:				
+			</td>
+			<td>
+				<!-- -->
+				<select id="colourSeen">
+					<option value="red">red</option>
+					<option value="green">green</option>
+					<option value="blue">blue</option>
+					<option value="yellow">yellow</option>
+					<option value="purple">purple</option>
+					<option value="pink">pink</option>
+					<option value="orange">orange</option>
+				</select>				
+			</td>
+			<td>
+				Current setting: 
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Set colour of "My List" media:			
+			</td>
+			<td>
+				<!-- -->
+				<select id="colourList">
+					<option value="red">red</option>
+					<option value="green">green</option>
+					<option value="blue">blue</option>
+					<option value="yellow">yellow</option>
+					<option value="purple">purple</option>
+					<option value="pink">pink</option>
+					<option value="orange">orange</option>
+				</select>				
+			</td>
+			<td>
+				Current setting: 
+			</td>
+		</tr>
+	</table>
+	<br>
+
+	<label>
+	  <input type="checkbox" id="check">
+	  Checkbox setting for later
+	</label>
+	<br>
+
+	<div id="status"></div>
+	<button id="save">Save</button>
+
+	<script src="options.js"></script>
+</body>
+</html>

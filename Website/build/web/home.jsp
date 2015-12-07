@@ -12,8 +12,9 @@
         <title>Chill Home Page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="WEB-INF/styles.css">
     </head>
-    <body style="color: White; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; background-color: Black; margin: 0; padding: 0; text-align: justify;">
+    <body>
 
         <!-- Title div -->
         <div style="width:760px; 
@@ -22,7 +23,7 @@
             <table>
                 <tr>
                     <td style="overflow: hidden; width: 660px; text-align: left;">
-                        <h1 style="font-weight: normal; letter-spacing: .005em; color: White; font-size: 24pt; text-align: Left;">
+                        <h1>
                             Disizza Shop
                         </h1>
                     </td>
@@ -38,8 +39,8 @@
             <!-- Using a table to help with alignment. This has nothing to do with the project other than aesthetics -->
             <table>
                 <tr>
-                    <td style="overflow: hidden; width: 740px; text-align: left; padding: 10px;background-color: #363636;vertical-align: top;">
-                        <p style="text-align:center;padding: 10px 0px 15px 0px; background-color: #000000; font-size: 16pt; margin-bottom: 7px; margin-top: 0;">
+                    <td style="overflow: hidden; width: 740px; text-align: left; padding: 10px;vertical-align: top;">
+                        <p style="text-align:center;padding: 10px 0px 15px 0px; font-size: 16pt; margin-bottom: 7px; margin-top: 0;">
                             <i>Welcome to Disizza</i>
                         </p>
 

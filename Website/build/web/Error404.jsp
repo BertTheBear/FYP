@@ -44,35 +44,7 @@
                            font-size: 16pt; margin-bottom: 7px; margin-top: 0;">
                             <i>Oh dear. We can't seem to find that page.</i>
                         </p>
-                        <pre style="color:White;
-                            padding: 5px 0px 5px 0px;
-                            border-bottom: 1px solid #484848; 
-                            border-top: 1px solid #484848; 
-                            background-color: #222222; 
-                            text-align: left;
-                            font-size: 12pt;">
-                                               ___
-                                           ,-""   `.
-                                         ,'  _   e )`-._
-                                        /  ,' `-._<.===-'
-                                       /  /
-                                      /  ;
-                          _.--.__    /   ;
-             (`._    _.-""       "--'    |
-             <_  `-""                     \
-              <`-                          :
-               (__   <__.                  ;
-                 `-.   '-.__.      _.'    /
-                    \      `-.__,-'    _,'
-                     `._    ,    /__,-'
-                        ""._\__,'< <____
-                             | |  `----.`.
-                             | |        \ `.
-                             ; |___      \-``
-                             \   --<
-                              `.`.<
-                                `-'
-                        </pre>
+                        
                         <p style="color:White;
                             padding: 5px 5px 5px 5px;
                             border-bottom: 1px solid #484848; 

@@ -5,6 +5,8 @@
  */
 package BasketPackage;
 
+import login.HTMLFilter;
+
 /**
  *
  * @author Mike

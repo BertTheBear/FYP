@@ -1,43 +1,45 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Group members: 
+ Denis Holmes           12140031
+ Shaun Gilbert          12153176
+ Michael Hallinan	12134635
  */
-package BasketPackage;
-
-import database.ConnectionManager;
-import login.HTMLFilter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+package login;
 
 /**
  *
  * @author Mike
+ * Based off of code found at:
+ * http://met.guc.edu.eg/OnlineTutorials/JSP%20-%20Servlets/Full%20Login%20Example.aspx#
  */
-public class ItemDAO {
-    
+import database.ConnectionManager;
+import java.text.*;
+import java.util.*;
+import java.sql.Statement;
+import java.sql.*;
+
+public class UserDAO {
+
     static Connection currentCon = null;
     static ResultSet resultSet = null;
 
-    public static ItemBean searchID(ItemBean bean) {
+    public static UserBean login(UserBean bean) {
 
-        
-        //Sanitise input (Again)
-        String id = HTMLFilter.filter(bean.getID());
-        
         //preparing some objects for connection 
         Statement stmt = null;
 
-        String tableName = "toor.item_table";
+        String username = bean.getUsername();
+        String password = bean.getPassword();
+        String tableName = "toor.user_table";
 
         //The query we will be using
-        String searchQuery = "select * from " + tableName + " where id='" + id + "'";
+        String searchQuery = "select * from " + tableName + " where username='"
+                + username + "' AND password='" + password + "'";
 
         // This will be for checking that the data is correct. 
         // Will be removed before release
-        System.out.println("ID searched is " + id);
+        System.out.println("Your user name is " + username);
+        System.out.println("Your password is " + password);
         System.out.println("Query: " + searchQuery);
 
         //Try and catch in case of SQLException
@@ -49,30 +51,26 @@ public class ItemDAO {
             //Execute the SQL query in the database
             resultSet = stmt.executeQuery(searchQuery);
 
+            // If user does not exist set the isValid variable to false
             if (!resultSet.next()) {
-                System.out.println("Sorry, The item you searched for could not be found.");
-                return null;
-                
+                System.out.println("Sorry, you are not a registered user! Please sign up first");
+                bean.setValid(false);
             } //If user exists set the isValid variable to true
             else {
-                String itemID = resultSet.getString("id");
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-                double price = resultSet.getDouble("price");
-                int stock = resultSet.getInt("stock");
+                String accountID = resultSet.getString("id");
+                String type = resultSet.getString("type");
 
-                System.out.println("Item found");
+                System.out.println("Welcome " + username);
+                bean.setID(accountID);
+                bean.setType(Integer.parseInt(type));
+                bean.setValid(true);
                 
-                //Set variables
-                bean.setID(itemID);
-                bean.setName(name);
-                bean.setDescription(description);
-                bean.setPrice(price);
-                bean.setStock(stock);
+                //Set password to null in order to limit sensitive data saved
+                bean.setPassword(null);
             }
         } catch (SQLException ex) {
-            System.out.println("An Exception has occurred while searching! " + ex.getMessage());
-        } 
+            System.out.println("Log In failed: An Exception has occurred! " + ex.getMessage());
+        } //some exception handling
         finally {
             //close all of the connections
             if (resultSet != null) {

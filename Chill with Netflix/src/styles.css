@@ -1,0 +1,35 @@
+a
+{
+	text-decoration: underline; 
+	color: Blue;   
+}
+
+a:hover
+{ 
+	text-decoration: none;
+	color: Blue;
+	font-weight: bold;
+}
+
+h1
+{ 
+	margin: 0; 
+	padding: 0 0 0 0; 
+	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif;
+	font-weight: normal; 
+	letter-spacing: .005em; 
+	color: Black;  
+	font-size: 20pt;
+	text-align: Left;
+}
+
+h2
+{ 
+	margin: 0; 
+	padding: 24px 0 7px 40px; 
+	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif; 
+	font-weight: normal; 
+	letter-spacing: .005em; 
+	color: Black; 
+	font-size: 15pt; 
+}

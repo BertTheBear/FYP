@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/WEB-INF/web.xml</file>
             <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/browse.jsp</file>
             <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/Error403.jsp</file>
-            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/WEB-INF/styles.css</file>
-            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/home.jsp</file>
+            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/src/java/BasketPackage/ItemDAO.java</file>
+            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/notFound.jsp</file>
+            <file>file:/D:/Users/Mike/DropboxRPG/Dropbox/%23FYP/Website/web/Error404.jsp</file>
         </group>
     </open-files>
 </project-private>

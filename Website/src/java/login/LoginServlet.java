@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package BasketPackage;
 
-import login.HTMLFilter;
+package login;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -17,10 +12,11 @@ import javax.servlet.http.HttpSession;
 /**
  *
  * @author Mike
+ * http://met.guc.edu.eg/OnlineTutorials/JSP%20-%20Servlets/Full%20Login%20Example.aspx#
  */
-public class SearchServlet extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
-     @Override
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, java.io.IOException {
         doPost(req, res);
@@ -31,29 +27,31 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession(true);
-        ItemBean item = new ItemBean();
+        UserBean user = new UserBean();
         String destination = "";
-        String input = null;
         
-        System.out.println("Search ID = " + request.getParameter("searchID"));
-        
-        try {
-            input = request.getParameter("searchID");
-            input = HTMLFilter.filter(input);
-            
-            item.setID(input);
+        if(request.getParameter("logout") != null) {
+            user.logout();
+            destination = "loggedout";
+            session.setAttribute("currentSessionUser", user);
+        }
+        else {
+            try {
+                user.setUsername(request.getParameter("username"));
+                user.setPassword(request.getParameter("password"));
 
-            item = ItemDAO.searchID(item);
+                user = UserDAO.login(user);
 
-            if (item != null) {
-                session.setAttribute("searchItem", item);
-                destination = "itemFound"; //	
-            } else {
-                destination = "notFound"; //error page 
+                if (user.isValid()) {
+                    session.setAttribute("currentSessionUser", user);
+                    destination = "home"; //logged-in page      		
+                } else {
+                    destination = "invalidLogin"; //error page 
+                }
+            } catch (Exception ex) {
+                //Throws default error
+                System.out.println(ex);
             }
-        } catch (Exception ex) {
-            //Throws default error
-            System.out.println(ex);
         }
         
         PrintWriter out = response.getWriter();
