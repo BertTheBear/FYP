@@ -1,0 +1,5 @@
+Opening options in new tab.
+	Spent ages trying to understand javascript to do it
+	Eventually realised that it's just simple HTML.
+	Means it's possible to set an internal system for the app however...
+	NEW IDEA: Set internal website functionality. Redo certain pages with JavaCript instead of JSP
