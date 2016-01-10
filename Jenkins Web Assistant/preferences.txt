@@ -1,0 +1,28 @@
+Preferences Searched.
+
+	Website visiting time
+	Set reminders/scheduling
+	Automatically create schedule
+
+Implicit Gathering Method
+	Mine recorded data for patterns.
+	Likely to follow the regular expression format
+		http://*.website.com/*
+		Might become more precise if necessary for large websites
+			Categories for shopping for example (Books on Amazon)
+			Youtube channel
+	Time stamp all recorded website visits
+	Clustering for visits
+		Possibly check if websites are similar
+		Open one website when opening another
+	Group websites
+		by genre for example
+		by requiring further assessment such as Amazon example above.
+
+
+
+Summary
+	Open website at certain times
+	Open website when opening another
+	Open website after visiting another
+	Have groups for certain websites

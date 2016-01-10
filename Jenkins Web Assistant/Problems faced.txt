@@ -1,0 +1,21 @@
+Opening options in new tab.
+	Spent ages trying to understand javascript to do it
+	Eventually realised that it's just simple HTML.
+	Means it's possible to set an internal system for the app however...
+	NEW IDEA: Set internal website functionality. Redo certain pages with JavaCript instead of JSP
+
+API
+	No available documentation online
+	May need to piece functionality together from other existing apps
+	Might speak with Jesus and see if I can switch to something else
+
+Saving options in Chrome
+	Set up javascript and it seemed to be fine
+	Problem unresolved, rewrote entire file and html file
+	Not sure if problem was in .js or .html or both
+
+Reading history from chrome
+	modified sample code
+	had problems returning the hostnames
+		problem was with document.createElement("a");
+		I had not used a, and created an invalid datatype

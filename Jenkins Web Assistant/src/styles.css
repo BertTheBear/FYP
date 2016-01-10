@@ -1,0 +1,56 @@
+a {
+	text-decoration: none; 
+	color: Blue;   
+}
+a:hover {
+	text-decoration: underline;
+}
+
+h1 { 
+	margin: 0; 
+	padding: 0 0 0 0; 
+	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif;
+	font-weight: normal; 
+	letter-spacing: .005em; 
+	color: Black;  
+	font-size: 20pt;
+	text-align: center;
+}
+
+h2 { 
+	margin: 0; 
+	padding: 24px 0 7px 40px; 
+	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif; 
+	font-weight: normal; 
+	letter-spacing: .005em; 
+	color: Black; 
+	font-size: 15pt; 
+}
+
+
+#status {
+	color: Red;
+	padding: 10px 0px 5px 0px;
+}
+
+
+.btn {
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	background: #cdcdcd;
+	padding: 40px 50px 40px 50px;
+	text-decoration: none;
+}
+
+.btn:hover {
+	background: #ededed;
+	text-decoration: underline;
+}
+
+.trcheckbox:hover {
+	background: #ededed;
+}

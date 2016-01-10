@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>"Jenkins Web Assistant" Options Page</title>
+
+	<!-- CSS Stylesheet reference -->
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+	<h1>Options Page</h1>
+	<br>
+	<!-- Table for permissions -->
+		<table>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkHistory">
+					</label>
+				
+					Allow access to history
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkBookmarks">
+					</label>
+				
+					Allow access to bookmarks
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkTopSites">
+					</label>
+				
+					Allow access to top sites
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkNotificions">
+					</label>
+				
+					Allow access to notifications
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkOrganiser">
+					</label>
+				
+					Enable organiser
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Keywords to ignore:
+				
+					<label>
+						<input type="textbox" id="blacklist">
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					Set words or websites to be ignored by automatic search function (Eg. facebook, pirate)
+				</td>
+			</tr>
+		</table>
+
+		<div id="status"><br></div>
+		<button id="save">Save</button>
+
+		<script src="options.js"></script>
+</body>
+</html>
