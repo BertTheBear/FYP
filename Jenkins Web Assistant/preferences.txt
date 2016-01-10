@@ -26,3 +26,11 @@ Summary
 	Open website when opening another
 	Open website after visiting another
 	Have groups for certain websites
+
+
+
+NOTES
+	typed entries will be given additional value
+		Or possibly processed differently
+	if the frequency is < a certain number it will be ignored
+		default maybe 3 and can be set by user
