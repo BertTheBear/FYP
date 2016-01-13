@@ -2,6 +2,8 @@
 var myid = chrome.runtime.id;
 
 
+var permission = true;
+var timerSetting = 0;
 
 
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
@@ -27,32 +29,66 @@ function buildPopupDom(divName, data) {
 	popupDiv.appendChild(ul);
 
 	for (var i = 0, ie = data.length; i < ie; ++i) {
-		var a = document.createElement('a');
-		a.href = data[i];
-		a.appendChild(document.createTextNode(data[i]));
-		a.addEventListener('click', onAnchorClick);
-
 		var li = document.createElement('li');
-		li.appendChild(a);
+
+		if(data[i] == 'Jenkins Web Assistant') {
+			li.appendChild(document.createTextNode(data[i] + ' Extension'));
+		}
+		else {
+			var a = document.createElement('a');
+			a.href = 'http://' + data[i];
+			a.appendChild(document.createTextNode(data[i]));
+			a.addEventListener('click', onAnchorClick);
+
+			li.appendChild(a);
+		}
 
 		ul.appendChild(li);
 	}
 }
 
-
+//On page load call functions
 document.addEventListener('DOMContentLoaded', function () {
-	processHistory("commonlyFound");
+
+	//Check first whether we have permission.
+	//Promise means it won't be called too late
+	var p = new Promise(function (resolve, reject) {
+		chrome.storage.sync.get({
+			history: true,
+			timer:28
+		}, function (items) {
+			permission = items.history;
+			timerSetting = items.timer;
+			resolve(permission);
+		});
+	});
+	p.then(function (permission) {
+		buildHistoryList("linked", "link");
+		buildHistoryList("typed", "typed");
+		buildHistoryList("reloaded", "reload");
+	});
 	buildIgnoreList("blacklist");
 });
 
 
 //=================================== My content ========================
 
-function processHistory(divName) {
-	// To look for history items visited in the last week,
-	// subtract a week of microseconds from the current time.
-	var microsecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
-	var fourWeeks = (new Date).getTime() - (microsecondsPerWeek * 4);
+function buildHistoryList(divName, transitionType) {
+
+	//Stop if we don't have permission
+	if(permission != true){
+		return;
+		//This will end the funtion prematurely
+	}
+
+	// To look for history items visited in the last amount of time,
+	// subtract that amount of time in microseconds from the current time.
+	var microsecondsPerDay = 1000 * 60 * 60 * 24;
+	
+
+
+	//Multiply 1 day by the amount of days set by user.
+	var historyCutoff = (new Date).getTime() - (microsecondsPerDay * timerSetting);
 
 	// Track the number of callbacks from chrome.history.getVisits()
 	// that we expect to get.	When it reaches zero, we have all results.
@@ -60,7 +96,7 @@ function processHistory(divName) {
 
 	chrome.history.search({
 			'text': '',							// Return every history item....
-			'startTime': fourWeeks	// that was accessed less than one week ago.
+			'startTime': historyCutoff	// that was accessed less than one week ago.
 		},
 		function(historyItems) {
 			// For each history item, get details on all visits.
@@ -90,7 +126,7 @@ function processHistory(divName) {
 	var processVisits = function(url, visitItems) {
 		for (var i = 0, ie = visitItems.length; i < ie; ++i) {
 			//ignore reloaded pages
-			if (visitItems[i].transition === 'reload') {
+			if (visitItems[i].transition != transitionType) {
 				continue;
 			}
 
@@ -126,12 +162,14 @@ function processHistory(divName) {
 		return forProcessing.hostname;
 
 		//===OTHER POSSIBILITIES===
+		//For if it matches criteria such as Google or Amazon etc.
+
 		//forProcessing.protocol; // => "http:"
-		//forProcessing.host;     // => "example.com:3000"
+		//forProcessing.host;	 // => "example.com:3000"
 		//forProcessing.hostname; // => "example.com"
-		//forProcessing.port;     // => "3000"
+		//forProcessing.port;	 // => "3000"
 		//forProcessing.pathname; // => "/pathname/"
-		//forProcessing.hash;     // => "#hash"
+		//forProcessing.hash;	 // => "#hash"
 		//forProcessing.search;   // => "?search=test"
 	};
 	var printList = function() {
@@ -160,19 +198,23 @@ function processHistory(divName) {
 //Ensures all elements of an array are unique
 // inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
 function uniq(array) {
-    var seen = {};
-    return array.filter(function(item) {
-        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
-    });
+	var seen = {};
+	return array.filter(function(item) {
+		return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+	});
 }
 
 ////Retrieves and displays blacklist
 function buildIgnoreList(divName) {
-		chrome.storage.sync.get({
+	chrome.storage.sync.get({
 		ignored: ""
 	}, function(items) {
 		var blacklist = document.getElementById(divName);
 		var data = items.ignored.split(",");
+		//if empty
+		if (data.length == 1 && data[0] == "") {
+			data = ["Ignore list is currently empty."];
+		}
 
 		var ul = document.createElement('ul');
 		blacklist.appendChild(ul);
@@ -184,4 +226,18 @@ function buildIgnoreList(divName) {
 			ul.appendChild(li);
 		}
 	});
+	printThis(permission);
+	printThis(timerSetting);
+}
+
+
+
+
+function printThis(thing) {
+	var area = document.getElementById("printHere");
+	var ul = document.createElement('ul');
+	area.appendChild(ul);
+	var li = document.createElement('li');
+	li.appendChild(document.createTextNode(thing));
+	ul.appendChild(li);
 }

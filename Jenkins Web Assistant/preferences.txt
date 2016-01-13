@@ -34,3 +34,7 @@ NOTES
 		Or possibly processed differently
 	if the frequency is < a certain number it will be ignored
 		default maybe 3 and can be set by user
+
+
+WEB USAGE MINING
+PROACTIVE ASSISTANT

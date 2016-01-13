@@ -59,6 +59,36 @@
 			</tr>
 			<tr>
 				<td>
+					<label>
+						<input type="number" id="visitThreshold" style="width:40px">
+					</label>
+
+					Website visit threshold <br>
+					<i>Minimum number of visits before a website is recorded.</i> (<b>Default 3.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="typedWeight" style="width:40px">
+					</label>
+
+					Typed visit weight <br>
+					<i>Additional value given to an address typed directly into URL bar.</i> (<b>Default 2.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="timeThreshold" style="width:40px">
+					</label>
+
+					History time threshold <br>
+					<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
 					Keywords to ignore:
 				
 					<label>
@@ -68,13 +98,14 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					Set words or websites to be ignored by automatic search function (Eg. facebook, pirate)
+					<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate)</i>
 				</td>
 			</tr>
 		</table>
 
 		<div id="status"><br></div>
-		<button id="save">Save</button>
+		<button id="save">Save</button> <br>
+		<a href="#" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
 
 		<script src="options.js"></script>
 </body>
