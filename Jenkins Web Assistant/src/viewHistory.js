@@ -2,23 +2,18 @@
 var myid = chrome.runtime.id;
 
 
-var permission = true;
+var historyPermission = true;
 var timerSetting = 0;
+//var notifPermission = true;
 
+
+//=================================== NOT My content ========================
+//The following work has been copied mostly unedited from online.
+//I'm not sure how much this is alowed so I will need to ask...
 
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// Event listner for clicks on links in a browser action popup.
-// Open the link in a new tab of the current window.
-function onAnchorClick(event) {
-	chrome.tabs.create({
-		selected: true,
-			url: event.srcElement.href
-		});
-		return false;
-}
 
 // Given an array of URLs, build a DOM list of those URLs in the
 // browser action popup.
@@ -36,19 +31,25 @@ function buildPopupDom(divName, data) {
 		}
 		else {
 			var a = document.createElement('a');
-			a.href = 'http://' + data[i];
+			url = 'http://' + data[i];
+			a.href = url;
+			a.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
 			a.appendChild(document.createTextNode(data[i]));
-			a.addEventListener('click', onAnchorClick);
-
 			li.appendChild(a);
 		}
 
 		ul.appendChild(li);
 	}
 }
+//=============================================================================
 
 //On page load call functions
 document.addEventListener('DOMContentLoaded', function () {
+	document.getElementById('blah').addEventListener('click', notification);
+
+	//check for permission for notifications
+	if (Notification.permission !== "granted")
+		Notification.requestPermission();
 
 	//Check first whether we have permission.
 	//Promise means it won't be called too late
@@ -57,26 +58,26 @@ document.addEventListener('DOMContentLoaded', function () {
 			history: true,
 			timer:28
 		}, function (items) {
-			permission = items.history;
+			historyPermission = items.history;
 			timerSetting = items.timer;
-			resolve(permission);
+			resolve(historyPermission);
 		});
 	});
-	p.then(function (permission) {
+	p.then(function (historyPermission) {
 		buildHistoryList("linked", "link");
 		buildHistoryList("typed", "typed");
 		buildHistoryList("reloaded", "reload");
 	});
 	buildIgnoreList("blacklist");
 });
+//document.getElementById('blah').addEventListener('click', printThis("Done"));
 
 
-//=================================== My content ========================
 
 function buildHistoryList(divName, transitionType) {
 
 	//Stop if we don't have permission
-	if(permission != true){
+	if(historyPermission != true){
 		return;
 		//This will end the funtion prematurely
 	}
@@ -170,7 +171,7 @@ function buildHistoryList(divName, transitionType) {
 		//forProcessing.port;	 // => "3000"
 		//forProcessing.pathname; // => "/pathname/"
 		//forProcessing.hash;	 // => "#hash"
-		//forProcessing.search;   // => "?search=test"
+		//forProcessing.search;	 // => "?search=test"
 	};
 	var printList = function() {
 		//define array to be printed
@@ -226,13 +227,10 @@ function buildIgnoreList(divName) {
 			ul.appendChild(li);
 		}
 	});
-	printThis(permission);
-	printThis(timerSetting);
 }
 
 
-
-
+// FOR TESTING +++++++++++++++++++++++++++++++++++++++++++++++
 function printThis(thing) {
 	var area = document.getElementById("printHere");
 	var ul = document.createElement('ul');
@@ -240,4 +238,35 @@ function printThis(thing) {
 	var li = document.createElement('li');
 	li.appendChild(document.createTextNode(thing));
 	ul.appendChild(li);
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//influenced from http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
+function notification() {
+
+	var notificationTitle = 'Notification title'; //Placeholder
+	var destination = "http://www.google.com"; //Placeholder
+	var bodyText = "Hey there! You've been notified!"; //Placeholder
+	var iconImage = '/images/128.png'; //Default. Likely won't be changed
+
+
+	if (!Notification) {
+		alert('Desktop notifications not available in your browser. Try Chromium.'); 
+		return;
+	}
+	chrome.storage.sync.get({
+		notif: true
+	}, function(items) {
+		if (items.notif == true) {
+			var notification = new Notification(notificationTitle, {
+				icon: iconImage,
+				body: bodyText,
+			});
+			notification.onclick = function () {
+				window.open(destination);
+				//Whatever I want the notification to do	
+			};
+		}
+	});
 }
