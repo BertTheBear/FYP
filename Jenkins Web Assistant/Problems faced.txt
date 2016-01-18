@@ -13,9 +13,40 @@ Saving options in Chrome
 	Set up javascript and it seemed to be fine
 	Problem unresolved, rewrote entire file and html file
 	Not sure if problem was in .js or .html or both
+	PROBLEM
+		Needed to place withing page load function
 
 Reading history from chrome
 	modified sample code
 	had problems returning the hostnames
 		problem was with document.createElement("a");
 		I had not used a, and created an invalid datatype
+
+
+Opening in new tab from list in viewhistory
+	Using window.onclick with href="#" caused errors if right-click open in new tab
+	Eventually found method to just change the attribute
+	Will probably be removed anyway but we'll see
+
+Retrieving information from storage
+	This was done after pager had loaded
+	Had to manipulate and use Promise
+		Still not perfect
+
+Notifications
+	Button not working
+	Same happened with SAVE button
+	PROBLEM
+		Needed to place withing page load function
+		Finally properly resolved this time
+	SCREEN - doesn't work as well on multiple screens
+
+Clear history
+	Problems with object types
+		cacheStorage and when removeFrom == 0
+		Also had a few 
+	Trigger when browser closed
+	RESOLVED
+	gets time of session on start
+	clears from that time next time it's opened
+		(Asked on Stack overflow for event handler)

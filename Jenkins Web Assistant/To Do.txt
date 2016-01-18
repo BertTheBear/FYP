@@ -1,0 +1,32 @@
+Storage				DONE
+History				DONE
+Notifications 		DONE
+Options Page 		DONE
+Bookmarks 			
+Top Sites 			DONE
+Clear history 		DONE
+	Auto trigger	DONE
+Profiles/Identity 	
+Process Information 
+	- 
+Explicit settings 	
+	- Dynamic List	DONE
+	- List content 	
+	- Save/Undo 	
+
+
+
+
+
+
+PERMISSIONS USED:
+unlimitedStorage	?
+storage				o
+notifications		o
+activeTab			
+tabs				o
+bookmarks			
+browsingData		o
+identity			
+topSites			o
+history				o

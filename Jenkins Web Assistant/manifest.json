@@ -18,6 +18,9 @@
 		"page": "src/options.html",
 		"chrome_style": true
 	},
+	"background": {
+		"scripts": ["src/background.js"]
+	},
 
 	"icons": {
 		"128": "images/128.png",

@@ -1,3 +1,4 @@
+
 // Saves options to chrome.storage
 function save_options() {
 	//record the current settings
@@ -11,6 +12,8 @@ function save_options() {
 	var weight   = document.getElementById('typedWeight').value;
 	var timer  	 = document.getElementById('timeThreshold').value;
 	var ignored  = document.getElementById('blacklist').value;
+
+	var clearhistory = document.getElementById('checkClearHistory').checked;
 	chrome.storage.sync.set({
 		history: history,
 		bookmarks: bookmarks,
@@ -20,7 +23,8 @@ function save_options() {
 		visit: visit,
 		weight:weight,
 		timer: timer,
-		ignored: ignored
+		ignored: ignored,
+		clearhistory: clearhistory,
 	}, function() {
 		// Update status to let user know options were saved.
 		var status = document.getElementById('status');
@@ -30,7 +34,11 @@ function save_options() {
 			status.appendChild(document.createElement('br'));
 		}, 750);
 	});
-}
+}/**/
+
+
+
+
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
@@ -46,7 +54,8 @@ function restore_options() {
 		visit: 3,
 		weight: 2,
 		timer: 28,
-		ignored: ""
+		ignored: "",
+		clearhistory: false,
 	}, function(items) {
 		document.getElementById('checkHistory').checked = items.history;
 		document.getElementById('checkBookmarks').checked = items.bookmarks;
@@ -58,13 +67,19 @@ function restore_options() {
 		document.getElementById('typedWeight').value = items.weight;
 		document.getElementById('timeThreshold').value = items.timer;
 		document.getElementById('blacklist').value = items.ignored;
+		document.getElementById('checkClearHistory').checked = items.clearhistory;
 	});
-}
-document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click', save_options);
-//for possible reset of all options in the future
-document.getElementById('reset').addEventListener('click', reset_options);
+}/**/
 
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+	restore_options();
+	document.getElementById('save').addEventListener('click', save_options);
+	document.getElementById('reset').addEventListener('click', reset_options);
+	document.getElementById('clearHistorySettings').addEventListener('click', open_history_options);	
+});
 
 
 
@@ -89,6 +104,9 @@ document.getElementById('reset').addEventListener('click', reset_options);
 })();
 
 
+
+
+
 function reset_options() {
 
 	//get currently selected settings
@@ -102,6 +120,8 @@ function reset_options() {
 	var timer  	 = document.getElementById('timeThreshold').value;
 	var ignored  = document.getElementById('blacklist').value;
 
+	var clearhistory = document.getElementById('checkClearHistory').checked;
+
 	//overwrite with default
 	document.getElementById('checkHistory').checked 	= true;
 	document.getElementById('checkBookmarks').checked 	= true;
@@ -112,6 +132,7 @@ function reset_options() {
 	document.getElementById('typedWeight').value 		= 2;
 	document.getElementById('timeThreshold').value 		= 28;
 	document.getElementById('blacklist').value 			= "";
+	document.getElementById('checkClearHistory').checked 	= false; //default false
 
 	// Update status to let user know options were reset.
 	var status = document.getElementById('status');
@@ -138,6 +159,12 @@ function reset_options() {
 		document.getElementById('typedWeight').value 		= weight;
 		document.getElementById('timeThreshold').value 		= timer;
 		document.getElementById('blacklist').value 			= ignored;
+		document.getElementById('checkClearHistory').checked 	= clearhistory;
 	});
 	status.appendChild(a);
+}/**/
+
+
+function open_history_options() {
+	chrome.tabs.create({ 'url': 'chrome://settings/clearBrowserData'});
 }

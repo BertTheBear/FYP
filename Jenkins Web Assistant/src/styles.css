@@ -45,12 +45,42 @@ h2 {
 	padding: 40px 50px 40px 50px;
 	text-decoration: none;
 }
-
 .btn:hover {
 	background: #ededed;
-	text-decoration: underline;
+	text-decoration: none;
+	color: White;
+	background: #777777;
+}
+.tdpopup {
+	overflow: hidden; 
+	text-align: left;
 }
 
 .trcheckbox:hover {
 	background: #ededed;
+}
+
+.trlist:hover {
+	background: #ededed;
+}
+
+.trlist-Entry {
+	width: 400px;
+}
+
+.trlist-RemoveButton {
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	background: #cdcdcd;
+	padding: 2px 5px 2px 5px;
+	text-decoration: none;
+}
+.trlist-RemoveButton:hover {
+	color: White;
+	background: Red;
+	text-decoration: none;
 }
