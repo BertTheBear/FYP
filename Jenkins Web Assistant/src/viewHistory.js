@@ -1,15 +1,24 @@
 //id of extension
 var myid = chrome.runtime.id;
 
-
+//Global variables
 var historyPermission = true;
 var timerSetting = 0;
+
+//Div IDs
+var listID = 'itemList';	//id of table to print schedule
+var urlID = 'enteredURL';	//id of input to retrieve url
+var timeID = 'enteredTime'; //id of input to retrieve time
+var listErrorID = 'formErrorDiv' //id of div to display list errors
 
 //On page load call functions
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('blah').addEventListener('click', function() {
-        addListItem("demo");
+		if(validateFormURL(listErrorID, urlID)) {
+			addArrayItem();
+		}
 	});
+	arrayToList();
 
 	//check for permission for notifications
 	if (Notification.permission !== "granted")
@@ -369,34 +378,202 @@ function notificationFunction(notificationTitle, bodyText, func, funcparam) {
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Inspired by http://stackoverflow.com/questions/23504528/dynamically-remove-items-from-list-javascript
-var lastid = 0;
-function addListItem(listID) {
+var lastid = 0; /*
+function addListItem(listID, urlID, timeID) {
+	//Format the text to be displayed and saved
+	var timeText = document.getElementById(timeID).value;
+	var text = " at " + timeText;
+	//Make the url a working anchor
+	var urlText = document.getElementById(urlID).value;
+	var url = document.createElement("a");
+	url.setAttribute('href', 'http://' + urlText);
+	url.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
+	url.appendChild(document.createTextNode(urlText));
 	//Checks the document for the list table
 	var list = document.getElementById(listID);
 	//Makes a new line to be added to the list and sets the id
 	var line = document.createElement('tr');
-    line.setAttribute('id','item'+lastid);
-    line.setAttribute('class', 'trlist');
+	line.setAttribute('id','item'+lastid);
+	line.setAttribute('class', 'trlist');
 
-    //Puts the text into the first element of the row
+	//Puts the text into the first element of the row
 	var entry = document.createElement('td');
-    entry.appendChild(document.createTextNode(document.getElementById('enteredText').value));
-    entry.setAttribute('class', 'trlist-Entry');
+	entry.appendChild(url);
+	//entry.appendChild("Scheduled for ");
+	entry.appendChild(document.createTextNode(text));
+	entry.setAttribute('class', 'trlist-Entry');
 
-    //Add remove button
+	//Add remove button
 	var removal = document.createElement('td');
-    var removeButton = document.createElement('a');
-    removeButton.appendChild(document.createTextNode("X"));
-    removeButton.setAttribute('href', '#');
-    removeButton.setAttribute('class', 'trlist-RemoveButton');
-    removeButton.addEventListener('click', function() {
-    	//Removes the whole line if the X is clicked
-        list.removeChild(line);
-    });
-    removal.appendChild(removeButton);
-    lastid+=1;
-    line.appendChild(entry);
-    line.appendChild(removal);
-    //Add line to list
-    list.appendChild(line);
+	var removeButton = document.createElement('a');
+	removeButton.appendChild(document.createTextNode("X"));
+	removeButton.setAttribute('href', '#');
+	removeButton.setAttribute('class', 'trlist-RemoveButton');
+	removeButton.addEventListener('click', function() {
+		//Removes the whole line if the X is clicked
+		list.removeChild(line);
+	});
+	removal.appendChild(removeButton);
+	lastid+=1;
+	line.appendChild(entry);
+	line.appendChild(removal);
+	//Add line to list
+	list.appendChild(line);
+
+	//Clear the form fields
+	document.getElementById(timeID).value = 0;
+	document.getElementById(urlID).value = "";
 }/**/
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Attempt to build from array
+function arrayToList() {
+	chrome.storage.sync.get({
+		schedule: []
+	}, function(items) {
+		//Add each element to the list
+		items.schedule.forEach(function (item, index, array){
+			var whole = item + '';	//Causes error otherwise
+			var fragments = whole.split(",");
+			addScheduleItem(items.schedule, fragments[0], fragments[1]);
+		});
+	});
+}
+
+//Input to array from form
+function addArrayItem() {
+	chrome.storage.sync.get({
+		schedule: []
+	}, function(items) {
+		//Add elements to the array
+		var urlText = document.getElementById(urlID).value;
+		var timeText = document.getElementById(timeID).value;
+		items.schedule.push(timeText + "," + urlText);
+		//Remove duplicates
+		items.schedule = uniq(items.schedule);
+		//Save updated array
+		chrome.storage.sync.set({
+			schedule: items.schedule
+		}, function() {
+			//Build list again
+			//First clear all children
+			var myNode = document.getElementById(listID);
+			while (myNode.firstChild) {
+				myNode.removeChild(myNode.firstChild);
+			}
+			//Now replace from array
+			items.schedule.forEach(function (item, index, array){
+				var whole = item + '';	//Causes error otherwise
+				var fragments = whole.split(",");
+				addScheduleItem(items.schedule, fragments[0], fragments[1]);
+			});
+
+			//Clear the form fields
+			document.getElementById(timeID).value = "00:00";
+			document.getElementById(urlID).value = "";
+		});
+	});
+}
+
+//Prints list from array
+function addScheduleItem(schedule, timeText, urlText) {
+	//Format the text to be displayed and saved
+	var text = "At " + timeText + " open ";
+	//Make the url a working anchor
+	var url = document.createElement("a");
+	url.setAttribute('href', 'http://' + urlText);
+	url.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
+	url.appendChild(document.createTextNode(urlText));
+	//Checks the document for the list table
+	var list = document.getElementById(listID);
+	//Makes a new line to be added to the list and sets the id
+	var line = document.createElement('tr');
+	line.setAttribute('id','item'+lastid);
+	line.setAttribute('class', 'trlist');
+
+	//Puts the text into the first element of the row
+	var entry = document.createElement('td');
+	//entry.appendChild("Scheduled for ");
+	entry.appendChild(document.createTextNode(text));
+	entry.appendChild(url);
+	entry.setAttribute('class', 'trlist-Entry');
+
+	//Add remove button
+	var removal = document.createElement('td');
+	var removeButton = document.createElement('a');
+	removeButton.appendChild(document.createTextNode("X"));
+	removeButton.setAttribute('href', '#');
+	removeButton.setAttribute('class', 'trlist-RemoveButton');
+	removeButton.addEventListener('click', function() {
+		//Removes the whole line if the X is clicked
+		list.removeChild(line);
+		//Remove the instance from the array
+		removeFromArray(schedule, timeText + "," + urlText);
+	});
+	removal.appendChild(removeButton);
+	lastid+=1;
+	line.appendChild(entry);
+	line.appendChild(removal);
+	//Add line to list
+	list.appendChild(line);
+}/**/
+
+function removeFromArray(array, object) {
+	var pos = array.indexOf(object);
+	var removedItem = array.splice(pos, 1);
+	//Save new array
+	chrome.storage.sync.set({
+			schedule: array
+		}, function() {
+			//Notification with "undo"
+			notificationFunction("Item removed", removedItem + " has been removed. Click here to undo.", function() {
+				//Undo and notify
+				array.push(removedItem);
+				chrome.storage.sync.set({
+					schedule: array
+				}, function() {
+					notificationURL("Item restored", removedItem + " has been restored. Click here to undo.");
+					arrayToList();
+				});
+			});
+	});
+}/**/
+
+
+//Verifies that the input is a working URL
+function validateFormURL(errorDiv, urlID) {
+	//Get values
+	var urlText = document.getElementById(urlID).value;
+	//Check values
+	var pattern = new RegExp("^((https|http|ftp|rtsp|mms)?://)"	//Protocol
+		+ "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp user
+		+ "(([0-9]{1,3}\.){3}[0-9]{1,3}" + "|" // OR	//IP(v4) address
+		+ "([0-9a-z_!~*'()-]+\.)*" 						// www.
+		+ "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." 		// domain name
+		+ "[a-z]{2,6})" 								// first level domain- .com or .museum
+		+ "(:[0-9]{1,4})?" 								// port number
+		+ "((/?)|" 										// a slash isn't required if there is no file name
+		+ "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$",'i'); // fragment locater
+	if(!pattern.test(urlText)) {
+		console.log(urlText + " Refused");// Update status to let user know options were saved.
+		var eDiv = document.getElementById(errorDiv);
+		if(urlText == "") {
+			eDiv.textContent = 'Please enter a URL.';
+		}
+		else {
+			eDiv.textContent = 'Invalid URL Entered.';
+		}
+
+		setTimeout(function() {
+			eDiv.textContent = "";
+			eDiv.appendChild(document.createElement('br'));
+		}, 750);
+		return false;
+	} else {
+		console.log(urlText + " Allowed");
+		return true;
+	}
+}
+

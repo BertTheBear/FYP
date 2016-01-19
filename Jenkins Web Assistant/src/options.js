@@ -55,7 +55,7 @@ function restore_options() {
 		weight: 2,
 		timer: 28,
 		ignored: "",
-		clearhistory: false,
+		clearhistory: false
 	}, function(items) {
 		document.getElementById('checkHistory').checked = items.history;
 		document.getElementById('checkBookmarks').checked = items.bookmarks;

@@ -2,8 +2,24 @@
 <html>
 <head>
 	<title>Jenkins Interface Page</title>
+	
+	<script src='interface.js'></script>
+	<!-- CSS Stylesheet reference -->
+	<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
+	<div class="scheduleList">
+		<h1>Jenkins Interface</h1>
+		<h2>Schedule List</h2>
+			<table id="itemList" class="scheduleList">
+			</table>
 
+			<form name="scheduleForm">
+				Time: <input type="time" id="enteredTime" value="00:00">
+				URL: <input type="text" id="enteredURL" placeholder="Enter a valid url" required>
+				<button id="blah">Submit</button>
+			</form>
+			<div id="formErrorDiv"> <br> </div>
+	</div>
 </body>
 </html>

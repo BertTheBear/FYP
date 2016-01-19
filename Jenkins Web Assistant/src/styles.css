@@ -33,6 +33,15 @@ h2 {
 	padding: 10px 0px 5px 0px;
 }
 
+#formErrorDiv {
+	color: Red;
+	padding: 10px 0px 10px 140px;
+}
+
+.scheduleList {
+	padding: 10px 0px 5px 20px;
+}
+
 
 .btn {
 	-webkit-border-radius: 4;

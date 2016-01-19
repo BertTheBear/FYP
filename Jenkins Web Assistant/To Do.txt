@@ -11,8 +11,10 @@ Process Information
 	- 
 Explicit settings 	
 	- Dynamic List	DONE
-	- List content 	
-	- Save/Undo 	
+	- List content 	DONE
+	- Save/Undo 	DONE
+Background
+	- Perform actions at certain times
 
 
 
