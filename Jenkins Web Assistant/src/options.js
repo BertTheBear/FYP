@@ -1,29 +1,40 @@
+//set triggers 
+document.addEventListener('DOMContentLoaded', function() {
+	restore_options();
+	document.getElementById('save').addEventListener('click', save_options);
+	document.getElementById('reset').addEventListener('click', reset_options);
+	document.getElementById('clearHistorySettings').addEventListener('click', open_history_options);	
+});
+
+
 
 // Saves options to chrome.storage
 function save_options() {
-	//record the current settings
-	var history  = document.getElementById('checkHistory').checked;
-	var bookmarks = document.getElementById('checkBookmarks').checked;
-	var topsites = document.getElementById('checkTopSites').checked;
-	var notif 	 = 	document.getElementById('checkNotificions').checked;
-	var organise = document.getElementById('checkOrganiser').checked;
-
-	var visit 	 = document.getElementById('visitThreshold').value;
-	var timer  	 = document.getElementById('timeThreshold').value;
-	var ignored  = document.getElementById('blacklist').value;
-
+	//retrieve the settings from the page
+	//Permissions
+	var historyPermission  	= document.getElementById('checkHistory').checked;
+	var bookmarksPermission = document.getElementById('checkBookmarks').checked;
+	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	var notifyPermission 	= document.getElementById('checkNotificions').checked;
+	var organiserPermission = document.getElementById('checkOrganiser').checked;
+	//Processing
+	var visitSite	= document.getElementById('visitThresholdSite').value;
+	var timer  	 	= document.getElementById('timeThreshold').value;
+	var ignored  	= document.getElementById('blacklist').value;
+	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
+
+	//Save the settings to memory
 	chrome.storage.sync.set({
-		history: history,
-		bookmarks: bookmarks,
-		topsites: topsites,
-		notif: notif,
-		organise: organise,
-		visit: visit,
-		weight:weight,
-		timer: timer,
-		ignored: ignored,
-		clearhistory: clearhistory,
+		history: 			historyPermission,
+		bookmarks: 			bookmarksPermission,
+		topsites: 			topsitesPermission,
+		notification: 		notifyPermission,
+		organiser: 			organiserPermission,
+		visitThreshold: 	visitSite,
+		timeThreshold: 		timer,
+		ignoreList: 		ignored,
+		clearhistory: 		clearhistory,
 	}, function() {
 		// Update status to let user know options were saved.
 		var status = document.getElementById('status');
@@ -45,39 +56,31 @@ function restore_options() {
 	
 	// Use default value of true for all and none for blacklist
 	chrome.storage.sync.get({
-		history: true,
-		bookmarks: true,
-		topsites: true,
-		notif: true,
-		organise: true,
-		visit: 3,
-		weight: 2,
-		timer: 28,
-		ignored: "",
-		clearhistory: false
+		history: 			true,
+		bookmarks: 			true,
+		topsites: 			true,
+		notification: 		true,
+		organiser: 			true,
+		visitThreshold: 	3,	
+		timeThreshold: 		28,	
+		ignoreList: 		"",	
+		clearhistory: 		false
 	}, function(items) {
-		document.getElementById('checkHistory').checked = items.history;
-		document.getElementById('checkBookmarks').checked = items.bookmarks;
-		document.getElementById('checkTopSites').checked = items.topsites;
-		document.getElementById('checkNotificions').checked = items.notif;
-		document.getElementById('checkOrganiser').checked = items.organise;
-
-		document.getElementById('visitThreshold').value = items.visit;
-		document.getElementById('timeThreshold').value = items.timer;
-		document.getElementById('blacklist').value = items.ignored;
-		document.getElementById('checkClearHistory').checked = items.clearhistory;
+		//Permissions
+		document.getElementById('checkHistory').checked 		= items.history;
+		document.getElementById('checkBookmarks').checked 		= items.bookmarks;
+		document.getElementById('checkTopSites').checked 		= items.topsites;
+		document.getElementById('checkNotificions').checked 	= items.notification;
+		document.getElementById('checkOrganiser').checked 		= items.organiser;
+		//Processing
+		document.getElementById('visitThresholdSite').value		= items.visitThreshold;
+		document.getElementById('timeThreshold').value 			= items.timeThreshold;
+		document.getElementById('blacklist').value 				= items.ignoreList;
+		//History Clear
+		document.getElementById('checkClearHistory').checked 	= items.clearhistory;
 	});
 }/**/
 
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-	restore_options();
-	document.getElementById('save').addEventListener('click', save_options);
-	document.getElementById('reset').addEventListener('click', reset_options);
-	document.getElementById('clearHistorySettings').addEventListener('click', open_history_options);	
-});
 
 
 
@@ -106,28 +109,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function reset_options() {
-
 	//get currently selected settings
-	var history  = document.getElementById('checkHistory').checked;
-	var bookmarks = document.getElementById('checkBookmarks').checked;
-	var topsites = document.getElementById('checkTopSites').checked;
-	var notif 	 = 	document.getElementById('checkNotificions').checked;
-	var organise = document.getElementById('checkOrganiser').checked;
-	var visit 	 = document.getElementById('visitThreshold').value;
-	var timer  	 = document.getElementById('timeThreshold').value;
-	var ignored  = document.getElementById('blacklist').value;
-
+	//Permissions
+	var historyPermission  	= document.getElementById('checkHistory').checked;
+	var bookmarksPermission = document.getElementById('checkBookmarks').checked;
+	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	var notifyPermission 	= document.getElementById('checkNotificions').checked;
+	var organiserPermission = document.getElementById('checkOrganiser').checked;
+	//Processing
+	var visitSite	= document.getElementById('visitThresholdSite').value;
+	var timer  	 	= document.getElementById('timeThreshold').value;
+	var ignored  	= document.getElementById('blacklist').value;
+	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
 
 	//overwrite with default
-	document.getElementById('checkHistory').checked 	= true;
-	document.getElementById('checkBookmarks').checked 	= true;
-	document.getElementById('checkTopSites').checked 	= true;
-	document.getElementById('checkNotificions').checked = true;
-	document.getElementById('checkOrganiser').checked 	= true;
-	document.getElementById('visitThreshold').value 	= 3;
-	document.getElementById('timeThreshold').value 		= 28;
-	document.getElementById('blacklist').value 			= "";
+	document.getElementById('checkHistory').checked 		= true;
+	document.getElementById('checkBookmarks').checked 		= true;
+	document.getElementById('checkTopSites').checked 		= true;
+	document.getElementById('checkNotificions').checked 	= true;
+	document.getElementById('checkOrganiser').checked 		= true;
+
+	document.getElementById('visitThresholdSite').value		= 3;
+	document.getElementById('timeThreshold').value 			= 28;
+	document.getElementById('blacklist').value 				= "";
+
 	document.getElementById('checkClearHistory').checked 	= false; //default false
 
 	// Update status to let user know options were reset.
@@ -146,14 +152,16 @@ function reset_options() {
 		status.appendChild(document.createElement('br'));
 
 		//restore settings
-		document.getElementById('checkHistory').checked 	= history;
-		document.getElementById('checkBookmarks').checked 	= bookmarks;
-		document.getElementById('checkTopSites').checked 	= topsites;
-		document.getElementById('checkNotificions').checked = notif;
-		document.getElementById('checkOrganiser').checked 	= organise;
-		document.getElementById('visitThreshold').value 	= visit;
-		document.getElementById('timeThreshold').value 		= timer;
-		document.getElementById('blacklist').value 			= ignored;
+		document.getElementById('checkHistory').checked 		= historyPermission;
+		document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
+		document.getElementById('checkTopSites').checked 		= topsitesPermission;
+		document.getElementById('checkNotificions').checked 	= notifyPermission;
+		document.getElementById('checkOrganiser').checked 		= organiserPermission;
+
+		document.getElementById('visitThresholdSite').value 	= visitSite;
+		document.getElementById('timeThreshold').value 			= timer;
+		document.getElementById('blacklist').value 				= ignored;
+
 		document.getElementById('checkClearHistory').checked 	= clearhistory;
 	});
 	status.appendChild(a);

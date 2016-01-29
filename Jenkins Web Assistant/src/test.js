@@ -432,15 +432,16 @@ function printList(list){
 		history: true,				//Whether we have permission to access browsing history
 		bookmarks: true,			//Whether we have permission to access bookmarks
 		topsites: true,				//Whether we have permission to access user's top sites
-		notif: true,				//Whether we have permission to display notifications to the user
-		organise: true,				//Whether user wishes to use automatic organiser
-		visit: 3,					//Minimum number of visits to domain before it is recorded
-		weight: 2,					//Amount of visits a typed entry counts for
-		timer: 28,					//How far back in the history will the program check
-		ignored: "",				//List of words or phrases to ignore
+		notification: true,			//Whether we have permission to display notifications to the user
+		organiser: true,			//Whether user wishes to use automatic organiser
+		recommender: true 			//Whether we have permission to give site recommendations
+		visitThreshold: 3,			//Minimum number of visits to domain before it is recorded
+		pageVisitThreshold: 9		//Minimum number of visits before single web page is recorded
+		typedWeight: 2,				//Amount of visits a typed entry counts for
+		timeThreshold: 28,			//How far back in the history will the program check
+		ignoreList: "",				//List of words or phrases to ignore
 		clearhistory: false,		//Whether user wishes to clear history at the "end" of each session
 		schedule: [],				//The schedule of site time recommendations
-		singlePage: 9				//Number of visits before single web page is recorded
 	}, function(items) {
 
 	});

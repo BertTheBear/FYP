@@ -266,9 +266,9 @@ function notificationURL(notificationTitle, bodyText, destination) {
 		return;
 	}
 	chrome.storage.sync.get({
-		notif: true
+		notification: true
 	}, function(items) {
-		if (items.notif == true) {
+		if (items.notification == true) {
 			var notification = new Notification(notificationTitle, {
 				icon: iconImage,
 				body: bodyText,
@@ -297,9 +297,9 @@ function notificationFunction(notificationTitle, bodyText, func, funcparam) {
 		return;
 	}
 	chrome.storage.sync.get({
-		notif: true
+		notification: true
 	}, function(items) {
-		if (items.notif == true) {
+		if (items.notification == true) {
 			var notification = new Notification(notificationTitle, {
 				icon: iconImage,
 				body: bodyText,

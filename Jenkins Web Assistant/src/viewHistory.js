@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	var p = new Promise(function (resolve, reject) {
 		chrome.storage.sync.get({
 			history: true,
-			timer:28
+			timeThreshold: 28
 		}, function (items) {
 			historyPermission = items.history;
-			timerSetting = items.timer;
+			timerSetting = items.timeThreshold;
 			resolve(historyPermission);
 		});
 	});
@@ -251,10 +251,10 @@ function uniq(array) {
 ////Retrieves and displays blacklist
 function buildIgnoreList(divName) {
 	chrome.storage.sync.get({
-		ignored: ""
+		ignoreList: ""
 	}, function(items) {
 		var blacklist = document.getElementById(divName);
-		var data = items.ignored.split(",");
+		var data = items.ignoreList.split(",");
 		//if empty
 		if (data.length == 1 && data[0] == "") {
 			data = ["Ignore list is currently empty."];
@@ -333,9 +333,9 @@ function notificationURL(notificationTitle, bodyText, destination) {
 		return;
 	}
 	chrome.storage.sync.get({
-		notif: true
+		notification: true
 	}, function(items) {
-		if (items.notif == true) {
+		if (items.notification == true) {
 			var notification = new Notification(notificationTitle, {
 				icon: iconImage,
 				body: bodyText,
@@ -364,9 +364,9 @@ function notificationFunction(notificationTitle, bodyText, func, funcparam) {
 		return;
 	}
 	chrome.storage.sync.get({
-		notif: true
+		notification: true
 	}, function(items) {
-		if (items.notif == true) {
+		if (items.notification == true) {
 			var notification = new Notification(notificationTitle, {
 				icon: iconImage,
 				body: bodyText,
@@ -607,7 +607,7 @@ function makeURL(destination) {
 function clearHistory() {
 	//Get options from storage.
 	chrome.storage.sync.get({
-		notif: true,
+		notification: true,
 		clearhistory: false,
 		historytimer: 0
 	}, function(items) {
@@ -633,7 +633,7 @@ function clearHistory() {
 					noteTitle = "History Automatically Cleared";
 					noteText = "Selected history from your last session has been cleared.\nClick here for options.";
 					//checks whether we have permission for notifications
-					if (items.notif) {
+					if (items.notification) {
 						notificationFunction(noteTitle, noteText, open_options);
 					}
 				});
@@ -641,7 +641,7 @@ function clearHistory() {
 		}
 
 		//checks whether we have permission for notifications
-		else if (items.notif) {
+		else if (items.notification) {
 			notificationFunction(noteTitle, noteText, open_options);
 		}
 	});
@@ -677,17 +677,19 @@ function processHistory() {
 
 	//Get all settings and schedule
 	chrome.storage.sync.get({
-		history: true,
-		bookmarks: true,
-		topsites: true,
-		notif: true,
-		organise: true,
-		visit: 3,
-		weight: 2,
-		timer: 28,
-		ignored: "",
-		schedule: [],		//For adding on changes
-		singlePage: 9
+		history: 			true,
+		bookmarks: 			true,
+		topsites: 			true,
+		notification: 		true,
+		organiser: 			true,
+		recommender: 		true, //--
+		visitThreshold: 	3,	
+		pageVisitThreshold: 9, //--
+		typedWeight: 		2, //--
+		timeThreshold: 		28,	
+		ignoreList: 		"",	
+		clearhistory: 		false,
+		schedule: 			[]		//For adding on changes
 	}, function(items) {
 		//Stop if we don't have permission
 		if(items.history != true){
@@ -697,7 +699,7 @@ function processHistory() {
 
 		var microsecondsPerDay = 1000 * 60 * 60 * 24;
 		//Multiply 1 day by the amount of days set by user.
-		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timer);
+		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
 
 		// Access history and process results
 		chrome.history.search({
@@ -710,10 +712,10 @@ function processHistory() {
 					var visits = item.visitCount;
 					//Add weighted typedCount but remove one from weight
 					// 		to account for initial recording of visit
-					visits += item.typedCount * (items.weight - 1); 
+					visits += item.typedCount * (items.typedWeight - 1); 
 
 					//For single pages with many visits
-					if(visits >= items.singlePage) {
+					if(visits >= items.pageVisitThreshold) {
 						item.visitCount = visits;
 						//remove # from end
 						var urltemp = item.url;
@@ -757,13 +759,13 @@ function processHistory() {
 				//Remove elements of list below threshold or containing blacklist
 				var index = 0;
 				while(index < commonSites.length) {
-					if(commonSites[index].visitCount < items.visit) {
+					if(commonSites[index].visitCount < items.visitThreshold) {
 						var removed = commonSites.splice(index, 1);
 						//remove from index because array is shorter
 						index -= removed.length;
 					}
 					else {
-						var blacklist = items.ignored.split(",");
+						var blacklist = items.ignoreList.split(",");
 						//if empty
 						if (blacklist.length == 1 && blacklist[0] == "") {
 							//List is empty, do nothing (For now)
