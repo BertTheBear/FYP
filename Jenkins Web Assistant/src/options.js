@@ -9,7 +9,6 @@ function save_options() {
 	var organise = document.getElementById('checkOrganiser').checked;
 
 	var visit 	 = document.getElementById('visitThreshold').value;
-	var weight   = document.getElementById('typedWeight').value;
 	var timer  	 = document.getElementById('timeThreshold').value;
 	var ignored  = document.getElementById('blacklist').value;
 
@@ -64,7 +63,6 @@ function restore_options() {
 		document.getElementById('checkOrganiser').checked = items.organise;
 
 		document.getElementById('visitThreshold').value = items.visit;
-		document.getElementById('typedWeight').value = items.weight;
 		document.getElementById('timeThreshold').value = items.timer;
 		document.getElementById('blacklist').value = items.ignored;
 		document.getElementById('checkClearHistory').checked = items.clearhistory;
@@ -116,7 +114,6 @@ function reset_options() {
 	var notif 	 = 	document.getElementById('checkNotificions').checked;
 	var organise = document.getElementById('checkOrganiser').checked;
 	var visit 	 = document.getElementById('visitThreshold').value;
-	var weight   = document.getElementById('typedWeight').value;
 	var timer  	 = document.getElementById('timeThreshold').value;
 	var ignored  = document.getElementById('blacklist').value;
 
@@ -129,7 +126,6 @@ function reset_options() {
 	document.getElementById('checkNotificions').checked = true;
 	document.getElementById('checkOrganiser').checked 	= true;
 	document.getElementById('visitThreshold').value 	= 3;
-	document.getElementById('typedWeight').value 		= 2;
 	document.getElementById('timeThreshold').value 		= 28;
 	document.getElementById('blacklist').value 			= "";
 	document.getElementById('checkClearHistory').checked 	= false; //default false
@@ -156,7 +152,6 @@ function reset_options() {
 		document.getElementById('checkNotificions').checked = notif;
 		document.getElementById('checkOrganiser').checked 	= organise;
 		document.getElementById('visitThreshold').value 	= visit;
-		document.getElementById('typedWeight').value 		= weight;
 		document.getElementById('timeThreshold').value 		= timer;
 		document.getElementById('blacklist').value 			= ignored;
 		document.getElementById('checkClearHistory').checked 	= clearhistory;

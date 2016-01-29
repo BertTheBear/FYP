@@ -9,14 +9,12 @@ var microsecondsPerMinute = 1000 * 60;
 var timeToWait = microsecondsPerMinute * minutesPerInterval;
 
 
-//Calls clearHistory when the extension is loaded
-chrome.runtime.onStartup.addListener(function(){
-	clearHistory();
-	//First check schedule
-	checkSchedule();
-	//Also initiates loop for checking schedule
-	setInterval(checkSchedule, timeToWait);
+document.addEventListener('DOMContentLoaded', function () {
+	console.log("ARRRRARRARARRA");
+	document.getElementById('bleh').addEventListener('click', clearHistory);
+	
 });
+
 
 
 
@@ -332,6 +330,7 @@ function processHistory() {
 
 				//Process this information for patterns
 				//processCommonSites(commonSites);
+				printStuff(commonSites);
 			});
 		});
 
@@ -357,3 +356,98 @@ function getHostname(url) {
 	//forProcessing.hash;	 // => "#hash"
 	//forProcessing.search;	 // => "?search=test"
 };
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TESTING
+function printList(list){ 
+	var thing = document.getElementById('printHere');
+
+	var ul = document.createElement('ul');
+	//if empty
+	if (list.length == 0) {
+		var li = document.createElement('li');
+		li.appendChild(document.createTextNode('No contents'));
+
+		ul.appendChild(li);
+	}
+
+	for (var i = 0; i < list.length; ++i) {
+		var li = document.createElement('li');
+		li.appendChild(document.createTextNode(list[i].url));
+
+		ul.appendChild(li);
+	}
+	thing.appendChild(ul);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 8888888888888888888888888888888 ALL SETTINGS REFERENCE 8888888888888888888888888888
+
+
+
+	chrome.storage.sync.get({
+		history: true,				//Whether we have permission to access browsing history
+		bookmarks: true,			//Whether we have permission to access bookmarks
+		topsites: true,				//Whether we have permission to access user's top sites
+		notif: true,				//Whether we have permission to display notifications to the user
+		organise: true,				//Whether user wishes to use automatic organiser
+		visit: 3,					//Minimum number of visits to domain before it is recorded
+		weight: 2,					//Amount of visits a typed entry counts for
+		timer: 28,					//How far back in the history will the program check
+		ignored: "",				//List of words or phrases to ignore
+		clearhistory: false,		//Whether user wishes to clear history at the "end" of each session
+		schedule: [],				//The schedule of site time recommendations
+		singlePage: 9				//Number of visits before single web page is recorded
+	}, function(items) {
+
+	});
+
+
+
+
+
+
+*/

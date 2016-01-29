@@ -57,7 +57,15 @@ Dynamic Schedule List
 	When switched to arrays problems modifying data and data types
 		Removing entries
 	Switched times and sites for faster processing
+	NEW
+	Deleting wrong element
+		Cannot replicate on Windows
 
 Variable types
 	A few issues with variables that needed to have arbitrary actions performed
 		eg var theString = aString + "";
+
+Processing
+	Urls with minor differences
+	Wasn't removing certain urls
+		Forgot to reduce index number to account for smaller array when removing item

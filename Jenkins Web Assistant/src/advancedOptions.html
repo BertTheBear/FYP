@@ -8,10 +8,15 @@
 </head>
 
 <body>
-	<h1>Options Page</h1>
+	<h1>Advanced Options Page</h1>
 	<br>
 	<!-- Table for permissions -->
-		<table>
+		<table class="centeredList">
+			<tr>
+				<td>
+					<h2>Permissions</h2>
+				</td>
+			</tr>
 			<tr class="trcheckbox">
 				<td>
 					<label>
@@ -57,14 +62,48 @@
 					Enable organiser
 				</td>
 			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkRecommendations">
+					</label>
+				
+					Enable site recommendations
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h2>Processing</h2>
+				</td>
+			</tr>
 			<tr>
 				<td>
 					<label>
-						<input type="number" id="visitThreshold" style="width:40px">
+						<input type="number" id="visitThresholdSite" style="width:40px">
 					</label>
 
 					Website visit threshold <br>
 					<i>Minimum number of visits before a website is recorded.</i> (<b>Default 3.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="visitThresholdPage" style="width:40px">
+					</label>
+
+					Webpage visit threshold <br>
+					<i>Minimum number of visits to a single webpage before it is recorded.</i> (<b>Default 9.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="typedWeight" style="width:40px">
+					</label>
+
+					Typed visit weight <br>
+					<i>Additional value given to an address typed directly into URL bar.</i> (<b>Default 2.</b>)
 				</td>
 			</tr>
 			<tr>
@@ -88,7 +127,13 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate)</i>
+					<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate) <br>
+					Page URL and title will both be checked.</i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h2>History Clear</h2>
 				</td>
 			</tr>
 			<tr class="trcheckbox">
@@ -101,17 +146,20 @@
 					<a href="#" id="clearHistorySettings">Settings</a>
 				</td>
 			</tr>
+			<tr>
+				<td colspan="2">
+					<i>If enabled, this will clear your history when the browser is closed. <br> 
+					The information cleared is dependent upon the settings above.</i>
+				</td>
+			</tr>
 		</table>
 
-		<div id="status"><br></div>
-		<button id="save">Save</button> <br>
-		<a href="#" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
-
 		<div class="centered">
-			<br> 
-			<a target="_blank" href="advancedOptions.html">Advanced Options Page</a>
+			<div id="status"><br></div>
+			<button id="save">Save</button> <br>
+			<a href="#" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
 		</div>
 
-		<script src="options.js"></script>
+		<script src="advancedOptions.js"></script>
 </body>
 </html>

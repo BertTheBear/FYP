@@ -19,7 +19,7 @@ h1 {
 
 h2 { 
 	margin: 0; 
-	padding: 24px 0 7px 40px; 
+	padding: 24px 0px 7px 0px; 
 	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif; 
 	font-weight: normal; 
 	letter-spacing: .005em; 
@@ -38,11 +38,18 @@ h2 {
 	padding: 10px 0px 10px 140px;
 }
 
-.scheduleList {
+.centeredList {
 	padding: 10px 0px 5px 20px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+.centered {
+	text-align: center;
 }
 
 
+/* popup buttons */
 .btn {
 	-webkit-border-radius: 4;
 	-moz-border-radius: 4;
@@ -60,10 +67,13 @@ h2 {
 	color: White;
 	background: #777777;
 }
+/* Stops buttons looking stupid */
 .tdpopup {
 	overflow: hidden; 
 	text-align: left;
 }
+
+
 
 .trcheckbox:hover {
 	background: #ededed;
@@ -77,6 +87,8 @@ h2 {
 	width: 400px;
 }
 
+
+/* Schedule buttons */
 .trlist-RemoveButton {
 	-webkit-border-radius: 4;
 	-moz-border-radius: 4;

@@ -13,7 +13,6 @@
 			"19" : "images/19.png"
 		}
 	},
-	"content_scripts": [],
 	"options_ui" : {
 		"page": "src/options.html",
 		"chrome_style": true

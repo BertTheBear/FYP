@@ -38,3 +38,6 @@ NOTES
 
 WEB USAGE MINING
 PROACTIVE ASSISTANT
+
+Visit threshold where it may start looking at path as well as domain (>100 visits for example)
+how long on page

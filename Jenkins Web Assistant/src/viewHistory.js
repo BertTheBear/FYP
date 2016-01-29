@@ -11,6 +11,14 @@ var urlID = 'enteredURL';	//id of input to retrieve url
 var timeID = 'enteredTime'; //id of input to retrieve time
 var listErrorID = 'formErrorDiv' //id of div to display list errors
 
+
+//How many minutes to wait
+var minutesPerInterval = 5;
+var microsecondsPerMinute = 1000 * 60;
+//time to wait between schedule checks
+var timeToWait = microsecondsPerMinute * minutesPerInterval;
+
+
 //On page load call functions
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('blah').addEventListener('click', function() {
@@ -19,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 	arrayToList();
+	document.getElementById('bloh').addEventListener('click', checkSchedule);
+	document.getElementById('bleh').addEventListener('click', clearHistory);
 
 	//check for permission for notifications
 	if (Notification.permission !== "granted")
@@ -43,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	buildIgnoreList("blacklist");
 	buildTopSitesList("topSites");
+	processHistory();
 });
 
 
@@ -373,66 +384,28 @@ function notificationFunction(notificationTitle, bodyText, func, funcparam) {
 	});
 }
 
+function open_options() {
+	chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + myid });
+}
 
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Inspired by http://stackoverflow.com/questions/23504528/dynamically-remove-items-from-list-javascript
-var lastid = 0; /*
-function addListItem(listID, urlID, timeID) {
-	//Format the text to be displayed and saved
-	var timeText = document.getElementById(timeID).value;
-	var text = " at " + timeText;
-	//Make the url a working anchor
-	var urlText = document.getElementById(urlID).value;
-	var url = document.createElement("a");
-	url.setAttribute('href', 'http://' + urlText);
-	url.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
-	url.appendChild(document.createTextNode(urlText));
-	//Checks the document for the list table
-	var list = document.getElementById(listID);
-	//Makes a new line to be added to the list and sets the id
-	var line = document.createElement('tr');
-	line.setAttribute('id','item'+lastid);
-	line.setAttribute('class', 'trlist');
-
-	//Puts the text into the first element of the row
-	var entry = document.createElement('td');
-	entry.appendChild(url);
-	//entry.appendChild("Scheduled for ");
-	entry.appendChild(document.createTextNode(text));
-	entry.setAttribute('class', 'trlist-Entry');
-
-	//Add remove button
-	var removal = document.createElement('td');
-	var removeButton = document.createElement('a');
-	removeButton.appendChild(document.createTextNode("X"));
-	removeButton.setAttribute('href', '#');
-	removeButton.setAttribute('class', 'trlist-RemoveButton');
-	removeButton.addEventListener('click', function() {
-		//Removes the whole line if the X is clicked
-		list.removeChild(line);
-	});
-	removal.appendChild(removeButton);
-	lastid+=1;
-	line.appendChild(entry);
-	line.appendChild(removal);
-	//Add line to list
-	list.appendChild(line);
-
-	//Clear the form fields
-	document.getElementById(timeID).value = 0;
-	document.getElementById(urlID).value = "";
-}/**/
+var lastid = 0; 
 
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCHEDULE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Attempt to build from array
 function arrayToList() {
 	chrome.storage.sync.get({
 		schedule: []
 	}, function(items) {
+		//First clear all children
+		var myNode = document.getElementById(listID);
+		while (myNode.firstChild) {
+			myNode.removeChild(myNode.firstChild);
+		}
 		//Add each element to the list
 		items.schedule.forEach(function (item, index, array){
 			var whole = item + '';	//Causes error otherwise
@@ -534,7 +507,7 @@ function removeFromArray(array, object) {
 				chrome.storage.sync.set({
 					schedule: array
 				}, function() {
-					notificationURL("Item restored", removedItem + " has been restored. Click here to undo.");
+					notificationURL("Item restored", removedItem + " has been restored.");
 					arrayToList();
 				});
 			});
@@ -577,3 +550,290 @@ function validateFormURL(errorDiv, urlID) {
 	}
 }
 
+
+
+
+
+// ========================== TIME CHECKING FUNCTIONS =====================================
+function checkSchedule() {
+	//Get the current time
+	var now = new Date();
+	var microsecondsSinceLastInterval = microsecondsPerMinute * minutesPerInterval;
+	var lastCheckedVal = (new Date).getTime() - microsecondsSinceLastInterval;
+	var lastChecked = new Date(lastCheckedVal);
+
+	//Get the schedule
+	chrome.storage.sync.get({
+		schedule: []
+	}, function(items) {
+		//Check time with each element of list
+		items.schedule.forEach(function (item, index, array){
+			//causes an error otherwise
+			item = item + "";
+			var index = item.indexOf(":");
+			var itemHour = item.substring(index-2, index);		//2 values before : character
+			var itemMinute = item.substring(index+1, index+3);	//2 values after  : character
+			//Check values versus times
+			if(itemHour <= now.getHours() && itemHour >= lastChecked.getHours()){
+				//If hours correct check minutes
+				if(itemMinute <= now.getMinutes() && itemMinute >= lastChecked.getMinutes()){
+					//If the time has passed send notification
+					var splitter = item.indexOf(",");
+					var destination = item.substring(splitter+1);//Start AFTER comma
+					destination = makeURL(destination);
+					notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
+				}
+			}
+		});
+	});
+}
+
+function makeURL(destination) {
+	var protocol = new RegExp("^((https|http|ftp|rtsp|mms)://)",'i');
+	if(!protocol.test(destination)) {
+		//Not a working URL, just add protocol
+		return "http://" + destination;
+	}
+	else {
+		//Everything's alright
+		return destination;
+	}
+}/**/
+
+
+// -------------------------------- CLEAR HISTORY FUNCTION -------------------------------
+
+//Clears history if set and records new time
+function clearHistory() {
+	//Get options from storage.
+	chrome.storage.sync.get({
+		notif: true,
+		clearhistory: false,
+		historytimer: 0
+	}, function(items) {
+		//For notification. Only changes if the history is deleted. Otherwise default text.
+		var noteTitle = "Automatic History Clear Failed";
+		var noteText = "Due to your preference settings, your history has NOT been cleared.\nClick here for options.";
+		//Check if user set to clear history
+		if (items.clearhistory) {
+			//Last user login time. History will be cleared from this date
+			var lastLogin = items.historytimer;
+
+			chrome.browsingData.settings(function(result) {
+				//This causes errors so must be removed
+				if(result.dataToRemove.hasOwnProperty('cacheStorage')) {
+					delete result.dataToRemove.cacheStorage;
+				}
+
+				//Get the settings and put them into the remove function
+				chrome.browsingData.remove({ since: lastLogin }, result.dataToRemove, function() {
+					//Something once the history is cleared
+
+					//Probably just notify for now
+					noteTitle = "History Automatically Cleared";
+					noteText = "Selected history from your last session has been cleared.\nClick here for options.";
+					//checks whether we have permission for notifications
+					if (items.notif) {
+						notificationFunction(noteTitle, noteText, open_options);
+					}
+				});
+			});
+		}
+
+		//checks whether we have permission for notifications
+		else if (items.notif) {
+			notificationFunction(noteTitle, noteText, open_options);
+		}
+	});
+
+
+	//Save the current time
+	var currentLogin = (new Date).getTime();
+	chrome.storage.sync.set({
+		historytimer: currentLogin
+	}, function() {
+		//Nothing for now.
+	});
+}/**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ############################## PROCESSING #############################
+
+function processHistory() {
+	//array for individual sites
+	var commonSites = []; //God I'm great at puns...
+
+	//Get all settings and schedule
+	chrome.storage.sync.get({
+		history: true,
+		bookmarks: true,
+		topsites: true,
+		notif: true,
+		organise: true,
+		visit: 3,
+		weight: 2,
+		timer: 28,
+		ignored: "",
+		schedule: [],		//For adding on changes
+		singlePage: 9
+	}, function(items) {
+		//Stop if we don't have permission
+		if(items.history != true){
+			return;
+			//This will end the funtion prematurely
+		}
+
+		var microsecondsPerDay = 1000 * 60 * 60 * 24;
+		//Multiply 1 day by the amount of days set by user.
+		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timer);
+
+		// Access history and process results
+		chrome.history.search({
+				'text': '',				
+				'startTime': historyCutoff
+			},
+			function(historyItems) {
+				//For each item check if it reaches the threshold
+				historyItems.forEach(function(item, index, array) {
+					var visits = item.visitCount;
+					//Add weighted typedCount but remove one from weight
+					// 		to account for initial recording of visit
+					visits += item.typedCount * (items.weight - 1); 
+
+					//For single pages with many visits
+					if(visits >= items.singlePage) {
+						item.visitCount = visits;
+						//remove # from end
+						var urltemp = item.url;
+						var hashIndex = urltemp.indexOf('#');
+						if(hashIndex > -1) {
+							item.url = item.url.substring(0, hashIndex);
+						}
+						//remove ? from end
+						var qmarkIndex = urltemp.indexOf('?');
+						if(qmarkIndex == urltemp.length-1) {
+							item.url = item.url.substring(0, qmarkIndex);
+						}
+
+						//commonSites.push(item);
+					}
+					//else check just the domain
+					else {
+						item.url = getHostname(item.url);
+					}
+
+
+
+					var found = false;
+					//Check if the site/domain already exists in the list
+					//This is O(X^2) so maybe look into better method
+					for(var i = 0; found == false && i < commonSites.length; i++) {
+						if(commonSites[i].url == item.url) {
+							commonSites[i].visitCount += visits;
+							found = true;
+						}
+					}
+					//if not found add to list
+					if(found == false) {
+						commonSites.push(item);
+					}
+				
+				})
+
+
+
+				//Remove elements of list below threshold or containing blacklist
+				var index = 0;
+				while(index < commonSites.length) {
+					if(commonSites[index].visitCount < items.visit) {
+						var removed = commonSites.splice(index, 1);
+						//remove from index because array is shorter
+						index -= removed.length;
+					}
+					else {
+						var blacklist = items.ignored.split(",");
+						//if empty
+						if (blacklist.length == 1 && blacklist[0] == "") {
+							//List is empty, do nothing (For now)
+						}
+						else {
+							//Also O(x^3) so need to look at
+							//Check if they contain any keywords
+							for(var i = 0; i < blacklist.length; i++) {
+								commonSites.forEach(function(item, index, array) {
+									var url = item.url + "";
+									if(url.toLowerCase().includes(blacklist[i].toLowerCase())) {
+										var removed = commonSites.splice(index, 1);
+										//remove from index because array is shorter
+										index -= removed.length;
+									}
+								})
+							}
+						}
+					}
+					index++;
+				}
+
+				//Process this information for patterns
+				//processCommonSites(commonSites);
+				printList(commonSites);
+			});
+		});
+
+}
+
+
+
+
+function getHostname(url) {
+	//make object element. a represents anchor... not element name...
+	var forProcessing = document.createElement("a");
+	//make url into href for object
+	forProcessing.href = url;
+	//return hostname section
+	return forProcessing.hostname;
+	//===OTHER POSSIBILITIES===
+	//For if it matches criteria such as Google or Amazon etc.
+	//forProcessing.protocol; 	// => "http:"
+	//forProcessing.host;	 	// => "example.com:3000"
+	//forProcessing.hostname; 	// => "example.com"
+	//forProcessing.port;	 	// => "3000"
+	//forProcessing.pathname; 	// => "/pathname/"
+	//forProcessing.hash;	 	// => "#hash"
+	//forProcessing.search;	 	// => "?search=test"
+};
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TESTING
+function printList(list){ 
+	var thing = document.getElementById('printHere');
+
+	var ul = document.createElement('ul');
+	//if empty
+	if (list.length == 0) {
+		var li = document.createElement('li');
+		li.appendChild(document.createTextNode('No contents'));
+
+		ul.appendChild(li);
+	}
+
+	for (var i = 0; i < list.length; ++i) {
+		var li = document.createElement('li');
+		li.appendChild(document.createTextNode(list[i].url + " COUNT: " + list[i].visitCount));
+
+		ul.appendChild(li);
+	}
+	thing.appendChild(ul);
+}

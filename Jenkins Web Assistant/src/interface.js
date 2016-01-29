@@ -74,6 +74,11 @@ function arrayToList() {
 	chrome.storage.sync.get({
 		schedule: []
 	}, function(items) {
+		//First clear all children
+		var myNode = document.getElementById(listID);
+		while (myNode.firstChild) {
+			myNode.removeChild(myNode.firstChild);
+		}
 		//Add each element to the list
 		items.schedule.forEach(function (item, index, array){
 			var whole = item + '';	//Causes error otherwise
@@ -175,7 +180,7 @@ function removeFromArray(array, object) {
 				chrome.storage.sync.set({
 					schedule: array
 				}, function() {
-					notificationURL("Item restored", removedItem + " has been restored. Click here to undo.");
+					notificationURL("Item restored", removedItem + " has been restored.");
 					arrayToList();
 				});
 			});
