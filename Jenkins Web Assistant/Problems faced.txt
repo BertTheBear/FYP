@@ -16,6 +16,10 @@ Saving options in Chrome
 	PROBLEM
 		Needed to place withing page load function
 
+Variable Names
+	Names were not very descriptive
+	Changed names in order to support maintainability and exxtensibility.
+
 Reading history from chrome
 	modified sample code
 	had problems returning the hostnames
@@ -68,4 +72,7 @@ Variable types
 Processing
 	Urls with minor differences
 	Wasn't removing certain urls
-		Forgot to reduce index number to account for smaller array when removing item
+		Forgot to reduce index number to account for smaller array when removing items
+	URL and visits
+		For security reasons you can't process a list of both
+		I might try again but it's not likely

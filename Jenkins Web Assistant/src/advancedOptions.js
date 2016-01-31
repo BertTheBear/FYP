@@ -19,11 +19,14 @@ function save_options() {
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
 	var recommendPermission = document.getElementById('checkRecommendations').checked;//--
 	//Processing
-	var visitSite	= document.getElementById('visitThresholdSite').value;
-	var visitPage 	= document.getElementById('visitThresholdPage').value; //--
-	var weight 	 	= document.getElementById('typedWeight').value; //--
-	var timer  	 	= document.getElementById('timeThreshold').value;
-	var ignored  	= document.getElementById('blacklist').value;
+	var visitSite		= document.getElementById('visitThresholdSite').value;
+	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
+	var weight 	 		= document.getElementById('typedWeight').value; //--
+	var timer  	 		= document.getElementById('timeThreshold').value;
+	var ignored  		= document.getElementById('blacklist').value;
+	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
+	var timeRounding  	= document.getElementById('timeRounding').value;	//---
+	var newZero  		= document.getElementById('newZero').value;			//---
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
 
@@ -40,7 +43,10 @@ function save_options() {
 		typedWeight: 		weight,//--
 		timeThreshold: 		timer,
 		ignoreList: 		ignored,
-		clearhistory: 		clearhistory,
+		checkFrequency: 	checkFrequency,		//--
+		timeRounding: 		timeRounding,		//--
+		newZero: 			newZero,		//--
+		clearhistory: 		clearhistory
 	}, function() {
 		// Update status to let user know options were saved.
 		var status = document.getElementById('status');
@@ -73,7 +79,10 @@ function restore_options() {
 		typedWeight: 		2, //--
 		timeThreshold: 		28,	
 		ignoreList: 		"",	
-		clearhistory: 		false,
+		checkFrequency: 	5,	//---
+		timeRounding: 		1,	//---
+		newZero: 			4,	//---
+		clearhistory: 		false
 	}, function(items) {
 		//Permissions
 		document.getElementById('checkHistory').checked 		= items.history;
@@ -88,6 +97,9 @@ function restore_options() {
 		document.getElementById('typedWeight').value 			= items.typedWeight;//--
 		document.getElementById('timeThreshold').value 			= items.timeThreshold;
 		document.getElementById('blacklist').value 				= items.ignoreList;
+		document.getElementById('checkFrequency').value 		= items.checkFrequency;
+		document.getElementById('timeRounding').value 			= items.timeRounding;
+		document.getElementById('newZero').value 				= items.newZero;
 		//History Clear
 		document.getElementById('checkClearHistory').checked 	= items.clearhistory;
 	});
@@ -130,11 +142,14 @@ function reset_options() {
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
 	var recommendPermission = document.getElementById('checkRecommendations').checked;//--
 	//Processing
-	var visitSite	= document.getElementById('visitThresholdSite').value;
-	var visitPage 	= document.getElementById('visitThresholdPage').value; //--
-	var weight 	 	= document.getElementById('typedWeight').value; //--
-	var timer  	 	= document.getElementById('timeThreshold').value;
-	var ignored  	= document.getElementById('blacklist').value;
+	var visitSite		= document.getElementById('visitThresholdSite').value;
+	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
+	var weight 	 		= document.getElementById('typedWeight').value; //--
+	var timer  	 		= document.getElementById('timeThreshold').value;
+	var ignored  		= document.getElementById('blacklist').value;
+	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
+	var timeRounding  	= document.getElementById('timeRounding').value;	//---
+	var newZero  		= document.getElementById('newZero').value;			//---
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
 
@@ -151,6 +166,9 @@ function reset_options() {
 	document.getElementById('typedWeight').value 			= 2;//--
 	document.getElementById('timeThreshold').value 			= 28;
 	document.getElementById('blacklist').value 				= "";
+	document.getElementById('checkFrequency').value 		= 5; //--
+	document.getElementById('timeRounding').value 			= 1; //--
+	document.getElementById('newZero').value 				= 4; //--
 
 	document.getElementById('checkClearHistory').checked 	= false; //default false
 
@@ -182,6 +200,9 @@ function reset_options() {
 		document.getElementById('timeThreshold').value 			= timer;//--
 		document.getElementById('timeThreshold').value 			= timer;
 		document.getElementById('blacklist').value 				= ignored;
+		document.getElementById('checkFrequency').value 		= checkFrequency;//--
+		document.getElementById('timeRounding').value 			= timeRounding;	//--
+		document.getElementById('newZero').value 				= newZero;		//--
 
 		document.getElementById('checkClearHistory').checked 	= clearhistory;
 	});

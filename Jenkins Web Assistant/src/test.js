@@ -440,8 +440,13 @@ function printList(list){
 		typedWeight: 2,				//Amount of visits a typed entry counts for
 		timeThreshold: 28,			//How far back in the history will the program check
 		ignoreList: "",				//List of words or phrases to ignore
+		internalIgnoreList: "",		//List of items to ignore as set by creator(Me) For use with words that break the organiser
+		ignoreQuery: true, 			//Whether to ignore queries in processing
 		clearhistory: false,		//Whether user wishes to clear history at the "end" of each session
 		schedule: [],				//The schedule of site time recommendations
+		checkFrequency: 5,			//How often (In minutes) the program will check the schedule
+		timeRounding: 1,			//How will the process round the retrieved time (Nearest minute, 15 mins etc.)
+		newZero: 4					//New time to set as 0 for purposes of late night browsing
 	}, function(items) {
 
 	});

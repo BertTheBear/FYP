@@ -15,6 +15,8 @@ var listErrorID = 'formErrorDiv' //id of div to display list errors
 //How many minutes to wait
 var minutesPerInterval = 5;
 var microsecondsPerMinute = 1000 * 60;
+var microsecondsPerHour = 1000 * 60 * 60;
+var microsecondsPerDay = 1000 * 60 * 60 * 24;
 //time to wait between schedule checks
 var timeToWait = microsecondsPerMinute * minutesPerInterval;
 
@@ -410,7 +412,7 @@ function arrayToList() {
 		items.schedule.forEach(function (item, index, array){
 			var whole = item + '';	//Causes error otherwise
 			var fragments = whole.split(",");
-			addScheduleItem(items.schedule, fragments[0], fragments[1]);
+			addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
 		});
 	});
 }
@@ -423,7 +425,7 @@ function addArrayItem() {
 		//Add elements to the array
 		var urlText = document.getElementById(urlID).value;
 		var timeText = document.getElementById(timeID).value;
-		items.schedule.push(timeText + "," + urlText);
+		items.schedule.push(timeText + "," + urlText + ",trlist-user");
 		//Remove duplicates
 		items.schedule = uniq(items.schedule);
 		//Save updated array
@@ -440,7 +442,7 @@ function addArrayItem() {
 			items.schedule.forEach(function (item, index, array){
 				var whole = item + '';	//Causes error otherwise
 				var fragments = whole.split(",");
-				addScheduleItem(items.schedule, fragments[0], fragments[1]);
+				addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
 			});
 
 			//Clear the form fields
@@ -451,7 +453,7 @@ function addArrayItem() {
 }
 
 //Prints list from array
-function addScheduleItem(schedule, timeText, urlText) {
+function addScheduleItem(schedule, timeText, urlText, type) {
 	//Format the text to be displayed and saved
 	var text = "At " + timeText + " open ";
 	//Make the url a working anchor
@@ -464,7 +466,11 @@ function addScheduleItem(schedule, timeText, urlText) {
 	//Makes a new line to be added to the list and sets the id
 	var line = document.createElement('tr');
 	line.setAttribute('id','item'+lastid);
-	line.setAttribute('class', 'trlist');
+
+	//Set type user/automatic
+	//trlist-user => user set
+	//trlist-auro => automatically set
+	line.setAttribute('class', type);
 
 	//Puts the text into the first element of the row
 	var entry = document.createElement('td');
@@ -554,6 +560,9 @@ function validateFormURL(errorDiv, urlID) {
 
 
 
+
+
+
 // ========================== TIME CHECKING FUNCTIONS =====================================
 function checkSchedule() {
 	//Get the current time
@@ -578,8 +587,8 @@ function checkSchedule() {
 				//If hours correct check minutes
 				if(itemMinute <= now.getMinutes() && itemMinute >= lastChecked.getMinutes()){
 					//If the time has passed send notification
-					var splitter = item.indexOf(",");
-					var destination = item.substring(splitter+1);//Start AFTER comma
+					var splitter = item.split(",");
+					var destination = splitter[1];//second item in array
 					destination = makeURL(destination);
 					notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
 				}
@@ -599,6 +608,13 @@ function makeURL(destination) {
 		return destination;
 	}
 }/**/
+
+
+
+
+
+
+
 
 
 // -------------------------------- CLEAR HISTORY FUNCTION -------------------------------
@@ -695,6 +711,8 @@ function processHistory() {
 		if(items.history != true){
 			return;
 			//This will end the funtion prematurely
+		} else if(items.organiser != true) {
+			return;
 		}
 
 		var microsecondsPerDay = 1000 * 60 * 60 * 24;
@@ -714,8 +732,16 @@ function processHistory() {
 					// 		to account for initial recording of visit
 					visits += item.typedCount * (items.typedWeight - 1); 
 
+					//If it's the id of the extension then it ignores it
+					if (item.url.includes(myid)) {
+						return;
+					}
+					if (item.url.includes("google")){
+						return;
+					}
+
 					//For single pages with many visits
-					if(visits >= items.pageVisitThreshold) {
+					else if(visits >= items.pageVisitThreshold) {
 						item.visitCount = visits;
 						//remove # from end
 						var urltemp = item.url;
@@ -724,19 +750,18 @@ function processHistory() {
 							item.url = item.url.substring(0, hashIndex);
 						}
 						//remove ? from end
-						var qmarkIndex = urltemp.indexOf('?');
+						var qmarkIndex = urltemp.indexOf('?'); //Easier than urltemp.endsWith("?")
 						if(qmarkIndex == urltemp.length-1) {
 							item.url = item.url.substring(0, qmarkIndex);
 						}
-
-						//commonSites.push(item);
+						//Set object as a single page
+						item.singlePage = true;
 					}
 					//else check just the domain
 					else {
 						item.url = getHostname(item.url);
+						item.singlePage = false;
 					}
-
-
 
 					var found = false;
 					//Check if the site/domain already exists in the list
@@ -751,14 +776,14 @@ function processHistory() {
 					if(found == false) {
 						commonSites.push(item);
 					}
+
 				
 				})
 
 
 
 				//Remove elements of list below threshold or containing blacklist
-				var index = 0;
-				while(index < commonSites.length) {
+				for(var index = 0; index < commonSites.length; index++) {
 					if(commonSites[index].visitCount < items.visitThreshold) {
 						var removed = commonSites.splice(index, 1);
 						//remove from index because array is shorter
@@ -783,14 +808,24 @@ function processHistory() {
 									}
 								})
 							}
+							//Can't finish early because it needs to check everything
 						}
 					}
-					index++;
 				}
+				//Print list for checking
+				printList(commonSites);//++++++++++++++++++++
 
-				//Process this information for patterns
-				//processCommonSites(commonSites);
-				printList(commonSites);
+
+				//Process this list for patterns
+				commonSites.forEach(function(item, index, array) {
+					//Single pages are treated differently to domains
+					if(item.singlePage) {
+						processSinglePage(item.url);
+					}
+					else {
+						processDomain(item.url);
+					}
+				});
 			});
 		});
 
@@ -816,6 +851,214 @@ function getHostname(url) {
 	//forProcessing.hash;	 	// => "#hash"
 	//forProcessing.search;	 	// => "?search=test"
 };
+
+
+function processDomain(domainUrl) {
+	chrome.storage.sync.get({
+		timeThreshold: 28,
+		ignoreQuery: true,
+		schedule: [],
+		newZero: 4
+	}, function(items) {
+		//Multiply 1 day by the amount of days set by user.
+		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
+
+		chrome.history.search( {
+			'text': domainUrl,	//Gets all results with the same URL
+			'startTime': historyCutoff
+		}, function(historyItems){
+			//to account for late night browsing (New Zero Modification)
+			var NZModification = items.newZero * microsecondsPerHour;
+
+
+			var timeSum = 0;
+			var maxTime = 0;
+			//Set first as min
+			var minTime = (historyItems[0].lastVisitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
+
+
+			//Process using last visited times for all pages
+			historyItems.forEach(function (item, index, array) {
+				//For simplicity it only counts hours
+				var time = (item.lastVisitTime - NZModification) % microsecondsPerDay;
+
+
+
+				console.log(item.url + " at " + ((time + NZModification)/microsecondsPerHour));
+				
+
+				//Get just the time of day from the date
+				//May make this work by week instead at some point
+				timeSum += (time % microsecondsPerDay);
+
+				//Set new min and max if changed
+				if(time < minTime) {
+					minTime = time;
+				} else if (time > maxTime) {
+					maxTime = time;
+				}
+			});
+
+
+			//Get average visit time
+			var averageTime = timeSum / historyItems.length;
+
+
+			var timeDeviation = 6; //(In hours) how far the min and max must be before it checks
+			var skewnessThreshold = 2;
+
+			//Check if it needs to be broken up further
+			// if the min and max are more than X hours apart and the average is close to the middle
+			//  then we'll split it up further.
+			var difference = (maxTime - minTime) / microsecondsPerHour;
+			if(difference > timeDeviation) {
+				var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
+				var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
+				var positiveSkew = lower / upper;
+				var negativeSkew = upper / lower;
+
+
+				console.log("positiveSkew: " + positiveSkew); //+++++++++++++++++++++++++++++++
+				console.log("negativeSkew: " + negativeSkew); //+++++++++++++++++++++++++++++++
+
+
+				if(positiveSkew > skewnessThreshold) {
+					console.log("Warning you're positively skewed!");
+				}else if(negativeSkew > skewnessThreshold) {
+					console.log("Warning you're negatively skewed!");
+				}
+				else {
+					var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+					//Probably set it to get the last average from last time too.
+
+					addToSchedule(domainUrl, scheduleTime);
+				}
+			}
+			else {
+				var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+				//Probably set it to get the last average from last time too.
+
+				addToSchedule(domainUrl, scheduleTime);
+			}
+		});
+	});
+}
+
+function processSinglePage(pageUrl) {
+	chrome.history.getVisits({
+		url: pageUrl
+	}, function(results) {
+		//to account for late night browsing
+		var newZero = 4; //in hours
+		var NZModification = newZero * microsecondsPerHour;
+
+
+		var timeSum = 0;
+		var maxTime = 0;
+		//Set first as min
+		var minTime = (results[0].visitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
+		results.forEach(function(item, index, array){
+			//For simplicity it only counts hours
+			var time = (item.visitTime - NZModification) % microsecondsPerDay;
+
+			//Get just the time of day from the date
+			//May make this work by week instead at some point
+			timeSum += (time % microsecondsPerDay);
+
+			//Set new min and max if changed
+			if(time < minTime){
+				minTime = time;
+			} else if (time > maxTime) {
+				maxTime = time;
+			}
+
+		})
+		//Get average visit time
+		var averageTime = timeSum / results.length;
+
+
+		var timeDeviation = 6; //(In hours) how far the min and max must be before it checks
+		var skewnessThreshold = 2;
+
+		//Check if it needs to be broken up further
+		// if the min and max are more than X hours apart and the average is close to the middle
+		//  then we'll split it up further.
+		var difference = (maxTime - minTime) / microsecondsPerHour;
+		if(difference > timeDeviation) {
+			var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
+			var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
+			var positiveSkew = lower / upper;
+			var negativeSkew = upper / lower;
+
+
+
+			if(positiveSkew > skewnessThreshold) {
+				console.log("Warning you're positively skewed!");
+			}else if(negativeSkew > skewnessThreshold) {
+				console.log("Warning you're negatively skewed!");
+			}
+			else {
+				var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+				//Print time for testing
+				console.log(scheduleTime.getHours() + ":" + scheduleTime.getMinutes() + " open " + pageUrl);//+++++++++++
+
+				addToSchedule(pageUrl, scheduleTime);
+			}
+		}
+		else {
+			var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+
+
+			//Print time for testing
+			console.log(scheduleTime.getHours() + ":" + scheduleTime.getMinutes() + " open " + pageUrl);//+++++++++++
+
+			addToSchedule(pageUrl, scheduleTime);
+		}
+	});
+}
+
+function addToSchedule(url, time) {
+	chrome.storage.sync.get( {
+		schedule: []
+	}, function(items) {
+		//To prevent 12:7
+		var minutes = time.getMinutes();
+		if (minutes < 10)
+			minutes = "0" + minutes;
+
+		var timeText = time.getHours() + ":" + minutes;
+		//Print time for testing
+		console.log(time.getHours() + ":" + time.getMinutes() + " open " + url);//+++++++++++
+
+		//add to schedule and save
+		items.schedule.push(timeText + "," + url + ",trlist-auto");
+		//Remove duplicates
+		items.schedule = uniq(items.schedule);
+		//Save updated array
+		chrome.storage.sync.set({
+			schedule: items.schedule
+		}, function() {
+			//Do nothing for now
+		});
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++ TESTING

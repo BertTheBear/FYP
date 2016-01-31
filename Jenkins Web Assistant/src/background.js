@@ -194,8 +194,8 @@ function checkSchedule() {
 				//If hours correct check minutes
 				if(itemMinute <= now.getMinutes() && itemMinute >= lastChecked.getMinutes()){
 					//If the time has passed send notification
-					var splitter = item.indexOf(",");
-					var destination = item.substring(splitter+1);//Start AFTER comma
+					var splitter = item.split(",");
+					var destination = splitter[1];//second item in array
 					destination = makeURL(destination);
 					notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
 				}

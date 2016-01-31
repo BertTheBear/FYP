@@ -105,3 +105,34 @@ h2 {
 	background: Red;
 	text-decoration: none;
 }
+.trlist-AcceptButton {
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	background: #afbfee;
+	padding: 2px 5px 2px 5px;
+	text-decoration: none;
+}
+.trlist-AcceptButton:hover {
+	color: White;
+	background: #8090cc;
+	text-decoration: none;
+}
+
+/* For type colours in schedule */
+.trlist-user {
+	background: #edffed;
+}
+.trlist-user:hover {
+	background: #cceecc;	
+}
+
+.trlist-auto {
+	background: #ededff;
+}
+.trlist-auto:hover {
+	background: #ccccee;	
+}

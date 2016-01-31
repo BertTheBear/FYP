@@ -83,7 +83,7 @@ function arrayToList() {
 		items.schedule.forEach(function (item, index, array){
 			var whole = item + '';	//Causes error otherwise
 			var fragments = whole.split(",");
-			addScheduleItem(items.schedule, fragments[0], fragments[1]);
+			addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
 		});
 	});
 }
@@ -96,7 +96,7 @@ function addArrayItem() {
 		//Add elements to the array
 		var urlText = document.getElementById(urlID).value;
 		var timeText = document.getElementById(timeID).value;
-		items.schedule.push(timeText + "," + urlText);
+		items.schedule.push(timeText + "," + urlText + ",trlist-user");
 		//Remove duplicates
 		items.schedule = uniq(items.schedule);
 		//Save updated array
@@ -113,7 +113,7 @@ function addArrayItem() {
 			items.schedule.forEach(function (item, index, array){
 				var whole = item + '';	//Causes error otherwise
 				var fragments = whole.split(",");
-				addScheduleItem(items.schedule, fragments[0], fragments[1]);
+				addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
 			});
 
 			//Clear the form fields
@@ -124,7 +124,7 @@ function addArrayItem() {
 }
 
 //Prints list from array
-function addScheduleItem(schedule, timeText, urlText) {
+function addScheduleItem(schedule, timeText, urlText, type) {
 	//Format the text to be displayed and saved
 	var text = "At " + timeText + " open ";
 	//Make the url a working anchor
@@ -137,7 +137,11 @@ function addScheduleItem(schedule, timeText, urlText) {
 	//Makes a new line to be added to the list and sets the id
 	var line = document.createElement('tr');
 	line.setAttribute('id','item'+lastid);
-	line.setAttribute('class', 'trlist');
+
+	//Set type user/automatic
+	//trlist-user => user set
+	//trlist-auro => automatically set
+	line.setAttribute('class', type);
 
 	//Puts the text into the first element of the row
 	var entry = document.createElement('td');
@@ -145,6 +149,29 @@ function addScheduleItem(schedule, timeText, urlText) {
 	entry.appendChild(document.createTextNode(text));
 	entry.appendChild(url);
 	entry.setAttribute('class', 'trlist-Entry');
+
+	//Add accept button
+	var acception = document.createElement('td');
+	if(type.includes("auto")) {
+		var acceptButton = document.createElement('a');
+		acceptButton.appendChild(document.createTextNode("Accept"));
+		acceptButton.setAttribute('href', '#');
+		acceptButton.setAttribute('class', 'trlist-AcceptButton');
+		acceptButton.addEventListener('click', function() {
+			//Add the new instance to the array
+			addScheduleItem(schedule, timeText, urlText, ",trlist-user");
+			schedule.unshift(timeText + "," + urlText + ",trlist-user");
+			chrome.storage.sync.set({
+				schedule: schedule
+			}, function() {
+				//Removes the whole line if the X is clicked
+				list.removeChild(line);
+				//Remove the instance from the array
+				replaceInArray(schedule, timeText + "," + urlText);
+			});
+		});
+		acception.appendChild(acceptButton);
+	}
 
 	//Add remove button
 	var removal = document.createElement('td');
@@ -161,6 +188,7 @@ function addScheduleItem(schedule, timeText, urlText) {
 	removal.appendChild(removeButton);
 	lastid+=1;
 	line.appendChild(entry);
+	line.appendChild(acception);
 	line.appendChild(removal);
 	//Add line to list
 	list.appendChild(line);
@@ -168,6 +196,18 @@ function addScheduleItem(schedule, timeText, urlText) {
 
 function removeFromArray(array, object) {
 	var pos = array.indexOf(object);
+	if(pos == -1) {
+		//More intensive search
+		var found = false;
+		for(var i = 0; i < array.length && !found; i++) {
+			if(array[i].includes(object)) {
+				found = true;
+				pos = i;
+			}
+		}
+		if (!found)
+			notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
+	}
 	var removedItem = array.splice(pos, 1);
 	//Save new array
 	chrome.storage.sync.set({
@@ -185,6 +225,29 @@ function removeFromArray(array, object) {
 				});
 			});
 	});
+}/**/
+function replaceInArray(array, object) {
+	var pos = array.indexOf(object);
+	if(pos == -1) {
+		//More intensive search
+		var found = false;
+		for(var i = 0; i < array.length && !found; i++) {
+			if(array[i].includes(object)) {
+				found = true;
+				pos = i;
+			}
+		}
+		if (!found)
+			notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
+	}
+	var removedItem = array.splice(pos, 1);
+	//Save new array
+	chrome.storage.sync.set({
+			schedule: array
+		}, function() {
+			//Notification with "undo"
+			notificationURL("Recommendation Validated", removedItem + " has been Validated.");
+		});
 }/**/
 
 
@@ -222,6 +285,10 @@ function validateFormURL(errorDiv, urlID) {
 		return true;
 	}
 }
+
+
+
+
 
 
 
