@@ -25,10 +25,16 @@ function save_options() {
 	var timer  	 		= document.getElementById('timeThreshold').value;
 	var ignored  		= document.getElementById('blacklist').value;
 	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
+	if (checkFrequency < 1) //Default to 1 if they set it too low
+		checkFrequency = 1;
 	var timeRounding  	= document.getElementById('timeRounding').value;	//---
+	if (timeRounding < 1) //Default to 1 if they set it too low
+		timeRounding = 1;
 	var newZero  		= document.getElementById('newZero').value;			//---
+	var autoNotifications = document.getElementById('autoNotifications').checked;//--
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
+	var notClearedNotification = document.getElementById('notClearedNotification').checked;// ----
 
 	//Save the settings to memory
 	chrome.storage.sync.set({
@@ -46,7 +52,9 @@ function save_options() {
 		checkFrequency: 	checkFrequency,		//--
 		timeRounding: 		timeRounding,		//--
 		newZero: 			newZero,		//--
-		clearhistory: 		clearhistory
+		autoNotifications: 	autoNotifications, //--
+		clearhistory: 		clearhistory,
+		notClearedNotification: notClearedNotification//---
 	}, function() {
 		// Update status to let user know options were saved.
 		var status = document.getElementById('status');
@@ -82,7 +90,9 @@ function restore_options() {
 		checkFrequency: 	5,	//---
 		timeRounding: 		1,	//---
 		newZero: 			4,	//---
-		clearhistory: 		false
+		autoNotifications: 	false, //---
+		clearhistory: 		false,
+		notClearedNotification: false //---
 	}, function(items) {
 		//Permissions
 		document.getElementById('checkHistory').checked 		= items.history;
@@ -100,8 +110,10 @@ function restore_options() {
 		document.getElementById('checkFrequency').value 		= items.checkFrequency;
 		document.getElementById('timeRounding').value 			= items.timeRounding;
 		document.getElementById('newZero').value 				= items.newZero;
+		document.getElementById('autoNotifications').checked 	= items.autoNotifications;//--
 		//History Clear
 		document.getElementById('checkClearHistory').checked 	= items.clearhistory;
+		document.getElementById('notClearedNotification').checked 	= items.notClearedNotification; //---
 	});
 }/**/
 
@@ -150,8 +162,10 @@ function reset_options() {
 	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
 	var timeRounding  	= document.getElementById('timeRounding').value;	//---
 	var newZero  		= document.getElementById('newZero').value;			//---
+	var autoNotifications = document.getElementById('autoNotifications').checked;//--
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
+	var notClearedNotification = document.getElementById('notClearedNotification').checked;
 
 	//overwrite with default
 	document.getElementById('checkHistory').checked 		= true;
@@ -169,8 +183,10 @@ function reset_options() {
 	document.getElementById('checkFrequency').value 		= 5; //--
 	document.getElementById('timeRounding').value 			= 1; //--
 	document.getElementById('newZero').value 				= 4; //--
+	document.getElementById('autoNotifications').checked 	= false;//--
 
-	document.getElementById('checkClearHistory').checked 	= false; //default false
+	document.getElementById('checkClearHistory').checked 	= false;
+	document.getElementById('notClearedNotification').checked 	= false; //---
 
 	// Update status to let user know options were reset.
 	var status = document.getElementById('status');
@@ -203,8 +219,10 @@ function reset_options() {
 		document.getElementById('checkFrequency').value 		= checkFrequency;//--
 		document.getElementById('timeRounding').value 			= timeRounding;	//--
 		document.getElementById('newZero').value 				= newZero;		//--
+		document.getElementById('autoNotifications').checked  	= autoNotifications;//--
 
 		document.getElementById('checkClearHistory').checked 	= clearhistory;
+		document.getElementById('notClearedNotification').checked 	= notClearedNotification;//---
 	});
 	status.appendChild(a);
 }/**/

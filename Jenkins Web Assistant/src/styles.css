@@ -47,6 +47,9 @@ h2 {
 .centered {
 	text-align: center;
 }
+.padded {
+	padding: 10px 0px 5px 0px;
+}
 
 
 /* popup buttons */
@@ -71,6 +74,25 @@ h2 {
 .tdpopup {
 	overflow: hidden; 
 	text-align: left;
+}
+
+/* in-line buttons */
+.smallbtn {
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	background: #cdcdcd;
+	padding: 4px 5px 4px 5px;
+	text-decoration: none;
+}
+.smallbtn:hover {
+	background: #ededed;
+	text-decoration: none;
+	color: White;
+	background: #777777;
 }
 
 

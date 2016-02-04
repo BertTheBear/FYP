@@ -41,3 +41,6 @@ PROACTIVE ASSISTANT
 
 Visit threshold where it may start looking at path as well as domain (>100 visits for example)
 how long on page
+
+
+Google photos days overlap similar to "New Zero"

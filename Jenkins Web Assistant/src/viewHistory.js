@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	arrayToList();
 	document.getElementById('bloh').addEventListener('click', checkSchedule);
 	document.getElementById('bleh').addEventListener('click', clearHistory);
+	document.getElementById('rer').addEventListener('click', function(){
+		chrome.storage.sync.clear();
+	});
 
 	//check for permission for notifications
 	if (Notification.permission !== "granted")
@@ -66,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 //=================================== NOT My content ========================
-//The following work has been copied mostly unedited from online.
-//I'm not sure how much this is alowed so I will need to ask...
+//The following work has been copied and edited from online.
+//I'm not sure how much this is allowed so I will need to ask...
 
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -565,16 +568,20 @@ function validateFormURL(errorDiv, urlID) {
 
 // ========================== TIME CHECKING FUNCTIONS =====================================
 function checkSchedule() {
-	//Get the current time
-	var now = new Date();
-	var microsecondsSinceLastInterval = microsecondsPerMinute * minutesPerInterval;
-	var lastCheckedVal = (new Date).getTime() - microsecondsSinceLastInterval;
-	var lastChecked = new Date(lastCheckedVal);
 
 	//Get the schedule
 	chrome.storage.sync.get({
+		checkFrequency: 5,
+		autoNotifications: false,
 		schedule: []
 	}, function(items) {
+		//Get the current time
+		var now = new Date();
+		var microsecondsSinceLastInterval = microsecondsPerMinute * items.checkFrequency;
+		var lastCheckedVal = (new Date).getTime() - microsecondsSinceLastInterval;
+		var lastChecked = new Date(lastCheckedVal);
+
+
 		//Check time with each element of list
 		items.schedule.forEach(function (item, index, array){
 			//causes an error otherwise
@@ -588,9 +595,46 @@ function checkSchedule() {
 				if(itemMinute <= now.getMinutes() && itemMinute >= lastChecked.getMinutes()){
 					//If the time has passed send notification
 					var splitter = item.split(",");
-					var destination = splitter[1];//second item in array
-					destination = makeURL(destination);
-					notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
+
+
+					if(items.autoNotifications || splitter[2] == "trlist-user") {
+						var url = splitter[1];//second item in array
+
+						//Make sure the url works
+						var destination = makeURL(url);
+						var check = makeURLPattern(url);
+						//Check whether the website is already open.
+						/*chrome.tabs.query({
+							url: "https:///"
+						}, function (results) {*/
+							chrome.tabs.query( { url:"*://*/*" }, function( tabs ){ console.log(tabs);
+							/*console.log(results);//+++++++++++++=
+							//If it found no results then the page is not open
+							if(results == null) {
+								console.log(destination + " not found in tabs. Function will open Tab.");//+++++++++++
+								notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
+							}
+							//If it's open, the function will switch to the tab instead.
+							else {
+								//Use the tab ID of the first result
+								var tabID = results.id;
+								console.log(tabID);//++++++++++++++++++++++++
+
+								//Switch to that tab if it's open
+								//Might make it just close. Might make option. Will receive feedback.
+								notificationFunction(itemHour + ":" + itemMinute + " reminder", 
+									destination + " is already open in another tab.\n Click here to move to that tab.", 
+									function(){
+										chrome.tabs.update(tabID, {
+											selected: true
+										});
+									});
+							}*/
+						});
+
+
+						
+					}
 				}
 			}
 		});
@@ -602,6 +646,24 @@ function makeURL(destination) {
 	if(!protocol.test(destination)) {
 		//Not a working URL, just add protocol
 		return "http://" + destination;
+	}
+	else {
+		//Everything's alright
+		return destination;
+	}
+}/**/
+
+function makeURLPattern(url) {
+	var protocol = new RegExp("^((https|http|ftp|rtsp|mms)://)",'i');
+	if(!protocol.test(url)) {
+		//No http://
+		protocol = new RegExp("^[a-zA-Z0-9].[a-zA-Z0-9].[a-zA-Z0-9]$");
+		if(protocol.test(url)) {
+			// not x.com etc
+			return "http://" + url + "/*";
+		}
+		//Not a working URL, just add protocol
+		return "http://www." + url + "/*";
 	}
 	else {
 		//Everything's alright
@@ -718,6 +780,8 @@ function processHistory() {
 		var microsecondsPerDay = 1000 * 60 * 60 * 24;
 		//Multiply 1 day by the amount of days set by user.
 		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
+		if (items.timeThreshold <= 0)
+			historyCutoff = 0;
 
 		// Access history and process results
 		chrome.history.search({
@@ -736,8 +800,8 @@ function processHistory() {
 					if (item.url.includes(myid)) {
 						return;
 					}
-					if (item.url.includes("google")){
-						return;
+					else if(items.ignoreQuery && item.url.indexOf("#") > -1) {
+						return; //ignore any query or hash entries
 					}
 
 					//For single pages with many visits
@@ -820,9 +884,11 @@ function processHistory() {
 				commonSites.forEach(function(item, index, array) {
 					//Single pages are treated differently to domains
 					if(item.singlePage) {
+			//console.log("Processing " + item.url);
 						processSinglePage(item.url);
 					}
 					else {
+			//console.log("Processing " + item.url);
 						processDomain(item.url);
 					}
 				});
@@ -857,11 +923,17 @@ function processDomain(domainUrl) {
 	chrome.storage.sync.get({
 		timeThreshold: 28,
 		ignoreQuery: true,
-		schedule: [],
-		newZero: 4
+		timeRounding: 1,
+		newZero: 4,
+		trackAfter: "00:00", 
+		trackBefore: "23:59",
+		timeDeviation: 6, 
+		skewnessThreshold: 2
 	}, function(items) {
 		//Multiply 1 day by the amount of days set by user.
 		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
+		if (items.timeThreshold <= 0)
+			historyCutoff = 0;
 
 		chrome.history.search( {
 			'text': domainUrl,	//Gets all results with the same URL
@@ -871,47 +943,72 @@ function processDomain(domainUrl) {
 			var NZModification = items.newZero * microsecondsPerHour;
 
 
+			//Process tracking times into a more easily manipulated format
+			//lower limit first
+			var index = items.trackAfter.indexOf(":");
+			var itemHour = items.trackAfter.substring(index-2, index);		//2 values before : character
+			var itemMinute = items.trackAfter.substring(index+1, index+3);	//2 values after  : character
+			var lowerLimit = itemHour + (itemMinute / 60);//Time as a double
+			//Make modification
+			lowerLimit -= items.newZero; //not NZModification because that's too big
+
+			//then upper limit
+			index = items.trackBefore.indexOf(":");
+			itemHour = items.trackBefore.substring(index-2, index);	
+			itemMinute = items.trackBefore.substring(index+1, index+3);
+			var upperLimit = itemHour + (itemMinute / 60);//Time as a double
+			//Make modification
+			upperLimit -= items.newZero;
+
+
+
 			var timeSum = 0;
 			var maxTime = 0;
 			//Set first as min
 			var minTime = (historyItems[0].lastVisitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
 
+			//for finding average
+			var itemCount = 0;
+
 
 			//Process using last visited times for all pages
 			historyItems.forEach(function (item, index, array) {
 				//For simplicity it only counts hours
-				var time = (item.lastVisitTime - NZModification) % microsecondsPerDay;
+				var time = (item.lastVisitTime - NZModification) % microsecondsPerDay;				
 
+				//Make sure the time it within the limits
+				if(lowerLimit < time && time < upperLimit) {
+					//Get just the time of day from the date
+					//May make this work by week instead at some point
+					timeSum += (time % microsecondsPerDay);
+					itemCount++;
 
-
-				console.log(item.url + " at " + ((time + NZModification)/microsecondsPerHour));
-				
-
-				//Get just the time of day from the date
-				//May make this work by week instead at some point
-				timeSum += (time % microsecondsPerDay);
-
-				//Set new min and max if changed
-				if(time < minTime) {
-					minTime = time;
-				} else if (time > maxTime) {
-					maxTime = time;
+					//Set new min and max if changed
+					if(time < minTime) {
+						minTime = time;
+					} else if (time > maxTime) {
+						maxTime = time;
+					}
 				}
 			});
 
+			//If no visits fall within rang then stop
+			if(itemCount <= 0) {
+				return; // Exits function
+			}
+
 
 			//Get average visit time
-			var averageTime = timeSum / historyItems.length;
+			var averageTime = timeSum / itemCount;
+			//Round to the preset number
+			averageTime -= (averageTime % items.timeRounding);
 
-
-			var timeDeviation = 6; //(In hours) how far the min and max must be before it checks
-			var skewnessThreshold = 2;
 
 			//Check if it needs to be broken up further
 			// if the min and max are more than X hours apart and the average is close to the middle
 			//  then we'll split it up further.
 			var difference = (maxTime - minTime) / microsecondsPerHour;
-			if(difference > timeDeviation) {
+			if(difference > items.timeDeviation) {
 				var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
 				var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
 				var positiveSkew = lower / upper;
@@ -922,9 +1019,10 @@ function processDomain(domainUrl) {
 				console.log("negativeSkew: " + negativeSkew); //+++++++++++++++++++++++++++++++
 
 
-				if(positiveSkew > skewnessThreshold) {
+				if(positiveSkew > items.skewnessThreshold) {
 					console.log("Warning you're positively skewed!");
-				}else if(negativeSkew > skewnessThreshold) {
+					//Split the results
+				}else if(negativeSkew > items.skewnessThreshold) {
 					console.log("Warning you're negatively skewed!");
 				}
 				else {
@@ -945,82 +1043,134 @@ function processDomain(domainUrl) {
 }
 
 function processSinglePage(pageUrl) {
-	chrome.history.getVisits({
-		url: pageUrl
-	}, function(results) {
-		//to account for late night browsing
-		var newZero = 4; //in hours
-		var NZModification = newZero * microsecondsPerHour;
+	chrome.storage.sync.get({
+		ignoreQuery: true,
+		timeRounding: 1,
+		newZero: 4,
+		trackAfter: "00:00", 
+		trackBefore: "23:59",
+		timeDeviation: 6, 
+		skewnessThreshold: 2
+	}, function(items) {
+		chrome.history.getVisits({
+			url: pageUrl
+		}, function(results) {
+			//to account for late night browsing
+			var NZModification = items.newZero * microsecondsPerHour;
 
 
-		var timeSum = 0;
-		var maxTime = 0;
-		//Set first as min
-		var minTime = (results[0].visitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
-		results.forEach(function(item, index, array){
-			//For simplicity it only counts hours
-			var time = (item.visitTime - NZModification) % microsecondsPerDay;
+			//Process tracking times into a more easily manipulated format
+			//lower limit first
+			var index = items.trackAfter.indexOf(":");
+			var itemHour = items.trackAfter.substring(index-2, index);		//2 values before : character
+			var itemMinute = items.trackAfter.substring(index+1, index+3);	//2 values after  : character
+			var lowerLimit = itemHour + (itemMinute / 60);//Time as a double
+			//Make modification
+			lowerLimit -= items.newZero; //not NZModification because that's too big
 
-			//Get just the time of day from the date
-			//May make this work by week instead at some point
-			timeSum += (time % microsecondsPerDay);
+			//then upper limit
+			index = items.trackBefore.indexOf(":");
+			itemHour = parseInt(items.trackBefore.substring(index-2, index));
+			itemMinute = parseInt(items.trackBefore.substring(index+1, index+3));
+			var upperLimit = itemHour + (itemMinute / 60);//Time as a double
+			//Make modification
+			upperLimit -= items.newZero;
 
-			//Set new min and max if changed
-			if(time < minTime){
-				minTime = time;
-			} else if (time > maxTime) {
-				maxTime = time;
+			var timeSum = 0;
+			var maxTime = 0;
+			//Set first as min
+			var minTime = (results[0].visitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
+
+			var itemCount = 0;
+
+			results.forEach(function(item, index, array){
+				//For simplicity it only counts hours
+				var time = (item.visitTime - NZModification) % microsecondsPerDay;
+
+				var timeCheck = time / microsecondsPerDay;
+
+				//Make sure the time it within the limits
+				if((lowerLimit < timeCheck && timeCheck < upperLimit) || (lowerLimit > timeCheck && timeCheck > upperLimit)) {
+					//Get just the time of day from the date
+					//May make this work by week instead at some point
+					timeSum += (time % microsecondsPerDay);
+					itemCount++;
+
+					//Set new min and max if changed
+					if(time < minTime) {
+						minTime = time;
+					} else if (time > maxTime) {
+						maxTime = time;
+					}
+				}
+
+			});
+
+			//If no visits fall within rang then stop
+			if(itemCount <= 0) {
+				return; // Exits function
 			}
 
-		})
-		//Get average visit time
-		var averageTime = timeSum / results.length;
+			//Get average visit time
+			var averageTime = timeSum / itemCount;
+			//Round to the preset number
+			averageTime -= (averageTime % items.timeRounding);
 
 
-		var timeDeviation = 6; //(In hours) how far the min and max must be before it checks
-		var skewnessThreshold = 2;
-
-		//Check if it needs to be broken up further
-		// if the min and max are more than X hours apart and the average is close to the middle
-		//  then we'll split it up further.
-		var difference = (maxTime - minTime) / microsecondsPerHour;
-		if(difference > timeDeviation) {
-			var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
-			var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
-			var positiveSkew = lower / upper;
-			var negativeSkew = upper / lower;
+			//Check if it needs to be broken up further
+			// if the min and max are more than X hours apart and the average is close to the middle
+			//  then we'll split it up further.
+			var difference = (maxTime - minTime) / microsecondsPerHour;
+			if(difference > items.timeDeviation) {
+				var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
+				var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
+				var positiveSkew = lower / upper;
+				var negativeSkew = upper / lower;
 
 
 
-			if(positiveSkew > skewnessThreshold) {
-				console.log("Warning you're positively skewed!");
-			}else if(negativeSkew > skewnessThreshold) {
-				console.log("Warning you're negatively skewed!");
+				if(positiveSkew > items.skewnessThreshold) {
+					console.log("Warning you're positively skewed!");
+					//Split results further
+				}else if(negativeSkew > items.skewnessThreshold) {
+					console.log("Warning you're negatively skewed!");
+				}
+				else {
+					var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+					//Print time for testing
+					console.log(scheduleTime.getHours() + ":" + scheduleTime.getMinutes() + " open " + pageUrl);//+++++++++++
+
+					addToSchedule(pageUrl, scheduleTime);
+				}
 			}
 			else {
 				var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+
+
 				//Print time for testing
 				console.log(scheduleTime.getHours() + ":" + scheduleTime.getMinutes() + " open " + pageUrl);//+++++++++++
 
 				addToSchedule(pageUrl, scheduleTime);
 			}
-		}
-		else {
-			var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
-
-
-			//Print time for testing
-			console.log(scheduleTime.getHours() + ":" + scheduleTime.getMinutes() + " open " + pageUrl);//+++++++++++
-
-			addToSchedule(pageUrl, scheduleTime);
-		}
+		});
 	});
 }
 
 function addToSchedule(url, time) {
 	chrome.storage.sync.get( {
+		autoCount: 20,
 		schedule: []
 	}, function(items) {
+		//First check if there's already an automatic entry of that url
+		//Also check if we have reached the entry limit
+		var entries = arrayStringIncludesCount("trlist-auto", items.schedule);
+		if(entries > items.autoCount || findInSchedule(url, items.schedule)) {
+			//console.log("Prevented " + url + "Too many entries or found in array");
+			return; //End the function
+		}
+			//console.log("Accepted " + url);
+
+
 		//To prevent 12:7
 		var minutes = time.getMinutes();
 		if (minutes < 10)
@@ -1043,7 +1193,26 @@ function addToSchedule(url, time) {
 	});
 }
 
+function findInSchedule(url, schedule) {
+	//Return whether the url has been found in schedule in auto
+	for(var i = 0; i < schedule.length; i++) {
+		var toCheck = schedule[i] + "";
+		if(toCheck.includes(url + ",trlist-auto"))
+			return true;
+	}
+	return false;
+}
 
+function arrayStringIncludesCount(theString, theArray) {
+	//return the amount of entries in an theArray containing theString
+	var entryCount = 0;
+	for(var i = 0; i < theArray.length; i++) {
+		var toCheck = theArray[i] + "";
+		if(toCheck.includes(theString))
+			entryCount++;
+	}
+	return entryCount;
+}
 
 
 

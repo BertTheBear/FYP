@@ -1,3 +1,6 @@
+Update TO DO list 	
+
+
 Storage				DONE
 History				DONE
 Notifications 		DONE
@@ -8,7 +11,9 @@ Clear history 		DONE
 	Auto trigger	DONE
 Profiles/Identity 	
 Process Information 
-	- 
+	- history 		DONE
+	- refresh
+	- limits switch if times change
 Explicit settings 	
 	- Dynamic List	DONE
 	- List content 	DONE
@@ -18,7 +23,7 @@ Background
 - ask on startup 	
 
 
-
+"Turn of notifications for this session"
 
 
 

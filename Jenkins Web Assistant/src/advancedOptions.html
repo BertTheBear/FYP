@@ -59,7 +59,7 @@
 						<input type="checkbox" id="checkOrganiser">
 					</label>
 				
-					Enable organiser
+					Enable automatic organiser
 				</td>
 			</tr>
 			<tr class="trcheckbox">
@@ -74,6 +74,15 @@
 			<tr>
 				<td>
 					<h2>Processing</h2>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="autoNotifications">
+					</label>
+				
+					Allow automatically created schedules to create notifications.
 				</td>
 			</tr>
 			<tr>
@@ -113,7 +122,8 @@
 					</label>
 
 					History time threshold <br>
-					<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>)
+					<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>) <br>
+					<i>Set as 0 to process all history</i>
 				</td>
 			</tr>
 			<tr>
@@ -139,7 +149,7 @@
 
 					Schedule check frequency <br>
 					<i>How often (In minutes) the system will check the schedule. <br>
-					Lower times may slow down your browsing.</i> (<b>Default 5.</b>)
+					Higher frequency (Lower times) may slow down your browsing. Requires restart to take effect.</i> (<b>Default 5. Minimum 1.</b>)
 				</td>
 			</tr>
 			<tr>
@@ -149,7 +159,7 @@
 					</label>
 
 					Time Rounding <br>
-					<i>To what number (In minutes) the system will round the schedule times. (eg. to the nearest 5 minutes)</i> (<b>Default 1.</b>)
+					<i>To what number (In minutes) the system will round the schedule times. (eg. to the nearest 5 minutes)</i> (<b>Default 1. Minimum 1.</b>)
 				</td>
 			</tr>
 			<tr>
@@ -181,6 +191,15 @@
 				<td colspan="2">
 					<i>If enabled, this will clear your history when the browser is closed. <br> 
 					The information cleared is dependent upon the settings above.</i>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="notClearedNotification">
+					</label>
+				
+					Show notification if history is <b>not</b> cleared.
 				</td>
 			</tr>
 		</table>

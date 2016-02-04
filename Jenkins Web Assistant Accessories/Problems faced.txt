@@ -68,6 +68,7 @@ Dynamic Schedule List
 Variable types
 	A few issues with variables that needed to have arbitrary actions performed
 		eg var theString = aString + "";
+	Increasing amount of soft-coding
 
 Processing
 	Urls with minor differences
@@ -76,3 +77,15 @@ Processing
 	URL and visits
 		For security reasons you can't process a list of both
 		I might try again but it's not likely
+			Using last visit for now
+	Background
+		Moved to Interface because of problems with background
+	Duplicates
+		Don't add to list if unverified example already exists
+		Don't show notifications for auto schedules by default
+			Caused trouble but got it done
+	Turning off processing for short durations
+		Difficult to do. Will leave to just using incognito
+
+Reloading
+	Saving page position on page reload
