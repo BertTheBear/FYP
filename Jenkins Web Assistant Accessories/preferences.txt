@@ -44,3 +44,46 @@ how long on page
 
 
 Google photos days overlap similar to "New Zero"
+
+
+CATEGORIES
+	Social Media
+	News
+		and weather
+	Email
+	Leisure/Recreation
+		Unclassified leisure browsing (Funny pictures etc)
+	Shopping
+		Amazon etc
+		Food ordering?
+			Or make "Facilitation"(Not sure of name) category
+	Sports
+		Sports related websites
+		Gambling?
+	Educational
+		Wikipedia or other sites
+			Alternate SCHOLAR category?
+	Game
+		Online browser games
+		Gaming related websites?
+	Music
+		Spotify etc
+	Video
+		Youtube
+	Work
+		Stack Overflow, work related websites set by user
+	Finance 
+		News etc. specific to stocks?
+		Subcategories maybe?
+		Banking? (Be careful on these sites. Maybe switch off.)
+		Paypal
+		bill paying?
+	Technology
+		Downloads etc.
+		Dropbox/ Google Drive?
+	Travel?
+		Holidays etc.
+	Adult
+		Preferably not...
+
+(Get a list of top ~20 in each category. Maybe ~50 in more varied categories.)

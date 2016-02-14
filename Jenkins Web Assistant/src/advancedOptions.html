@@ -25,7 +25,7 @@
 				
 					Allow access to history
 				</td>
-			</tr>
+			</tr><!--
 			<tr class="trcheckbox">
 				<td>
 					<label>
@@ -34,7 +34,7 @@
 				
 					Allow access to bookmarks
 				</td>
-			</tr>
+			</tr> -->
 			<tr class="trcheckbox">
 				<td>
 					<label>
@@ -170,6 +170,37 @@
 
 					New Zero <br>
 					<i>The delay (In hours after 00:00) before a "new day" will start. This is designed to adapt schedules towards late night browsing.</i> (<b>Default 4.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="time" id="trackAfter">
+					</label>
+
+					Lower Time limit <br>
+					<i>The time that the system will limit to tracking all visits after.</i> (<b>Default 00:00.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="time" id="trackBefore">
+					</label>
+
+					Upper Time limit <br>
+					<i>The time that the system will limit to tracking all visits before.</i> (<b>Default 23:59.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="autoCount" style="width:40px">
+					</label>
+
+					Max auto schedule entries <br>
+					<i>How many automatic schedule entries the system will create.</i>
+					(<b>Default 20.</b>)
 				</td>
 			</tr>
 			<tr>

@@ -11,19 +11,25 @@ Clear history 		DONE
 	Auto trigger	DONE
 Profiles/Identity 	
 Process Information 
-	- history 		DONE
-	- refresh
-	- limits switch if times change
+- history 			DONE
+- refresh
+- limits switch if times change (What?)
+- time spent on site
+- try more clustering
 Explicit settings 	
-	- Dynamic List	DONE
-	- List content 	DONE
-	- Save/Undo 	DONE
+- Dynamic List		DONE
+- List content 		DONE
+- Save/Undo 		DONE
 Background
 - actions at times 	DONE
 - ask on startup 	
+General
+- reduce hard-code 	DONE
+- call from background DONE
+- Chech OWASP securities
 
 
-"Turn of notifications for this session"
+"Turn off notifications for this session"
 
 
 

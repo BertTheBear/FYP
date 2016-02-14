@@ -54,6 +54,9 @@ Clear history
 	gets time of session on start
 	clears from that time next time it's opened
 		(Asked on Stack overflow for event handler)
+	Notifications still showing after selected false
+		After renaming variables notifications were still showing
+		Removing code duplication to Background.js helped to discover this
 
 Dynamic Schedule List
 	Problems creating format
@@ -89,3 +92,18 @@ Processing
 
 Reloading
 	Saving page position on page reload
+
+Tabs
+	Retrieving tabs open with url
+
+Code duplication
+	Much of the code was duplicated or repeated between pages
+	Problems with revisions and debugging and such
+	SOLUTION
+		Put functions in background page and called background page
+
+Table size
+	Very long URLs could extend the table too far
+	This was resolved by putting "max-width: 400px; word-wrap: break-word;" in the css for the td
+	This was tried on tr and table (And Div) before realising it needed to be the td
+	This was pointed out by Owen.

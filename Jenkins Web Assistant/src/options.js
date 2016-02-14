@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	restore_options();
 	document.getElementById('save').addEventListener('click', save_options);
 	document.getElementById('reset').addEventListener('click', reset_options);
-	document.getElementById('clearHistorySettings').addEventListener('click', open_history_options);	
+	document.getElementById('clearHistorySettings').addEventListener('click', chrome.extension.getBackgroundPage().open_history_options);	
 });
 
 
@@ -13,7 +13,7 @@ function save_options() {
 	//retrieve the settings from the page
 	//Permissions
 	var historyPermission  	= document.getElementById('checkHistory').checked;
-	var bookmarksPermission = document.getElementById('checkBookmarks').checked;
+	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
 	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
 	var notifyPermission 	= document.getElementById('checkNotificions').checked;
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
@@ -27,7 +27,7 @@ function save_options() {
 	//Save the settings to memory
 	chrome.storage.sync.set({
 		history: 			historyPermission,
-		bookmarks: 			bookmarksPermission,
+		//bookmarks: 			bookmarksPermission,
 		topsites: 			topsitesPermission,
 		notification: 		notifyPermission,
 		organiser: 			organiserPermission,
@@ -57,7 +57,7 @@ function restore_options() {
 	// Use default value of true for all and none for blacklist
 	chrome.storage.sync.get({
 		history: 			true,
-		bookmarks: 			true,
+		//bookmarks: 			true,
 		topsites: 			true,
 		notification: 		true,
 		organiser: 			true,
@@ -68,7 +68,7 @@ function restore_options() {
 	}, function(items) {
 		//Permissions
 		document.getElementById('checkHistory').checked 		= items.history;
-		document.getElementById('checkBookmarks').checked 		= items.bookmarks;
+		//document.getElementById('checkBookmarks').checked 		= items.bookmarks;
 		document.getElementById('checkTopSites').checked 		= items.topsites;
 		document.getElementById('checkNotificions').checked 	= items.notification;
 		document.getElementById('checkOrganiser').checked 		= items.organiser;
@@ -112,7 +112,7 @@ function reset_options() {
 	//get currently selected settings
 	//Permissions
 	var historyPermission  	= document.getElementById('checkHistory').checked;
-	var bookmarksPermission = document.getElementById('checkBookmarks').checked;
+	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
 	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
 	var notifyPermission 	= document.getElementById('checkNotificions').checked;
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
@@ -125,7 +125,7 @@ function reset_options() {
 
 	//overwrite with default
 	document.getElementById('checkHistory').checked 		= true;
-	document.getElementById('checkBookmarks').checked 		= true;
+	//document.getElementById('checkBookmarks').checked 		= true;
 	document.getElementById('checkTopSites').checked 		= true;
 	document.getElementById('checkNotificions').checked 	= true;
 	document.getElementById('checkOrganiser').checked 		= true;
@@ -153,7 +153,7 @@ function reset_options() {
 
 		//restore settings
 		document.getElementById('checkHistory').checked 		= historyPermission;
-		document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
+		//document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
 		document.getElementById('checkTopSites').checked 		= topsitesPermission;
 		document.getElementById('checkNotificions').checked 	= notifyPermission;
 		document.getElementById('checkOrganiser').checked 		= organiserPermission;
@@ -166,8 +166,3 @@ function reset_options() {
 	});
 	status.appendChild(a);
 }/**/
-
-
-function open_history_options() {
-	chrome.tabs.create({ 'url': 'chrome://settings/clearBrowserData'});
-}

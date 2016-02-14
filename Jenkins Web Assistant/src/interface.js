@@ -2,8 +2,6 @@
 var myid = chrome.runtime.id;
 
 //Global variables
-var historyPermission = true;
-var timerSetting = 0;
 var lastid = 0;
 
 //Div IDs
@@ -26,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			addArrayItem();
 		}
 	});
+	//Puts the array into the list
 	arrayToList();
 
 	//Settings
@@ -34,7 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('reset').addEventListener('click', reset_options);
 
 	//Process history on button click
-	document.getElementById('processHistory').addEventListener('click', processHistory);
+	document.getElementById('processHistory').addEventListener('click', function() {
+
+		//Call process history from background page
+		chrome.extension.getBackgroundPage().processHistory();
+
+		//Needs to refresh page AGAIN to show results
+		setTimeout(function() {
+			window.location.reload();
+		}, 1000);//Wait 1 second and then refresh
+	});
 
 
 
@@ -46,15 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	//check for permission for notifications
 	if (Notification.permission !== "granted")
 		Notification.requestPermission();
-
-	//Check first whether we have permission.
-	chrome.storage.sync.get({
-		history: true,
-		timer:28
-	}, function (items) {
-		historyPermission = items.history;
-		timerSetting = items.timer;
-	});
 });
 
 
@@ -75,6 +74,18 @@ function uniq(array) {
 			return seen[item] = true;
 	});
 }
+
+function makeURL(destination) {
+	var protocol = new RegExp("^((https|http|ftp|rtsp|mms)://)",'i');
+	if(!protocol.test(destination)) {
+		//Not a working URL, just add protocol
+		return "http://" + destination;
+	}
+	else {
+		//Everything's alright
+		return destination;
+	}
+}/**/
 
 
 
@@ -151,7 +162,7 @@ function addScheduleItem(schedule, timeText, urlText, type) {
 	var text = "At " + timeText + " open ";
 	//Make the url a working anchor
 	var url = document.createElement("a");
-	url.setAttribute('href', 'http://' + urlText);//---------------------- fix
+	url.setAttribute('href', makeURL(urlText));
 	url.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
 	url.appendChild(document.createTextNode(urlText));
 	//Checks the document for the list table
@@ -228,8 +239,10 @@ function removeFromArray(array, object) {
 				pos = i;
 			}
 		}
-		if (!found)
-			notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
+		if (!found) {
+			//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
+		}
 	}
 	var removedItem = array.splice(pos, 1);
 	//Save new array
@@ -238,14 +251,15 @@ function removeFromArray(array, object) {
 	}, function() {
 		var allowUndo = document.getElementById('undoNotifications').checked;
 		if (allowUndo) {
-			//Notification with "undo"
-			notificationFunction("Item removed", removedItem + " has been removed. Click here to undo.", function() {
+			//Notification with "undo" called from background page ~~~~~~~~~~~~~~~~~~~~~~~~~
+			chrome.extension.getBackgroundPage().notificationFunction("Item removed", removedItem + " has been removed. Click here to undo.", function() {
 				//Undo and notify
 				array.push(removedItem);
 				chrome.storage.sync.set({
 					schedule: array
 				}, function() {
-					notificationURL("Item restored", removedItem + " has been restored.");
+					//Notify user of success of restoration. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					chrome.extension.getBackgroundPage().notificationURL("Item restored", removedItem + " has been restored.");
 					arrayToList();
 				});
 			});
@@ -265,7 +279,7 @@ function replaceInArray(array, object) {
 			}
 		}
 		if (!found)
-			notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
+			chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + object + "\". Please notify Mikey.");
 	}
 	var removedItem = array.splice(pos, 1);
 	//Save new array
@@ -273,7 +287,7 @@ function replaceInArray(array, object) {
 			schedule: array
 		}, function() {
 			//Notification with "undo"
-			notificationURL("Recommendation Validated", removedItem + " has been Validated.");
+			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", removedItem + " has been Validated.");
 		});
 }/**/
 
@@ -334,8 +348,13 @@ function save_options() {
 	if (timeRounding < 1) //Default to 1 if they set it too low
 		timeRounding = 1;
 	var newZero  		= document.getElementById('newZero').value;			//---
+	//Make sure "trackAfter" is the smaller value
 	var trackAfter  	= document.getElementById('trackAfter').value;			//---
 	var trackBefore  	= document.getElementById('trackBefore').value;			//---
+	if(trackAfter > trackBefore) {
+		var trackAfter  = document.getElementById('trackBefore').value;			//---
+		var trackBefore = document.getElementById('trackAfter').value;			//---
+	}
 	var autoNotifications = document.getElementById('autoNotifications').checked;//---
 	var autoCount  	= document.getElementById('autoCount').value;	//---
 
@@ -448,96 +467,7 @@ function reset_options() {
 
 
 
-
-
-
-
-
-
-
-//++++++++++++++++++++++++++++++ NOTIFICATIONS +++++++++++++++++++++++++++++++++++++++++++
-
-//Polymorphism for no destination var
-function notificationURL(notificationTitle, bodyText) {
-	notificationURL(notificationTitle, bodyText, null);
-}
-//influenced from http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
-function notificationURL(notificationTitle, bodyText, destination) {
-
-	var iconImage = '/images/128.png'; //Default. Likely won't be changed
-
-
-	if (!Notification) {
-		alert('Desktop notifications not available in your browser. Try Chromium.'); 
-		return;
-	}
-	chrome.storage.sync.get({
-		notification: true
-	}, function(items) {
-		if (items.notification == true) {
-			var notification = new Notification(notificationTitle, {
-				icon: iconImage,
-				body: bodyText,
-			});
-			//Whatever I want the notification to do
-			notification.onclick = function () {
-				if (destination != null)
-					window.open(destination);
-				//Placeholder
-				notification.close();
-			};
-		}
-	});
-}
-
-
-function notificationFunction(notificationTitle, bodyText, func) {
-	notificationFunction(notificationTitle, bodyText, func, null);
-}
-function notificationFunction(notificationTitle, bodyText, func, funcparam) {
-	var iconImage = '/images/128.png'; //Default. Likely won't be changed
-
-
-	if (!Notification) {
-		alert('Desktop notifications not available in your browser. Try Chromium.'); 
-		return;
-	}
-	chrome.storage.sync.get({
-		notification: true
-	}, function(items) {
-		if (items.notification == true) {
-			var notification = new Notification(notificationTitle, {
-				icon: iconImage,
-				body: bodyText,
-			});
-			//Whatever I want the notification to do
-			notification.onclick = function () {
-				if (funcparam != null)
-					func(funcparam);
-				else
-					func();
-				//Placeholder
-				notification.close();
-			};
-		}
-	});
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 
 // ############################## PROCESSING #############################
 
@@ -995,4 +925,4 @@ function arrayStringIncludesCount(theString, theArray) {
 			entryCount++;
 	}
 	return entryCount;
-}
+}*/

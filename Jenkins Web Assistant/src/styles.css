@@ -107,6 +107,8 @@ h2 {
 
 .trlist-Entry {
 	width: 400px;
+	max-width: 450px; 
+	word-wrap: break-word;
 }
 
 
@@ -116,9 +118,9 @@ h2 {
 	-moz-border-radius: 4;
 	border-radius: 4px;
 	font-family: Arial;
-	color: #111111;
+	color: Black;
 	font-size: 12px;
-	background: #cdcdcd;
+	background: White;
 	padding: 2px 5px 2px 5px;
 	text-decoration: none;
 }
@@ -132,29 +134,29 @@ h2 {
 	-moz-border-radius: 4;
 	border-radius: 4px;
 	font-family: Arial;
-	color: #111111;
+	color: White;
 	font-size: 12px;
-	background: #afbfee;
+	background: #0174df;
 	padding: 2px 5px 2px 5px;
 	text-decoration: none;
 }
 .trlist-AcceptButton:hover {
-	color: White;
-	background: #8090cc;
+	color: Black;
+	background: #92ff68;
 	text-decoration: none;
 }
 
 /* For type colours in schedule */
 .trlist-user {
-	background: #edffed;
+	background: #92ff68;
 }
 .trlist-user:hover {
-	background: #cceecc;	
+	background: #40ff00;	
 }
 
 .trlist-auto {
 	background: #ededff;
 }
 .trlist-auto:hover {
-	background: #ccccee;	
+	background: #a9d0f5;	
 }
