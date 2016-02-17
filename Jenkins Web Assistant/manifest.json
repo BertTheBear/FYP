@@ -3,7 +3,7 @@
 
 	"name": "Jenkins Web Assistant",
 	"description": "Adaptive interface assistant for Chrome. Can be manually configured or granted access to recognise browsing patterns.",
-	"version": "0.2",
+	"version": "0.3",
 	"version_name": "ALPHA (in Development)",
 
 	"browser_action": {

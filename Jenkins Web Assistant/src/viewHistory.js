@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	arrayToList();
 	document.getElementById('bloh').addEventListener('click', function() {
-		chrome.extension.getBackgroundPage().checkSchedule();
+		//chrome.extension.getBackgroundPage().checkSchedule();
+		thing();
 	});
 	document.getElementById('bleh').addEventListener('click', chrome.extension.getBackgroundPage().clearHistory);
 	document.getElementById('rer').addEventListener('click', function(){
@@ -561,7 +562,31 @@ function validateFormURL(errorDiv, urlID) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //>>>>>>>>>>>>>>>>>>> Recommender <<<<<<<<<<<<<<<<<<<<<<
-function recommend() {
+/*function recommend() {
 	
-}
+}*/

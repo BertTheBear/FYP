@@ -44,20 +44,48 @@
 Set it to check if auto has website and then stop making more
 
 
+history object
+	url: , 				//string
+	time: , 			//Date
+	visits: , 			//int
+	approved: , 		//boolean
+	category: 			//string (optional)
+
+
 
 recommendation objects:
 	
-	title: , 			//string
+	title: , 			//string (Optional)
 	url: , 				//string
-	category: , 		//see below, possibly multiple array maybe
+	category: , 		//String
 	accepted: , 		//boolean
-	blocked: , 			//boolean
+	blocked:  			//boolean
 
 
 	accepted is when they follow link
 	blocked is when the option is given to block after closing notification
 
 	CATEGORIES
+	
+		categoryArray = ["animation", 			[0]
+						"educational", 			[1]
+						"email", 				[2]
+						"entertainmentNews", 	[3]
+						"finance", 				[4]
+						"game", 				[5]
+						"leisure", 				[6]
+						"literature", 			[7]
+						"music", 				[8]
+						"news", 				[9]
+						"searchEngine", 		[10]
+						"shopping", 			[11]
+						"socialMedia", 			[12]
+						"sports", 				[13]
+						"video", 				[14]
+						"work", 				[15]//***
+						"technology", 			[16]
+						"television", 			[17]
+						"travel" ];				[18]
 
 	Animation {
 		animehaven.org

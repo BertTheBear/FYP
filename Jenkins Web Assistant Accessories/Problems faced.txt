@@ -95,6 +95,7 @@ Reloading
 
 Tabs
 	Retrieving tabs open with url
+	type error with object array
 
 Code duplication
 	Much of the code was duplicated or repeated between pages
@@ -107,3 +108,12 @@ Table size
 	This was resolved by putting "max-width: 400px; word-wrap: break-word;" in the css for the td
 	This was tried on tr and table (And Div) before realising it needed to be the td
 	This was pointed out by Owen.
+
+Recommendations
+	Type Error when passing object array
+		Caused by adding to array but I can't find solution
+	SOLUTION
+		caused by incorrect array limits (Needed to -1)
+
+	BINARY SEARCH
+		mixed up switching middle+upperLimit and middle+lowerLimit

@@ -220,9 +220,9 @@ function checkSchedule() {
 
 	//Get the schedule
 	chrome.storage.sync.get({
-		checkFrequency: 5,
-		autoNotifications: false,
-		schedule: []
+		checkFrequency: 	5,
+		autoNotifications: 	false,
+		schedule: 			[]
 	}, function(items) {
 		//Get the current time
 		var now = new Date();
@@ -253,6 +253,21 @@ function checkSchedule() {
 						destination = makeURL(destination);
 
 						//Check whether the website is already open.
+						/*
+						chrome.tabs.query({url: destination}, function (result) {
+							//If it found no results then the page is not open
+							if(result == null) {
+								console.log(destination + " not found in tabs. Function will open Tab.")
+								//Appropriate function...
+							}
+							//If it's open, the function will switch to the tab instead.
+							else {
+								//Use the tab ID of the first result
+								var tabID = result[0].id;
+								//Appropriate function using id to open tab
+							}
+						});
+						*/
 						//Check is not working
 						notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
 						
@@ -519,14 +534,14 @@ function getHostname(url) {
 
 function processDomain(domainUrl) {
 	chrome.storage.sync.get({
-		timeThreshold: 28,
-		ignoreQuery: true,
-		timeRounding: 1,
-		newZero: 4,
-		trackAfter: "00:00", 
-		trackBefore: "23:59",
-		timeDeviation: 6, 
-		skewnessThreshold: 2
+		timeThreshold: 		28,
+		ignoreQuery: 		true,
+		timeRounding: 		1,
+		newZero: 			4,
+		trackAfter: 		"00:00", 
+		trackBefore: 		"23:59",
+		timeDeviation: 		6, 
+		skewnessThreshold: 	2
 	}, function(items) {
 		//Multiply 1 day by the amount of days set by user.
 		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
@@ -646,13 +661,13 @@ function processDomain(domainUrl) {
 
 function processSinglePage(pageUrl) {
 	chrome.storage.sync.get({
-		ignoreQuery: true,
-		timeRounding: 1,
-		newZero: 4,
-		trackAfter: "00:00", 
-		trackBefore: "23:59",
-		timeDeviation: 6, 
-		skewnessThreshold: 2
+		ignoreQuery: 		true,
+		timeRounding: 		1,
+		newZero: 			4,
+		trackAfter: 		"00:00", 
+		trackBefore: 		"23:59",
+		timeDeviation: 		6, 
+		skewnessThreshold: 	2
 	}, function(items) {
 		chrome.history.getVisits({
 			url: pageUrl
@@ -756,17 +771,34 @@ function processSinglePage(pageUrl) {
 
 function addToSchedule(url, time) {
 	chrome.storage.sync.get( {
-		autoCount: 20,
-		schedule: []
+		autoCount: 		20,
+		timeRounding: 	1,
+		schedule: 		[]
 	}, function(items) {
 		//First check if there's already an automatic entry of that url
 		//Also check if we have reached the entry limit
 		var entries = arrayStringIncludesCount("trlist-auto", items.schedule);
-		if(entries > items.autoCount || findInSchedule(url, items.schedule)) {
-			console.log("Prevented " + url + "Too many entries or found in array");
+		var index = findInSchedule(url, items.schedule)
+		if (0 <= index) {
+			//Extract time from items.schedule[findInSchedule(url, items.schedule)]
+			var breaker = items.schedule[index].indexOf(":");
+			var oldTime = parseInt(items.schedule[index].substring(index-2, index)) * microsecondsPerHour;		//2 values before : character
+			oldTime += parseInt(items.schedule[index].substring(index+1, index+3)) * microsecondsPerMinute; 	//2 values after : character
+			//Then find average between that and time
+			var averageTime = (oldTime + time) / 2;
+			//Round time
+			averageTime -= averageTime % (items.timeRounding * microsecondsPerMinute);
+			console.log("Edited " + url);
+
+			//Change time to equal new time
+			time = new Date(averageTime);
+		}
+		if(entries > items.autoCount){
+			console.log("Prevented " + url + ". Too many automatic entries in array");
 			return; //End the function
 		}
-			console.log("Accepted " + url);
+		console.log("Accepted " + url);
+
 
 
 		//To prevent 12:7
@@ -794,9 +826,9 @@ function findInSchedule(url, schedule) {
 	for(var i = 0; i < schedule.length; i++) {
 		var toCheck = schedule[i] + "";
 		if(toCheck.includes(url + ",trlist-auto"))
-			return true;
+			return i;
 	}
-	return false;
+	return -1;
 }
 
 function arrayStringIncludesCount(theString, theArray) {
