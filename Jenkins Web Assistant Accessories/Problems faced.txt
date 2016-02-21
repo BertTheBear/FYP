@@ -117,3 +117,7 @@ Recommendations
 
 	BINARY SEARCH
 		mixed up switching middle+upperLimit and middle+lowerLimit
+
+Schedule
+	Converting from String to Object
+	Date type cannot be saved by chrome

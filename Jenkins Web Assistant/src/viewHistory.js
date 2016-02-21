@@ -390,9 +390,14 @@ function arrayToList() {
 		}
 		//Add each element to the list
 		items.schedule.forEach(function (item, index, array){
-			var whole = item + '';	//Causes error otherwise
-			var fragments = whole.split(",");
-			addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
+			if (!(item.time instanceof Date)) {
+				//Remove from list
+				var removed = array.splice(index, 1);
+				console.log("Removed:"); //++++++
+				console.log(removed);//++++++++++
+			}
+			else
+				addScheduleItem(items.schedule, item.time, item.url, item.approved);
 		});
 	});
 }
@@ -405,13 +410,41 @@ function addArrayItem() {
 		//Add elements to the array
 		var urlText = document.getElementById(urlID).value;
 		var timeText = document.getElementById(timeID).value;
-		items.schedule.push(timeText + "," + urlText + ",trlist-user");
+
+		//Get time info from the string
+		var time = new Date(0);
+		var index = timeText.indexOf(":");//Location of :
+		var hours = parseFloat(timeText.substring(index-2, index)); //2 values before : character
+		console.log(timeText);//++++++++++
+		console.log(hours);//++++++++++
+		var minutes = parseFloat(timeText.substring(index+1, index+3)); //2 values after : 
+		console.log(minutes);//++++++++++
+		//add times to new Date
+		time.setMinutes(minutes);
+		time.setHours(hours);
+
+		console.log(time);//++++++++++
+
+		var newItem = Object();
+		newItem.time = time;
+		newItem.url = urlText;
+		newItem.approved = true;
+
+		console.log(newItem);//+++++++++++
+
+
+		items.schedule.push(newItem);
 		//Remove duplicates
-		items.schedule = uniq(items.schedule);
+		//items.schedule = uniq(items.schedule);
 		//Save updated array
 		chrome.storage.sync.set({
 			schedule: items.schedule
 		}, function() {
+
+		console.log("Saved");//+++++++++++
+		console.log(items.schedule);//+++++++++++
+
+
 			//Build list again
 			//First clear all children
 			var myNode = document.getElementById(listID);
@@ -420,9 +453,7 @@ function addArrayItem() {
 			}
 			//Now replace from array
 			items.schedule.forEach(function (item, index, array){
-				var whole = item + '';	//Causes error otherwise
-				var fragments = whole.split(",");
-				addScheduleItem(items.schedule, fragments[0], fragments[1], fragments[2]);
+				addScheduleItem(items.schedule, item.time, item.url, item.approved);
 			});
 
 			//Clear the form fields
@@ -433,23 +464,34 @@ function addArrayItem() {
 }
 
 //Prints list from array
-function addScheduleItem(schedule, timeText, urlText, type) {
+function addScheduleItem(schedule, time, urlText, approved) {
+	console.log(time);//++++++++++++++
+
 	//Format the text to be displayed and saved
+	var timeText = "";
+	timeText += time.getHours() + ":";
+	if (timeText.getMinutes < 10) {
+		//To prevent 12:7 etc.
+		timeText += "0";
+	}
+	timeText += timeText.getMinutes;
 	var text = "At " + timeText + " open ";
+
 	//Make the url a working anchor
 	var url = document.createElement("a");
-	url.setAttribute('href', 'http://' + urlText);
+	url.setAttribute('href', makeURL(urlText));
 	url.setAttribute('target', '_blank'); //So it will open in a new tab/window and not break if the user tries to do this differently
 	url.appendChild(document.createTextNode(urlText));
 	//Checks the document for the list table
 	var list = document.getElementById(listID);
 	//Makes a new line to be added to the list and sets the id
 	var line = document.createElement('tr');
+	//For removing from list
 	line.setAttribute('id','item'+lastid);
 
 	//Set type user/automatic
-	//trlist-user => user set
-	//trlist-auro => automatically set
+	//trlist-user => user set (green)
+	//trlist-auto => automatically set (blue)
 	line.setAttribute('class', type);
 
 	//Puts the text into the first element of the row
@@ -458,6 +500,29 @@ function addScheduleItem(schedule, timeText, urlText, type) {
 	entry.appendChild(document.createTextNode(text));
 	entry.appendChild(url);
 	entry.setAttribute('class', 'trlist-Entry');
+
+	//Add accept button
+	var acception = document.createElement('td');
+	if(type.includes("auto")) {
+		var acceptButton = document.createElement('a');
+		acceptButton.appendChild(document.createTextNode("Accept"));
+		acceptButton.setAttribute('href', '#');
+		acceptButton.setAttribute('class', 'trlist-AcceptButton');
+		acceptButton.addEventListener('click', function() {
+			//Add the new instance to the array 
+			addScheduleItem(items.schedule, time, urlText, true);
+			schedule.push(acceptedItem);
+			chrome.storage.sync.set({
+				schedule: schedule
+			}, function() {
+				//Removes the whole line if the X is clicked
+				list.removeChild(line);
+				//Remove the instance from the array
+				replaceInArray(schedule, scheduleItem);//=================================================================================================================================================================================================
+			});
+		});
+		acception.appendChild(acceptButton);
+	}
 
 	//Add remove button
 	var removal = document.createElement('td');
@@ -469,40 +534,98 @@ function addScheduleItem(schedule, timeText, urlText, type) {
 		//Removes the whole line if the X is clicked
 		list.removeChild(line);
 		//Remove the instance from the array
-		removeFromArray(schedule, timeText + "," + urlText);
+		removeFromArray(schedule, scheduleItem);
 	});
 	removal.appendChild(removeButton);
 	lastid+=1;
 	line.appendChild(entry);
+	line.appendChild(acception);
 	line.appendChild(removal);
 	//Add line to list
 	list.appendChild(line);
 }/**/
 
-function removeFromArray(array, object) {
-	var pos = array.indexOf(object);
-	var removedItem = array.splice(pos, 1);
-	//Save new array
-	chrome.storage.sync.set({
+function removeFromArray(array, scheduleItem) {
+	var approved = scheduleItem.approved;
+	var url = scheduleItem.url;
+	var time = scheduleItem.time;
+
+	//More intensive search
+	var found = false;
+	var pos = -1;
+	for(var i = 0; i < array.length && !found; i++) {
+		var toCheck = array[i];
+		//If all variables are the same it's a duplicate
+		if(toCheck.time == time && toCheck.url == url && toCheck.approved == approved) {
+			found = true;
+			pos = i;
+		}
+	}
+	if (!found) {
+		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.");
+	}
+	else {
+		//remove item from array
+		var removedItem = array.splice(pos, 1);
+		//Save new array
+		chrome.storage.sync.set({
+			schedule: array
+		}, function() {
+			var allowUndo = document.getElementById('undoNotifications').checked;
+			if (allowUndo) {
+				//Notification with "undo" called from background page ~~~~~~~~~~~~~~~~~~~~~~~~~
+				chrome.extension.getBackgroundPage().notificationFunction("Item removed", removedItem + " has been removed. Click here to undo.", function() {
+					//Undo and notify
+					array.push(removedItem);
+					chrome.storage.sync.set({
+						schedule: array
+					}, function() {
+						//Notify user of success of restoration. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+						chrome.extension.getBackgroundPage().notificationURL("Item restored", removedItem + " has been restored.");
+						arrayToList();
+					});
+				});
+			}
+		});
+	}
+}/**/
+function replaceInArray(array, scheduleItem) {
+	var approved = scheduleItem.approved;
+	var url = scheduleItem.url;
+	var time = scheduleItem.time;
+
+
+	//More intensive search
+	var found = false;
+	var pos = -1;
+	for(var i = 0; i < array.length && !found; i++) {
+		var toCheck = array[i];
+		//If all variables are the same it's a duplicate
+		if(toCheck.time == time && toCheck.url == url && toCheck.approved == approved) {
+			found = true;
+			pos = i;
+		}
+	}
+	if (!found) {
+		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.");
+	}
+	else {
+		var removedItem = array.splice(pos, 1);
+		//Save new array
+		chrome.storage.sync.set({
 			schedule: array
 		}, function() {
 			//Notification with "undo"
-			notificationFunction("Item removed", removedItem + " has been removed. Click here to undo.", function() {
-				//Undo and notify
-				array.push(removedItem);
-				chrome.storage.sync.set({
-					schedule: array
-				}, function() {
-					notificationURL("Item restored", removedItem + " has been restored.");
-					arrayToList();
-				});
-			});
-	});
+			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", url + " has been Validated.");
+		});
+	}
 }/**/
 
 
 //Verifies that the input is a working URL
-function validateFormURL(errorDiv, urlID) {
+function validateFormURL(errorDiv, urlID, scheduleLength) {
 	//Get values
 	var urlText = document.getElementById(urlID).value;
 	//Check values
@@ -515,16 +638,29 @@ function validateFormURL(errorDiv, urlID) {
 		+ "(:[0-9]{1,4})?" 								// port number
 		+ "((/?)|" 										// a slash isn't required if there is no file name
 		+ "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$",'i'); // fragment locater
-	if(!pattern.test(urlText)) {
-		console.log(urlText + " Refused");// Update status to let user know options were saved.
-		var eDiv = document.getElementById(errorDiv);
-		if(urlText == "") {
-			eDiv.textContent = 'Please enter a URL.';
-		}
-		else {
-			eDiv.textContent = 'Invalid URL Entered.';
-		}
 
+
+
+	// Update status to let user know options were saved.
+	var eDiv = document.getElementById(errorDiv);
+	var valid = true;
+
+	
+	if (scheduleLength > maxScheduleLength) {
+		eDiv.textContent = 'Schedule is full. Please remove existing elements.';
+		valid = false;
+	}
+	else if(urlText == "") {
+		eDiv.textContent = 'Please enter a URL.';
+		valid = false;
+	}
+	else if (!pattern.test(urlText)) {
+		eDiv.textContent = 'Invalid URL Entered.';
+	}
+
+
+
+	if(!valid) {
 		setTimeout(function() {
 			eDiv.textContent = "";
 			eDiv.appendChild(document.createElement('br'));
@@ -544,49 +680,20 @@ function validateFormURL(errorDiv, urlID) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //>>>>>>>>>>>>>>>>>>> Recommender <<<<<<<<<<<<<<<<<<<<<<
 /*function recommend() {
 	
 }*/
+
+
+
+function thing() {
+	chrome.storage.sync.get(function(items) {
+		console.log(items);
+	})
+}
+
+
+function isString(variable) {
+	return toString.call(variable) == '[object String]';
+}

@@ -23,6 +23,9 @@ chrome.runtime.onStartup.addListener(function(){
 		//First check schedule
 		checkSchedule();
 
+		//Convert from old format to new format
+		convertFromStringFormat();
+
 		//if tempnotify was selected, reset it
 		if(items.tempNotify) {
 			chrome.storage.sync.set({
@@ -232,22 +235,23 @@ function checkSchedule() {
 
 
 		//Check time with each element of list
-		items.schedule.forEach(function (item, index, array){
-			//causes an error otherwise
-			item = item + "";
-			var index = item.indexOf(":");
-			var itemHour = item.substring(index-2, index);		//2 values before : character
-			var itemMinute = item.substring(index+1, index+3);	//2 values after  : character
+		var scheduleArray = items.schedule;
+		console.log(scheduleArray);//+++++++
+		console.log(scheduleArray.length + " length");//+++++
+		for(var x = 0; x < scheduleArray.length; x++) {
+			var currentItem = scheduleArray[x];
+			var time = new Date();
+			time = currentItem.time;
+			//Get hours + minutes from schedule item
+			var itemHour = time.getHours();
+			var itemMinute = time.getMinutes();
 			//Check values versus times
 			if(itemHour <= now.getHours() && itemHour >= lastChecked.getHours()){
 				//If hours correct check minutes
-				if(itemMinute <= now.getMinutes() && itemMinute >= lastChecked.getMinutes()){
+				if(itemMinute <= now.getMinutes() || itemMinute > lastChecked.getMinutes()){
 					//If the time has passed send notification
-					var splitter = item.split(",");
-
-
-					if(items.autoNotifications || splitter[2] == "trlist-user") {
-						var destination = splitter[1];//second item in array
+					if(items.autoNotifications || item.approved) {
+						var destination = item.url;
 
 						//Make sure the url works
 						destination = makeURL(destination);
@@ -270,11 +274,10 @@ function checkSchedule() {
 						*/
 						//Check is not working
 						notificationURL(itemHour + ":" + itemMinute + " reminder", "Click here to open " + destination, destination);
-						
 					}
 				}
 			}
-		});
+		};
 	});
 }
 
@@ -291,19 +294,6 @@ function makeURL(destination) {
 }/**/
 
 
-//Ensures all elements of an array are unique
-// inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
-function uniq(array) {
-	var seen = {};
-	return array.filter(function(item) {
-		// for each element checks whether it already contains that element, 
-		//   if it does then it skips, if it doesn't then it adds it
-		if (seen.hasOwnProperty(item))
-			return false;
-		else
-			return seen[item] = true;
-	});
-}
 
 
 
@@ -331,7 +321,7 @@ function uniq(array) {
 
 
 
-//****************** OPEN OPTION PAGES *******************
+//****************** MISCELLANEOUS FUNCTIONS *******************
 function open_history_options() {
 	chrome.tabs.create({ 'url': 'chrome://settings/clearBrowserData'});
 }
@@ -341,9 +331,73 @@ function open_options() {
 }
 
 
+function isString(variable) {
+	return toString.call(variable) == '[object String]';
+}
+
+function convertFromStringFormat() {
+	chrome.storage.sync.get(function(items) {
+		console.log("Everything");//++++++++++++
+		console.log(items);//++++++++++++++
+		var theArray = items.schedule;
+		console.log("Schedule");//++++++++++++
+		console.log(theArray);//++++++++++++++
+
+		//Now process the array
+		for(var i = 0; i < theArray.length; i++) {
+			//Temp var for ease of reading
+			var currentElement = theArray[i];
+			if (isString(currentElement)) {
+				//Create the new object to splice in
+				var newItem = new Object();
 
 
+				var index = currentElement.indexOf(":");
 
+				//Get time info from the string
+				var time = new Date(0);
+				var hours = parseFloat(currentElement.substring(index-2, index)); //2 values before : character
+				var minutes = parseFloat(currentElement.substring(index+1, index+3)); //2 values after : 
+				//add times to new Date
+				time.setMinutes(minutes);
+				time.setHours(hours);
+
+				//Set time (Date)
+				newItem.time = time;
+
+				//Set url (String)
+				var brokenUp = currentElement.split(","); //element should be time,url,type
+				var urlPart = brokenUp[1];
+				newItem.url = urlPart;
+
+				//set approved (Boolean)
+				var type = brokenUp[2];
+				if(type == "trlist-user") {
+					newItem.approved = true;
+				}
+				else {
+					newItem.approved = false;
+				}
+
+
+				//Splice into theArray
+				var removed = theArray.splice(i, 1, newItem);
+
+			}//Remove any errors in the list
+			else if (!(currentElement.time instanceof Date)) {
+				//Remove from list
+				var removed = theArray.splice(i, 1);
+				console.log("Removed:"); //++++++
+				console.log(removed);//++++++++++
+			}
+		}
+		chrome.storage.sync.set({
+			schedule: theArray
+		}, function() {
+			console.log(theArray); //+++++++++++++++
+		});
+	});
+}
 
 
 
@@ -372,6 +426,7 @@ function processHistory() {
 
 	//Get all settings and schedule
 	chrome.storage.sync.get({
+		ignoreQuery: 		true,
 		history: 			true,
 		bookmarks: 			true,
 		topsites: 			true,
@@ -383,6 +438,7 @@ function processHistory() {
 		typedWeight: 		2, //--
 		timeThreshold: 		28,	
 		ignoreList: 		"",	
+		defaultIgnoreList: 	"",
 		clearhistory: 		false,
 		schedule: 			[]		//For adding on changes
 	}, function(items) {
@@ -402,7 +458,7 @@ function processHistory() {
 
 		// Access history and process results
 		chrome.history.search({
-				'text': '',				
+				'text': '',	
 				'startTime': historyCutoff
 			},
 			function(historyItems) {
@@ -441,6 +497,7 @@ function processHistory() {
 					//else check just the domain
 					else {
 						item.url = getHostname(item.url);
+						//and set as NOT a single page
 						item.singlePage = false;
 					}
 
@@ -457,9 +514,7 @@ function processHistory() {
 					if(found == false) {
 						commonSites.push(item);
 					}
-
-				
-				})
+				});
 
 
 
@@ -471,26 +526,12 @@ function processHistory() {
 						index -= removed.length;
 					}
 					else {
+						//Check user blacklist
 						var blacklist = items.ignoreList.split(",");
-						//if empty
-						if (blacklist.length == 1 && blacklist[0] == "") {
-							//List is empty, do nothing (For now)
-						}
-						else {
-							//Also O(x^3) so need to look at
-							//Check if they contain any keywords
-							for(var i = 0; i < blacklist.length; i++) {
-								commonSites.forEach(function(item, index, array) {
-									var url = item.url + "";
-									if(url.toLowerCase().includes(blacklist[i].toLowerCase())) {
-										var removed = commonSites.splice(index, 1);
-										//remove from index because array is shorter
-										index -= removed.length;
-									}
-								})
-							}
-							//Can't finish early because it needs to check everything
-						}
+						commonSites = checkBlacklist(commonSites, blacklist);
+						//Check default blacklist
+						var defaultBlacklist = items.defaultIgnoreList.split(",");
+						commonSites = checkBlacklist(commonSites, blacklist);
 					}
 				}
 
@@ -508,6 +549,30 @@ function processHistory() {
 			});
 		});
 
+}
+
+function checkBlacklist(list, blacklist) {
+	//if empty
+	if (blacklist.length == 1 && blacklist[0] == "") {
+		//List is empty, do nothing (For now)
+		return list;
+	}
+	else {
+		//Also O(x^3) so need to look at
+		//Check if they contain any keywords
+		for(var i = 0; i < blacklist.length; i++) {
+			list.forEach(function(item, index, array) {
+				var url = item.url + "";
+				if(url.toLowerCase().includes(blacklist[i].toLowerCase())) {
+					var removed = list.splice(index, 1);
+					//remove from index because array is shorter
+					index -= removed.length;
+				}
+			})
+		}
+		//Can't finish early because it needs to check everything
+		return list;
+	}
 }
 
 
@@ -535,7 +600,6 @@ function getHostname(url) {
 function processDomain(domainUrl) {
 	chrome.storage.sync.get({
 		timeThreshold: 		28,
-		ignoreQuery: 		true,
 		timeRounding: 		1,
 		newZero: 			4,
 		trackAfter: 		"00:00", 
@@ -543,6 +607,7 @@ function processDomain(domainUrl) {
 		timeDeviation: 		6, 
 		skewnessThreshold: 	2
 	}, function(items) {
+
 		//Multiply 1 day by the amount of days set by user.
 		var historyCutoff = (new Date).getTime() - (microsecondsPerDay * items.timeThreshold);
 		if (items.timeThreshold <= 0)
@@ -551,7 +616,7 @@ function processDomain(domainUrl) {
 		chrome.history.search( {
 			'text': domainUrl,	//Gets all results with the same URL
 			'startTime': historyCutoff
-		}, function(historyItems){
+		}, function(historyItems) {
 			//to account for late night browsing (New Zero Modification)
 			var NZModification = items.newZero * microsecondsPerHour;
 
@@ -609,7 +674,7 @@ function processDomain(domainUrl) {
 				}
 			});
 
-			//If no visits fall within rang then stop
+			//If no visits fall within range then stop
 			if(itemCount <= 0) {
 			console.log("Item count too low for " + domainUrl); //+++++++++++++++++
 			console.log("Item count: " + itemCount); //+++++++++++++++++++++++++
@@ -644,15 +709,11 @@ function processDomain(domainUrl) {
 				}
 				else {
 					var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
-					//Probably set it to get the last average from last time too.
-
 					addToSchedule(domainUrl, scheduleTime);
 				}
 			}
 			else {
 				var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
-				//Probably set it to get the last average from last time too.
-
 				addToSchedule(domainUrl, scheduleTime);
 			}
 		});
@@ -661,7 +722,6 @@ function processDomain(domainUrl) {
 
 function processSinglePage(pageUrl) {
 	chrome.storage.sync.get({
-		ignoreQuery: 		true,
 		timeRounding: 		1,
 		newZero: 			4,
 		trackAfter: 		"00:00", 
@@ -777,39 +837,39 @@ function addToSchedule(url, time) {
 	}, function(items) {
 		//First check if there's already an automatic entry of that url
 		//Also check if we have reached the entry limit
-		var entries = arrayStringIncludesCount("trlist-auto", items.schedule);
-		var index = findInSchedule(url, items.schedule)
+		var entries = countAutoEntries(items.schedule);
+		var index = findInSchedule(url, items.schedule);
 		if (0 <= index) {
-			//Extract time from items.schedule[findInSchedule(url, items.schedule)]
-			var breaker = items.schedule[index].indexOf(":");
-			var oldTime = parseInt(items.schedule[index].substring(index-2, index)) * microsecondsPerHour;		//2 values before : character
-			oldTime += parseInt(items.schedule[index].substring(index+1, index+3)) * microsecondsPerMinute; 	//2 values after : character
+			//For ease of reading
+			var scheduleItem = items.schedule[index];
+
+			//get old time and find average with current time
+			//Convert from seconds to Date object
+			var oldTime = new Date(scheduleItem.time);
 			//Then find average between that and time
-			var averageTime = (oldTime + time) / 2;
+			var averageTime = (oldTime.getTime() + time.getTime()) / 2;
 			//Round time
 			averageTime -= averageTime % (items.timeRounding * microsecondsPerMinute);
-			console.log("Edited " + url);
+			console.log("Edited " + url + " from " + oldTime + " to " + time);
 
 			//Change time to equal new time
 			time = new Date(averageTime);
 		}
-		if(entries > items.autoCount){
+		else if(entries > items.autoCount){
 			console.log("Prevented " + url + ". Too many automatic entries in array");
 			return; //End the function
 		}
-		console.log("Accepted " + url);
+		else 
+			console.log("Accepted " + url);
 
-
-
-		//To prevent 12:7
-		var minutes = time.getMinutes();
-		if (minutes < 10)
-			minutes = "0" + minutes;
-
-		var timeText = time.getHours() + ":" + minutes;
+		//Create new object to add to schedule
+		var scheduleItem = new Object();
+		scheduleItem.time = time.getTime();
+		scheduleItem.url = url;
+		scheduleItem.approved = false;
 
 		//add to schedule and save
-		items.schedule.push(timeText + "," + url + ",trlist-auto");
+		items.schedule.push(scheduleItem);
 		//Remove duplicates
 		items.schedule = uniq(items.schedule);
 		//Save updated array
@@ -824,13 +884,27 @@ function addToSchedule(url, time) {
 function findInSchedule(url, schedule) {
 	//Return whether the url has been found in schedule in auto
 	for(var i = 0; i < schedule.length; i++) {
-		var toCheck = schedule[i] + "";
-		if(toCheck.includes(url + ",trlist-auto"))
+		var itemToCheck = schedule[i];
+		if(itemToCheck.url == url && itemToCheck.approved == false)
 			return i;
 	}
 	return -1;
 }
 
+function countAutoEntries(schedule) {
+	//return the amount of entries in an theArray containing theString
+	var entryCount = 0;
+	for(var i = 0; i < schedule.length; i++) {
+		//For ease of reading
+		var itemToCheck = schedule[i];
+		//Increase if the approved is not true
+		if(itemToCheck.approved == false)
+			entryCount++;
+	}
+	return entryCount;
+}
+
+/*
 function arrayStringIncludesCount(theString, theArray) {
 	//return the amount of entries in an theArray containing theString
 	var entryCount = 0;
@@ -840,4 +914,19 @@ function arrayStringIncludesCount(theString, theArray) {
 			entryCount++;
 	}
 	return entryCount;
+}/**/
+
+
+//Ensures all elements of an array are unique
+// inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
+function uniq(array) {
+	var seen = {};
+	return array.filter(function(item) {
+		// for each element checks whether it already contains that element, 
+		//   if it does then it skips, if it doesn't then it adds it
+		if (seen.hasOwnProperty(item))
+			return false;
+		else
+			return seen[item] = true;
+	});
 }
