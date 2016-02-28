@@ -2,29 +2,6 @@
 
 //declare index variables as global
 var startIndex = 0;
-// These declare the last occurence of the category
-var animationCount = 0;
-var educationalCount = 0;
-var emailCount = 0;
-var entertainmentNewsCount = 0;
-var financeCount = 0;
-var gameCount = 0;
-var leisureCount = 0;
-var literatureCount = 0;
-var musicCount = 0;
-var newsCount = 0;
-var searchEngineCount = 0;
-var shoppingCount = 0;
-var socialMediaCount = 0;
-var sportsCount = 0;
-var videoCount = 0;
-var workCount = 0;
-var technologyCount = 0;
-var televisionCount = 0;
-var travelCount = 0;
-
-
-
 
 //Dis list gon be big
 function thing() {

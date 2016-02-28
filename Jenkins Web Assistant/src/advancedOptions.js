@@ -218,7 +218,7 @@ function reset_options() {
 
 	//Create an "undo" option for if it is accidentally clicked
 	var a = document.createElement('a');
-	a.href = '#';
+	a.href = '#reset';
 	a.appendChild(document.createTextNode(" undo"));
 	a.addEventListener('click', function() {
 		//For when undo is called

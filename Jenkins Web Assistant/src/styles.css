@@ -89,7 +89,7 @@ h2 {
 	text-decoration: none;
 }
 .smallbtn:hover {
-	background: #ededed;
+	/* background: #ededed;*/
 	text-decoration: none;
 	color: White;
 	background: #777777;
@@ -105,10 +105,33 @@ h2 {
 	background: #ededed;
 }
 
+/* Helps stop the list getting too wide */
 .trlist-Entry {
 	width: 400px;
 	max-width: 450px; 
 	word-wrap: break-word;
+}
+.popup-recommendation {
+	width: 315px;
+	max-width: 315px; 
+	word-wrap: break-word;
+	overflow: hidden; 
+}
+.popup-url {
+	background: #ededff;
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	padding: 4px 150px 4px 150px;
+	text-decoration: none;
+}
+.popup-url:hover {
+	background: #a9d0f5;
+	text-decoration: none;
+	color: White;
 }
 
 

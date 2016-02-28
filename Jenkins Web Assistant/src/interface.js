@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //Ensures all elements of an array are unique
 // inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
-function uniq(array) {
+/*function uniq(array) {
 	var seen = {};
 	return array.filter(function(item) {
 		// for each element checks whether it already contains that element, 
@@ -75,7 +75,8 @@ function uniq(array) {
 		else
 			return seen[item] = true;
 	});
-}
+}/**/
+
 
 function makeURL(destination) {
 	var protocol = new RegExp("^((https|http|ftp|rtsp|mms)://)",'i');
@@ -115,7 +116,6 @@ function makeURL(destination) {
 
 
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCHEDULE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Attempt to build from array
 function arrayToList() {
@@ -127,12 +127,19 @@ function arrayToList() {
 		while (myNode.firstChild) {
 			myNode.removeChild(myNode.firstChild);
 		}
+
+
+		console.log(items.schedule);//+++++++++++++++++++++++++++++++++++++++++
+
+		//Process errors from list
+		items.schedule = items.schedule.filter(function(n){ return n != undefined }); 
+		//Remove duplicates
+		items.schedule = chrome.extension.getBackgroundPage().uniq(items.schedule);
+
+		console.log(items.schedule);//+++++++++++++++++++++++++++++++++++++++++
+
 		//Add each element to the list
 		items.schedule.forEach(function (item, index, array) {
-			//Convert from seconds to Date object
-			var toDate = new Date(item.time);
-			item.time = toDate;
-
 			addScheduleItem(items.schedule, item.time, item.url, item.approved);
 		});
 	});
@@ -166,7 +173,7 @@ function addArrayItem() {
 
 		items.schedule.push(newItem);
 		//Remove duplicates
-		//items.schedule = uniq(items.schedule);
+		items.schedule = chrome.extension.getBackgroundPage().uniq(items.schedule);
 		//Save updated array
 		chrome.storage.sync.set({
 			schedule: items.schedule
@@ -208,14 +215,14 @@ function addScheduleItem(schedule, time, urlText, approved) {
 
 	//Format the text to be displayed
 	var timeText = "";
-	timeText += time.getHours() + ":";
-	console.log(timeText);//++++++++++++++++
-	if (time.getMinutes() < 10) {
+	var hours = (time - (time % microsecondsPerHour)) / microsecondsPerHour;
+	timeText += hours + ":";
+	var minutes = (time % microsecondsPerHour) / microsecondsPerMinute;
+	if (minutes < 10) {
 		//To prevent 12:7 etc.
 		timeText += "0";
 	}
-	console.log("Minutes " + time.getMinutes());//++++++++++++++++
-	timeText += time.getMinutes();
+	timeText += minutes;
 	var text = "At " + timeText + " open ";
 
 	//Make the url a working anchor
@@ -254,13 +261,17 @@ function addScheduleItem(schedule, time, urlText, approved) {
 			addScheduleItem(schedule, time, urlText, true);
 			scheduleItem.approved = true;
 			schedule.push(scheduleItem);
+
+			//Remove null entries
+			schedule = schedule.filter(function(n){ return n != undefined }); 
+
 			chrome.storage.sync.set({
 				schedule: schedule
 			}, function() {
-				//Removes the whole line if the X is clicked
+				//Removes the whole line and replace
 				list.removeChild(line);
 				//Remove the instance from the array
-				replaceInArray(schedule, scheduleItem);//=================================================================================================================================================================================================
+				replaceInArray(schedule, scheduleItem);
 			});
 		});
 		acception.appendChild(acceptButton);
@@ -294,12 +305,14 @@ function removeFromArray(array, scheduleItem) {
 
 	//Format the text to be displayed
 	var timeText = "";
-	timeText += time.getHours() + ":";
-	if (timeText.getMinutes < 10) {
+	var hours = (time - (time % microsecondsPerHour)) / microsecondsPerHour;
+	timeText += hours + ":";
+	var minutes = (time % microsecondsPerHour) / microsecondsPerMinute;
+	if (minutes < 10) {
 		//To prevent 12:7 etc.
 		timeText += "0";
 	}
-	timeText += timeText.getMinutes;
+	timeText += minutes;
 
 	//More intensive search
 	var found = false;
@@ -314,7 +327,7 @@ function removeFromArray(array, scheduleItem) {
 	}
 	if (!found) {
 		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.");
+		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to remove entry \"" + url + "\". Please notify Mikey.");
 	}
 	else {
 		//remove item from array
@@ -350,10 +363,10 @@ function replaceInArray(array, scheduleItem) {
 	//More intensive search
 	var found = false;
 	var pos = -1;
-	for(var i = 0; i < array.length && !found; i++) {
+	for(var i = 0; i < array.length && !found; ++i) {
 		var toCheck = array[i];
 		//If all variables are the same it's a duplicate
-		if(toCheck.time == time && toCheck.url == url && toCheck.approved == approved) {
+		if(toCheck.time == time && toCheck.url == url && toCheck.approved == false) {
 			found = true;
 			pos = i;
 		}
@@ -362,14 +375,21 @@ function replaceInArray(array, scheduleItem) {
 		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.");
 	}
-	else {
-		var removedItem = array.splice(pos, 1);
+	else if (pos > -1) {
+		//var removedItem = array.splice(pos, 1, scheduleItem);
+		//console.log(removedItem);//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		//Process errors from list
+		array = array.filter(function(n){ return n != undefined }); 
+		//Remove duplicates
+		array = chrome.extension.getBackgroundPage.uniq(array);
 		//Save new array
 		chrome.storage.sync.set({
 			schedule: array
 		}, function() {
+			console.log(array);//++++++++++++++
+
 			//Notification with "undo"
-			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", url + " has been Validated.");
+			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", array[pos].url + " has been Validated.");
 		});
 	}
 }/**/
@@ -555,7 +575,7 @@ function reset_options() {
 
 	//Create an "undo" option for if it is accidentally clicked
 	var a = document.createElement('a');
-	a.href = '#';
+	a.href = '#reset';
 	a.appendChild(document.createTextNode(" undo"));
 	a.addEventListener('click', function() {
 		//For when undo is called

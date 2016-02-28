@@ -691,6 +691,9 @@ function thing() {
 	chrome.storage.sync.get(function(items) {
 		console.log(items);
 	})
+	chrome.storage.local.get(function(items) {
+		console.log(items);
+	})
 }
 
 
