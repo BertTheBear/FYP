@@ -61,7 +61,7 @@ function showRecommendation() {
 		recommendations: []
 	}, function(items) {
 		//get current tab url
-		chrome.tabs.query({active: true}, function (result) {
+		chrome.tabs.query({ currentWindow: true }, function (result) {
 			//Makes sure there are results
 			if(result.length < 1) {
 				//error
@@ -69,7 +69,6 @@ function showRecommendation() {
 			//Should only process the first result
 			var currentTab = result[0];
 			var url = currentTab.url;
-			console.log(url);//+++++++++++++++++
 
 			var urlIndex = searchForUrl(url, items.recommendations);
 			//Returns -1 if not found
@@ -87,19 +86,31 @@ function showRecommendation() {
 			//Find limits of category
 			// May change to be more efficient later
 			var categoryUpperIndex = categoryBinarySearch(urlCategory, items.recommendations, true);	//True means first index
+			if(categoryUpperIndex == null) {
+				//If there is an error then set upper as being the final index
+				categoryUpperIndex = items.recommendations.length - 1;
+			}
 			var categoryLowerIndex = categoryBinarySearch(urlCategory, items.recommendations, false); 	//False means last index
+			if(categoryLowerIndex == null) {
+				//If there is an error then set upper as being the first index
+				categoryLowerIndex = 0;
+			}
+
+
 			
 
-
-			//Finds the first result that has not yet been viewed and returns it
+			//Finds the first result that has not yet been viewed or is current and returns it
 			var selected = false;
-			console.log("Rar");
 			console.log(categoryLowerIndex + " < " + categoryUpperIndex);
 			for(var i = categoryLowerIndex; i <= categoryUpperIndex && !selected; i++) {
+				//Make sure it has not been blocked or accepted
 				if(!(items.recommendations[i].accepted || items.recommendations[i].blocked)) {
-					selected = true;
-					//Send array and item location to another function for printing
-					displayRecommendation(items.recommendations, i);
+					//Make sure it's not the current tab
+					if(url != items.recommendations[i].url) {
+						selected = true;
+						//Send array and item location to another function for printing
+						displayRecommendation(items.recommendations, i);
+					}
 				}
 			}
 			//Else do nothing?

@@ -258,33 +258,60 @@ function checkSchedule() {
 					//If the time has passed send notification
 					if(items.autoNotifications || currentItem.approved) {
 						var destination = currentItem.url;
+						destination = destination.toLowerCase();
 
-						//Make sure the url works
-						destination = makeURL(destination);
-
-						//Check whether the website is already open.
-						/*
-						chrome.tabs.query({url: destination}, function (result) {
+						
+						//Get all tabs open in the window
+						chrome.tabs.query({}, function (result) {
 							//If it found no results then the page is not open
 							if(result == null) {
-								console.log(destination + " not found in tabs. Function will open Tab.")
+								console.log(destination + " not found in tabs. Function will open Tab.");
 								//Appropriate function...
 							}
-							//If it's open, the function will switch to the tab instead.
-							else {
-								//Use the tab ID of the first result
-								var tabID = result[0].id;
-								//Appropriate function using id to open tab
-							}
-						});
-						*/
-						//Check is not working
 
-						//To prevent 12:7 etc.
-						var itemMinuteText = "" + itemMinute;
-						if (itemMinute < 10)
-							itemMinuteText = "0" + itemMinuteText;
-						notificationURL(itemHour + ":" + itemMinuteText + " reminder", "Click here to open " + destination, destination);
+							var tabToOpen;
+							var current = false;
+							//Check whether the website is already open.
+							for (var index = 0; index < result.length && !current; index++) {
+								//For ease of reading
+								var item = result[index];
+								//If this tab contains url to be opened
+								if(item.url.contains(destination)) {
+									//If tabToOpen has no value
+									if(tabToOpen == null) {
+										tabToOpen = item;
+									}
+									else if(item.currentWindow) {
+										//Window is open. Ignore?
+										//Notify?
+										current = true;//?
+										return;
+									}
+								}
+							}
+
+							//If tab was found in loop above
+							if(tabToOpen != null) {
+								//Switch to that tab
+								notificationFunction("Title", "Text", function() {
+									//Switch to that tab
+								});
+							}
+							else { //Tab not found to be open
+								//Open url in a new tab
+
+								//Make sure the url works
+								destination = makeURL(destination);
+
+								//To prevent 12:7 etc.
+								var itemMinuteText = "" + itemMinute;
+								if (itemMinute < 10)
+									itemMinuteText = "0" + itemMinuteText;
+								notificationURL(itemHour + ":" + itemMinuteText + " reminder", "Click here to open " + destination, destination);
+							}
+							
+						});
+						
 					}
 				}
 			}
@@ -584,6 +611,11 @@ function checkBlacklist(list, blacklist) {
 					console.log("Removed " + url + " due to limitations.");
 					//remove from index because array is shorter
 					index -= removed.length;
+				}
+				//++++++++++++++++++++++++++++++++++++
+				else {
+					console.log("Did not remove " + url + " as it is not included in ");//++++
+					console.log(blacklist);//++++++++++
 				}
 			})
 		}
@@ -953,20 +985,25 @@ function uniq(array) {
 
 
 		var found = false;
-		for(var i = 0; i < uniqueArray.length && !found; i++) {
-			if(item.time == uniqueArray[i].time && item.url == uniqueArray[i].url) {
+		for(var i = 0; i < uniqueArray.length && !found; ) {
+			if(item.url == uniqueArray[i].url) {
 				found = true;
-				i--;
+			}
+			else {
+				i++;
 			}
 		}
-		//Ensure that the one kept is the approved version
 		if(found) {
-			if(item.approved) {
+			if(!uniqueArray[i].approved) {
 				uniqueArray[i] = item;
 			}
-		} //If not found
+			else if(!item.time == uniqueArray[i].time) {
+				uniqueArray.push(item);
+			}
+		}
 		else {
 			uniqueArray.push(item);
+			console.log("Did not find " + JSON.stringify(item));//++++++++++++
 		}
 	});
 
@@ -1310,7 +1347,7 @@ function sortRecommendations() {
 								"trivago.com" ];
 		allArrays.push(travelArray);
 
-		var videoArray 			= [ categoryArray[17], 
+		var videoArray 			= [ categoryArray[17],  //Problem here
 								"dailymotion.com", 
 								"filmon.com", 
 								"hulu.com", 
@@ -1321,7 +1358,7 @@ function sortRecommendations() {
 								"youtube.com" ];
 		allArrays.push(videoArray);	
 
-		var workArray 			= [categoryArray[18]];
+		var workArray 			= [ categoryArray[18]];
 		allArrays.push(workArray);
 
 		//All above are in alphabetical order

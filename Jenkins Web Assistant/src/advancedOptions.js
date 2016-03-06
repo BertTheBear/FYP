@@ -14,10 +14,10 @@ function save_options() {
 	//Permissions
 	var historyPermission  	= document.getElementById('checkHistory').checked;
 	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
-	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	//var topsitesPermission 	= document.getElementById('checkTopSites').checked;
 	var notifyPermission 	= document.getElementById('checkNotificions').checked;
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
-	var recommendPermission = document.getElementById('checkRecommendations').checked;//--
+	var recommendPermission = document.getElementById('checkRecommendations').checked;
 	//Processing
 	var visitSite		= document.getElementById('visitThresholdSite').value;
 	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
@@ -48,7 +48,7 @@ function save_options() {
 	chrome.storage.sync.set({
 		history: 			historyPermission,
 		//bookmarks: 			bookmarksPermission,
-		topsites: 			topsitesPermission,
+		//topsites: 			topsitesPermission,
 		notification: 		notifyPermission,
 		organiser: 			organiserPermission,
 		recommender: 		recommendPermission,//--
@@ -88,11 +88,11 @@ function restore_options() {
 	// Use default value of true for all and none for blacklist
 	chrome.storage.sync.get({
 		history: 			true,
-		bookmarks: 			true,
-		topsites: 			true,
+		//bookmarks: 			true,
+		//topsites: 			true,
 		notification: 		true,
 		organiser: 			true,
-		recommender: 		true, //--
+		recommender: 		true,
 		visitThreshold: 	3,	
 		pageVisitThreshold: 9, //--
 		typedWeight: 		2, //--
@@ -111,10 +111,10 @@ function restore_options() {
 		//Permissions
 		document.getElementById('checkHistory').checked 		= items.history;
 		//document.getElementById('checkBookmarks').checked 		= items.bookmarks;
-		document.getElementById('checkTopSites').checked 		= items.topsites;
+		//document.getElementById('checkTopSites').checked 		= items.topsites;
 		document.getElementById('checkNotificions').checked 	= items.notification;
 		document.getElementById('checkOrganiser').checked 		= items.organiser;
-		document.getElementById('checkRecommendations').checked = items.recommender;//--
+		document.getElementById('checkRecommendations').checked = items.recommender;
 		//Processing
 		document.getElementById('visitThresholdSite').value		= items.visitThreshold;
 		document.getElementById('visitThresholdPage').value		= items.pageVisitThreshold;//--
@@ -166,10 +166,10 @@ function reset_options() {
 	//Permissions
 	var historyPermission  	= document.getElementById('checkHistory').checked;
 	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
-	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	//var topsitesPermission 	= document.getElementById('checkTopSites').checked;
 	var notifyPermission 	= document.getElementById('checkNotificions').checked;
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
-	var recommendPermission = document.getElementById('checkRecommendations').checked;//--
+	var recommendPermission = document.getElementById('checkRecommendations').checked;
 	//Processing
 	var visitSite		= document.getElementById('visitThresholdSite').value;
 	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
@@ -190,7 +190,7 @@ function reset_options() {
 	//overwrite with default
 	document.getElementById('checkHistory').checked 		= true;
 	//document.getElementById('checkBookmarks').checked 		= true;
-	document.getElementById('checkTopSites').checked 		= true;
+	//document.getElementById('checkTopSites').checked 		= true;
 	document.getElementById('checkNotificions').checked 	= true;
 	document.getElementById('checkOrganiser').checked 		= true;
 	document.getElementById('checkRecommendations').checked = true;//--
@@ -229,10 +229,10 @@ function reset_options() {
 		//restore settings
 		document.getElementById('checkHistory').checked 		= historyPermission;
 		//document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
-		document.getElementById('checkTopSites').checked 		= topsitesPermission;
+		//document.getElementById('checkTopSites').checked 		= topsitesPermission;
 		document.getElementById('checkNotificions').checked 	= notifyPermission;
 		document.getElementById('checkOrganiser').checked 		= organiserPermission;
-		document.getElementById('checkRecommendations').checked = recommendPermission;//--
+		document.getElementById('checkRecommendations').checked = recommendPermission;
 
 		document.getElementById('visitThresholdSite').value 	= visitSite;
 		document.getElementById('visitThresholdPage').value 	= visitPage;//--

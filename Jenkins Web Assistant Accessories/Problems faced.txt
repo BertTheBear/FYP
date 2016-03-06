@@ -121,3 +121,14 @@ Recommendations
 Schedule
 	Converting from String to Object
 	Date type cannot be saved by chrome
+	DUPLICATION ERRORS
+		Stopped checking time
+
+Showing first active not current for recommendations
+	Would show first active window, not current window
+	changed query from active to currentWindow
+
+Not showing Video category
+	Recommendations. Not showing video recommendations
+	Issue with finding categoryUpperIndex.
+	Set error catch as top index location. Same for the bottom.
