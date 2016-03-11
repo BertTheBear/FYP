@@ -276,7 +276,7 @@ function checkSchedule() {
 								//For ease of reading
 								var item = result[index];
 								//If this tab contains url to be opened
-								if(item.url.contains(destination)) {
+								if(item.url.includes(destination)) {
 									//If tabToOpen has no value
 									if(tabToOpen == null) {
 										tabToOpen = item;
@@ -292,9 +292,16 @@ function checkSchedule() {
 
 							//If tab was found in loop above
 							if(tabToOpen != null) {
+								//To prevent 12:7 etc.
+								var itemMinuteText = "" + itemMinute;
+								if (itemMinute < 10)
+									itemMinuteText = "0" + itemMinuteText;
+								var title = itemHour + ":" + itemMinuteText + " reminder";
+								var textContent = "Click here to open tab containing " + destination;
 								//Switch to that tab
-								notificationFunction("Title", "Text", function() {
+								notificationFunction(title, textContent, function() {
 									//Switch to that tab
+									chrome.tabs.update(tabToOpen.id, {active: true});
 								});
 							}
 							else { //Tab not found to be open
@@ -307,7 +314,9 @@ function checkSchedule() {
 								var itemMinuteText = "" + itemMinute;
 								if (itemMinute < 10)
 									itemMinuteText = "0" + itemMinuteText;
-								notificationURL(itemHour + ":" + itemMinuteText + " reminder", "Click here to open " + destination, destination);
+								var title = itemHour + ":" + itemMinuteText + " reminder";
+								var textContent = "Click here to open " + destination + " in a new tab.";
+								notificationURL(title, textContent, destination);
 							}
 							
 						});
@@ -614,8 +623,9 @@ function checkBlacklist(list, blacklist) {
 				}
 				//++++++++++++++++++++++++++++++++++++
 				else {
-					console.log("Did not remove " + url + " as it is not included in ");//++++
-					console.log(blacklist);//++++++++++
+					// Do not remove
+					//console.log("Did not remove " + url + " as it is not included in ");//++++
+					//console.log(blacklist);//++++++++++
 				}
 			})
 		}
@@ -1003,7 +1013,7 @@ function uniq(array) {
 		}
 		else {
 			uniqueArray.push(item);
-			console.log("Did not find " + JSON.stringify(item));//++++++++++++
+			//console.log("Did not find " + JSON.stringify(item));//++++++++++++
 		}
 	});
 

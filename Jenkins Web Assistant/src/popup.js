@@ -66,8 +66,13 @@ function showRecommendation() {
 			if(result.length < 1) {
 				//error
 			}
-			//Should only process the first result
+			//Should scan through the current window to find the active tab.
 			var currentTab = result[0];
+			for(var i = 0; i < result.length; i++) { //Stops if previous entry was active
+				if (result[i].active) {
+					currentTab = result[i];
+				}
+			}
 			var url = currentTab.url;
 
 			var urlIndex = searchForUrl(url, items.recommendations);
@@ -97,7 +102,7 @@ function showRecommendation() {
 			}
 
 
-			
+
 
 			//Finds the first result that has not yet been viewed or is current and returns it
 			var selected = false;
