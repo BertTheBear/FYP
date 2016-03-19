@@ -5,6 +5,14 @@ var myid = chrome.runtime.id;
 var historyPermission = true;
 var timerSetting = 0;
 
+//picture types
+var NOSUIT	  = -1
+var BLACKSUIT = 0
+var BLUESUIT  = 1
+var GREENSUIT = 3
+var REDUIT	  = 4
+var GREYSUIT  = 5
+
 //Div IDs
 var listID = 'itemList';	//id of table to print schedule
 var urlID = 'enteredURL';	//id of input to retrieve url

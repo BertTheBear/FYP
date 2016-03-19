@@ -6,6 +6,14 @@ var microsecondsPerMinute = 1000 * 60;
 var microsecondsPerHour = 1000 * 60 * 60;
 var microsecondsPerDay = 1000 * 60 * 60 * 24;
 
+//picture types
+var NOSUIT	  = -1
+var BLACKSUIT = 0
+var BLUESUIT  = 1
+var GREENSUIT = 3
+var REDUIT	  = 4
+var GREYSUIT  = 5
+
 
 //For use in recommendations function
 var startIndex = 0;
@@ -110,7 +118,7 @@ function clearHistory() {
 					noteText = "Selected history from your last session has been cleared.\nClick here for options.";
 					//checks whether we have permission for notifications
 					if (items.notif) {
-						notificationFunction(noteTitle, noteText, open_options);
+						notificationFunction(noteTitle, noteText, open_options, null, BLACKSUIT); //Black for cleared?
 					}
 				});
 			});
@@ -118,7 +126,7 @@ function clearHistory() {
 
 		//checks whether we have permission for notifications
 		else if (items.notif) {
-			notificationFunction(noteTitle, noteText, open_options);
+			notificationFunction(noteTitle, noteText, open_options, null, GREYSUIT);//Show grey for light notification
 		}
 	});
 
@@ -147,14 +155,33 @@ function clearHistory() {
 
 // +++++++++++++++++++++++++++++ NOTIFICATION FUNCTIONS +++++++++++++++++++++++++++++++++++
 
-//Polymorphism for no "funcparam" var
+//Polymorphism for no destination var or type var
 function notificationURL(notificationTitle, bodyText) {
-	notificationURL(notificationTitle, bodyText, null);
+	notificationURL(notificationTitle, bodyText, null, 0);
+}
+//Polymorphism for no type var
+function notificationURL(notificationTitle, bodyText, destination) {
+	notificationURL(notificationTitle, bodyText, destination, 0);
 }
 //influenced from http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
-function notificationURL(notificationTitle, bodyText, destination) {
+function notificationURL(notificationTitle, bodyText, destination, type) {
 
-	var iconImage = '/images/128.png'; //Default. Likely won't be changed
+	var iconImage = '/images/128.png'; //Default. When type == 0
+	if (type == REDSUIT) {
+		iconImage = '/images/128-red.png';
+	}
+	else if (type == BLUESUIT) {
+		iconImage = '/images/128-blue.png';
+	}
+	else if (type == GREENSUIT) {
+		iconImage = '/images/128-green.png';
+	}
+	else if (type == GREYSUIT) {
+		iconImage = '/images/128-grey.png';
+	}
+	else if (type == NOSUIT) {
+		//Whatever for no suit
+	}
 
 
 	if (!Notification) {
@@ -180,11 +207,32 @@ function notificationURL(notificationTitle, bodyText, destination) {
 	});
 }
 
+//Polymorphism for no "funcparam" var or type var
 function notificationFunction(notificationTitle, bodyText, func) {
-	notificationFunction(notificationTitle, bodyText, func, null);
+	notificationFunction(notificationTitle, bodyText, null, null, 0);
 }
+//Polymorphism for no type var
 function notificationFunction(notificationTitle, bodyText, func, funcparam) {
-	var iconImage = '/images/128.png'; //Default. Likely won't be changed
+	notificationFunction(notificationTitle, bodyText, func, funcparam, 0);
+}
+function notificationFunction(notificationTitle, bodyText, func, funcparam, type) {
+	//Set the icon image
+	var iconImage = '/images/128.png'; //Default. When type == 0
+	if (type == REDSUIT) {
+		iconImage = '/images/128-red.png';
+	}
+	else if (type == BLUESUIT) {
+		iconImage = '/images/128-blue.png';
+	}
+	else if (type == GREENSUIT) {
+		iconImage = '/images/128-green.png';
+	}
+	else if (type == GREYSUIT) {
+		iconImage = '/images/128-grey.png';
+	}
+	else if (type == NOSUIT) {
+		//Whatever for no suit
+	}
 
 
 	if (!Notification) {
@@ -260,6 +308,16 @@ function checkSchedule() {
 						var destination = currentItem.url;
 						destination = destination.toLowerCase();
 
+						//set type based upon object type
+						var notificationColour = 0;
+						//Set the picture as green if it's approved
+						if(currentItem.approved) {
+							notificationColour = GREENSUIT;
+						}
+						//Set as blue if it's an automatic creation
+						else {
+							notificationColour = BLUESUIT;
+						}
 						
 						//Get all tabs open in the window
 						chrome.tabs.query({}, function (result) {
@@ -298,11 +356,11 @@ function checkSchedule() {
 									itemMinuteText = "0" + itemMinuteText;
 								var title = itemHour + ":" + itemMinuteText + " reminder";
 								var textContent = "Click here to open tab containing " + destination;
-								//Switch to that tab
+								//Switch to that tab when notification clicked
 								notificationFunction(title, textContent, function() {
 									//Switch to that tab
-									chrome.tabs.update(tabToOpen.id, {active: true});
-								});
+									chrome.tabs.update(tabToOpen.id, { active: true });
+								}, null, notificationColour);
 							}
 							else { //Tab not found to be open
 								//Open url in a new tab
@@ -316,7 +374,8 @@ function checkSchedule() {
 									itemMinuteText = "0" + itemMinuteText;
 								var title = itemHour + ":" + itemMinuteText + " reminder";
 								var textContent = "Click here to open " + destination + " in a new tab.";
-								notificationURL(title, textContent, destination);
+								//Show notification
+								notificationURL(title, textContent, destination, notificationColour);
 							}
 							
 						});
@@ -980,6 +1039,10 @@ function arrayStringIncludesCount(theString, theArray) {
 
 //Ensures all elements of an array are unique
 function uniq(array) {
+
+//PROBLEM IS HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 	var uniqueArray = [];
 	array.forEach(function(item, index, array) {
 		if(item == null) {
@@ -987,15 +1050,21 @@ function uniq(array) {
 			return;
 		}
 		//Make sure there are no errors in saved data. Makes sure time is an int
-		if(!(item.time === parseInt(item.time, 10))) {
+		if(typeof item.time === "undefined") {
+			//type error
+			console.log("Type error with" + JSON.stringify(item)); //+++++++++++++++++++++++++++++++++++++++++++++++++++++
+			return; //Skip
+		}
+		else if(!(item.time === parseInt(item.time, 10))) {
 			//error
-			console.log("Error with" + item); //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			console.log("Error with" + JSON.stringify(item)); //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			return; //Skip
 		}
 
-
+		//for sohrtening the array runtime
 		var found = false;
 		for(var i = 0; i < uniqueArray.length && !found; ) {
+			//if the urls are the same it's found
 			if(item.url == uniqueArray[i].url) {
 				found = true;
 			}
@@ -1003,11 +1072,13 @@ function uniq(array) {
 				i++;
 			}
 		}
+		//Check a few other settings if it's found
 		if(found) {
+			//if this item is approved and the other item isn't
 			if(!uniqueArray[i].approved) {
 				uniqueArray[i] = item;
 			}
-			else if(!item.time == uniqueArray[i].time) {
+			else if(!(item.time == uniqueArray[i].time)) {
 				uniqueArray.push(item);
 			}
 		}
@@ -1383,6 +1454,8 @@ function sortRecommendations() {
 		var lastStartIndex = startIndex;
 		var lastCount = 0;
 
+		//iterate through the list and check all entries
+		//Adds new entries and skips old entries
 		for(var outerIndex = 0; outerIndex < allArrays.length; outerIndex++) {
 			//Initialise new start index
 			var thisStartIndex = lastStartIndex + lastCount;

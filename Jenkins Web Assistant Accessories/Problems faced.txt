@@ -142,3 +142,20 @@ Opening existing tabs
 	Switching to existing tab if scheduler would otherwise open.
 	Ignoring if the tab is already open.  DONE
 	(Need to check both currentWindow AND active is true)
+
+Automatically classifying new websites
+	Check for certain words in the url and classify based upon those.
+	First check category name. Then possibly other similar words (Anime, comic, animation etc)
+
+Scheduler
+	Undo not working
+		Undefined variables when removing element with splice
+		Fixed by creating a variable and saving value before removal
+	Input failing sometimes
+		Missing bracket in uniq... ( !blah == blergh instead of !(blah == blergh))
+		I am a silly. This seems to have fixed it
+	ADD DAYS
+
+Removed entries
+	where do they go?
+	What happens

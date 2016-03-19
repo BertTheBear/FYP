@@ -11,6 +11,15 @@ var timeID = 'enteredTime'; //id of input to retrieve time
 var listErrorID = 'formErrorDiv' //id of div to display list errors
 
 
+//picture types
+var NOSUIT	  = -1
+var BLACKSUIT = 0
+var BLUESUIT  = 1
+var GREENSUIT = 3
+var REDUIT	  = 4
+var GREYSUIT  = 5
+
+
 //Microsecond amounts
 var microsecondsPerMinute = 1000 * 60;
 var microsecondsPerHour = 1000 * 60 * 60;
@@ -109,13 +118,6 @@ function makeURL(destination) {
 
 
 
-
-
-
-
-
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SCHEDULE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Attempt to build from array
 function arrayToList() {
@@ -128,15 +130,10 @@ function arrayToList() {
 			myNode.removeChild(myNode.firstChild);
 		}
 
-
-		console.log(items.schedule);//+++++++++++++++++++++++++++++++++++++++++
-
 		//Process errors from list
-		items.schedule = items.schedule.filter(function(n){ return n != undefined }); 
+		items.schedule = items.schedule.filter(function(n){ return n != undefined });
 		//Remove duplicates
 		items.schedule = chrome.extension.getBackgroundPage().uniq(items.schedule);
-
-		console.log(items.schedule);//+++++++++++++++++++++++++++++++++++++++++
 
 		//Add each element to the list
 		items.schedule.forEach(function (item, index, array) {
@@ -163,12 +160,13 @@ function addArrayItem() {
 		time.setMinutes(minutes);
 		time.setHours(hours);
 
+		//Create new item to be saved
 		var newItem = Object();
 		newItem.time = time.getTime(); //Cannot be saved as Date
 		newItem.url = urlText;
 		newItem.approved = true;
 
-		console.log(newItem);//+++++++++++
+		//console.log(newItem);//+++++++++++
 
 
 		items.schedule.push(newItem);
@@ -179,8 +177,8 @@ function addArrayItem() {
 			schedule: items.schedule
 		}, function() {
 
-		console.log("Saved");//+++++++++++
-		console.log(items.schedule);//+++++++++++
+		//console.log("Saved");//+++++++++++
+		//console.log(items.schedule);//+++++++++++
 
 
 			//Build list again
@@ -327,11 +325,13 @@ function removeFromArray(array, scheduleItem) {
 	}
 	if (!found) {
 		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to remove entry \"" + url + "\". Please notify Mikey.");
+		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to remove entry \"" + url + "\". Please notify Mikey.", null, REDSUIT);
 	}
 	else {
 		//remove item from array
-		var removedItem = array.splice(pos, 1);
+		var removedItem = array[pos];
+		array.splice(pos, 1);
+
 		//Save new array
 		chrome.storage.sync.set({
 			schedule: array
@@ -341,12 +341,17 @@ function removeFromArray(array, scheduleItem) {
 				//Notification with "undo" called from background page ~~~~~~~~~~~~~~~~~~~~~~~~~
 				chrome.extension.getBackgroundPage().notificationFunction("Item removed", url + " at " + timeText + " has been removed. Click here to undo.", function() {
 					//Undo and notify
+					//Add to the array exactly where it was removed
+					array.splice(pos, 0, removedItem);
+					//console.log(removedItem.time);
 					array.push(removedItem);
+
+					//Notify and save
 					chrome.storage.sync.set({
 						schedule: array
 					}, function() {
 						//Notify user of success of restoration. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-						chrome.extension.getBackgroundPage().notificationURL("Item restored", url + " at " + timeText + " has been restored.");
+						chrome.extension.getBackgroundPage().notificationURL("Item restored", url + " at " + timeText + " has been restored.", null, GREYSUIT);
 						arrayToList();
 					});
 				});
@@ -373,7 +378,7 @@ function replaceInArray(array, scheduleItem) {
 	}
 	if (!found) {
 		//Call notification functions from background page ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.");
+		chrome.extension.getBackgroundPage().notificationURL("Error", "Unable to find entry \"" + url + "\". Please notify Mikey.", null, REDSUIT);
 	}
 	else if (pos > -1) {
 		//var removedItem = array.splice(pos, 1, scheduleItem);
@@ -389,7 +394,7 @@ function replaceInArray(array, scheduleItem) {
 			console.log(array);//++++++++++++++
 
 			//Notification with "undo"
-			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", array[pos].url + " has been Validated.");
+			chrome.extension.getBackgroundPage().notificationURL("Recommendation Validated", array[pos].url + " has been Validated.", null, GREYSUIT);
 		});
 	}
 }/**/

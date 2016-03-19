@@ -1,3 +1,13 @@
+//picture types
+var NOSUIT	  = -1
+var BLACKSUIT = 0
+var BLUESUIT  = 1
+var GREENSUIT = 3
+var REDUIT	  = 4
+var GREYSUIT  = 5
+
+
+
 //set triggers 
 document.addEventListener('DOMContentLoaded', function() {
 	restore_options();

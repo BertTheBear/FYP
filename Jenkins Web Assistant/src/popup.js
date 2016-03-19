@@ -3,6 +3,14 @@ var myid = chrome.runtime.id;
 
 var backgroundPage = chrome.extension.getBackgroundPage();
 
+//picture types
+var NOSUIT	  = -1
+var BLACKSUIT = 0
+var BLUESUIT  = 1
+var GREENSUIT = 3
+var REDUIT	  = 4
+var GREYSUIT  = 5
+
 //Ids and class names
 var recommendationTable = "recommendation";
 var recommendationTitle = "recTitle";
@@ -67,8 +75,8 @@ function showRecommendation() {
 				//error
 			}
 			//Should scan through the current window to find the active tab.
-			var currentTab = result[0];
-			for(var i = 0; i < result.length; i++) { //Stops if previous entry was active
+			var currentTab = result[0];//Defaults to the first one
+			for(var i = 1; i < result.length && !result[i-1].active; i++) { //Stops if previous entry was active
 				if (result[i].active) {
 					currentTab = result[i];
 				}
