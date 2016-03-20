@@ -159,3 +159,7 @@ Scheduler
 Removed entries
 	where do they go?
 	What happens
+
+Storing information
+	Used a .txt file
+		This was stupid and I should have used a JSON file

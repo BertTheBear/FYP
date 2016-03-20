@@ -1,4 +1,9 @@
-var recListFile = 'recommendationList.txt';
+var recListFile = 'recommendationList.json';
+
+document.addEventListener('DOMContentLoaded', function() {
+	read(recListFile);
+});
+
 
 
 //From http://stackoverflow.com/questions/18366191/import-text-file-using-javascript
@@ -11,21 +16,12 @@ function read(textFile) {
 
 function show() {
     var div = document.createElement('div');
+    //Put all of the text into a string
     var allTheText = this.response;
-    var parts = allTheText.split("###"); //split into the two parts
-    //The names of the categories in the first part, and the contents in the second
+    //make an object of the parsed string
+    var recObject = JSON.parse(allTheText);
 
-    //make an array of all of the categories
-    //ignore the first one as this will be the update log and comments etc.
-    var categories = parts[1].split(",");
-
-    //Now separate all of the list elements
-    var contents = parts[2].split("##");
-    //Now make into an array of arrays
-    var recommendations = new Array();
-    for (var i = 0; i < categories.length; i++) {
-        recommendations[i] = contents[i].split(",");
-    }
+    var recommendations = recObject.recommendations;
 
     console.log(recommendations); //+++++++++++++++++++++++++
     //I think it works
@@ -34,8 +30,3 @@ function show() {
     div.textContent = allTheText;
     document.body.appendChild(div);
 }
-
-
-document.addEventListener('DOMContentLoaded', function() {
-	read(recListFile);
-});

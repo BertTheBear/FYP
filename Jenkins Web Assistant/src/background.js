@@ -7,6 +7,7 @@ var microsecondsPerHour = 1000 * 60 * 60;
 var microsecondsPerDay = 1000 * 60 * 60 * 24;
 
 //picture types
+//Closest thing to a static int I can get
 var NOSUIT	  = -1
 var BLACKSUIT = 0
 var BLUESUIT  = 1
@@ -14,6 +15,8 @@ var GREENSUIT = 3
 var REDUIT	  = 4
 var GREYSUIT  = 5
 
+//For reading recommendation list
+var recListFile = 'recommendationList.json';
 
 //For use in recommendations function
 var startIndex = 0;
@@ -1140,7 +1143,7 @@ function sortRecommendations() {
 		var i = 0;
 
 		//Define all of the category names
-		categoryArray = ["animation", 
+		var categoryArray = ["animation", 
 						"educational", 
 						"email", 
 						"entertainmentNews", 
