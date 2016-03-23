@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Test Page</title>
+		<style>
+			body {min-width: 250px;}
+		</style>
+		<script src='viewHistory.js'></script>
+	<!-- CSS Stylesheet reference -->
+	<link rel="stylesheet" type="text/css" href="/src/styles.css">
+	</head>
+	
+	<body>
+		 <h2>Linked Locations:</h2>
+		<div id="linked"></div>
+		 <h2>Typed Locations:</h2>
+		<div id="typed"></div>
+		 <h2>Reloaded Locations:</h2>
+		<div id="reloaded"></div>
+		 <h2>Blacklist:</h2>
+		<div id="blacklist"></div>
+		 <h2>Top Sites:</h2>
+		<div id="topSites"></div>
+		 <h2>Bookmark Locations:</h2>
+		<div id="bookmarks"></div>
+		<button id="bleh">Clear History</button>
+		<button id="bloh">Show Storage</button>
+
+		<div class="scheduleList">
+		<h2>Schedule List</h2>
+			<table id="itemList">
+			</table>
+
+			<form name="scheduleForm">
+				Time: <input type="time" id="enteredTime" value="00:00">
+				URL: <input type="text" id="enteredURL" placeholder="Enter a valid url" required>
+				<button id="blah">Submit</button>
+			</form>
+			<div id="formErrorDiv"> <br> </div>
+		</div>
+
+	<button id="rer">Clear Storage</button>
+
+	</body>
+</html>

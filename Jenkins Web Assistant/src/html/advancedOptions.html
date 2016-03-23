@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>"Jenkins Web Assistant" Options Page</title>
+
+	<!-- CSS Stylesheet reference -->
+	<link rel="stylesheet" type="text/css" href="/src/styles.css">
+		<script src="/src/js/advancedOptions.js"></script>
+</head>
+
+<body>
+	<h1>Advanced Options Page</h1>
+	<br>
+	<!-- Table for permissions -->
+		<table class="centeredList">
+			<tr>
+				<td>
+					<h2>Permissions</h2>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkHistory">
+					</label>
+				
+					Allow access to history
+				</td>
+			</tr><!--
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkBookmarks">
+					</label>
+				
+					Allow access to bookmarks
+				</td>
+			</tr> 
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkTopSites">
+					</label>
+				
+					Allow access to top sites
+				</td>
+			</tr> -->
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkNotificions">
+					</label>
+				
+					Allow access to notifications
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkOrganiser">
+					</label>
+				
+					Enable automatic organiser
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkRecommendations">
+					</label>
+				
+					Enable site recommendations
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h2>Processing</h2>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="autoNotifications">
+					</label>
+				
+					Allow automatically created schedules to create notifications.
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="visitThresholdSite" style="width:40px">
+					</label>
+
+					Website visit threshold <br>
+					<i>Minimum number of visits before a website is recorded.</i> (<b>Default 3.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="visitThresholdPage" style="width:40px">
+					</label>
+
+					Webpage visit threshold <br>
+					<i>Minimum number of visits to a single webpage before it is recorded.</i> (<b>Default 9.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="typedWeight" style="width:40px">
+					</label>
+
+					Typed visit weight <br>
+					<i>Additional value given to an address typed directly into URL bar.</i> (<b>Default 2.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="timeThreshold" style="width:40px">
+					</label>
+
+					History time threshold <br>
+					<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>) <br>
+					<i>Set as 0 to process all history</i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Keywords to ignore:
+				
+					<label>
+						<input type="textbox" id="blacklist">
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate) <br>
+					Page URL and title will both be checked.</i>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="checkFrequency" style="width:40px">
+					</label>
+
+					Schedule check frequency <br>
+					<i>How often (In minutes) the system will check the schedule. <br>
+					Higher frequency (Lower times) may slow down your browsing. Requires restart to take effect.</i> (<b>Default 5. Minimum 1.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="timeRounding" style="width:40px">
+					</label>
+
+					Time Rounding <br>
+					<i>To what number (In minutes) the system will round the schedule times. (eg. to the nearest 5 minutes)</i> (<b>Default 1. Minimum 1.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="newZero" style="width:40px">
+					</label>
+
+					New Zero <br>
+					<i>The delay (In hours after 00:00) before a "new day" will start. This is designed to adapt schedules towards late night browsing.</i> (<b>Default 4.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="time" id="trackAfter">
+					</label>
+
+					Lower Time limit <br>
+					<i>The time that the system will limit to tracking all visits after.</i> (<b>Default 00:00.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="time" id="trackBefore">
+					</label>
+
+					Upper Time limit <br>
+					<i>The time that the system will limit to tracking all visits before.</i> (<b>Default 23:59.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>
+						<input type="number" id="autoCount" style="width:40px">
+					</label>
+
+					Max auto schedule entries <br>
+					<i>How many automatic schedule entries the system will create.</i>
+					(<b>Default 20.</b>)
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<h2>History Clear</h2>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="checkClearHistory">
+					</label>
+
+					Automatically clear session history on close? 
+					<a href="#" id="clearHistorySettings">Settings</a>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<i>If enabled, this will clear your history when the browser is closed. <br> 
+					The information cleared is dependent upon the settings above.</i>
+				</td>
+			</tr>
+			<tr class="trcheckbox">
+				<td>
+					<label>
+						<input type="checkbox" id="notClearedNotification">
+					</label>
+				
+					Show notification if history is <b>not</b> cleared.
+				</td>
+			</tr>
+		</table>
+
+		<div class="centered">
+			<div id="status"><br></div>
+			<button id="save">Save</button> <br>
+			<a href="#reset" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
+		</div>
+
+</body>
+</html>

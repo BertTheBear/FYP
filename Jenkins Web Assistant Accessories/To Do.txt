@@ -45,7 +45,7 @@ identity
 topSites			o
 history				o
 
-EDGE extension
+EDGE extension 		NO GO. NO CAN DO.
 
 
 
@@ -57,3 +57,5 @@ Test opening or switching to tab on inactive WINDOW		DONE
 Removed entries
 	where do they go?
 	What happens
+
+Image with info on hover

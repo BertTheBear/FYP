@@ -7,18 +7,18 @@
 	"version_name": "ALPHA (in Development) 0.6",
 
 	"browser_action": {
-		"default_popup": "src/popup.html",
+		"default_popup": "src/html/popup.html",
 		"default_icon": {
 			"38" : "images/38.png",
 			"19" : "images/19.png"
 		}
 	},
 	"options_ui" : {
-		"page": "src/options.html",
+		"page": "src/html/options.html",
 		"chrome_style": true
 	},
 	"background": {
-		"scripts": ["src/background.js"]
+		"scripts": ["src/js/background.js"]
 	},
 
 	"icons": {

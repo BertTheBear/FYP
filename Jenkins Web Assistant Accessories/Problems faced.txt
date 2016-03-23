@@ -163,3 +163,7 @@ Removed entries
 Storing information
 	Used a .txt file
 		This was stupid and I should have used a JSON file
+		Caused a bunch of problems with \n and stuff
+	Information was also initially sotred as a single array. 
+		May make it into a 2D array for ease of searching etc.
+			No real reason not to...
