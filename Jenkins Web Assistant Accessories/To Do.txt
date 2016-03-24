@@ -50,12 +50,16 @@ EDGE extension 		NO GO. NO CAN DO.
 
 
 
-JSON format for entries
-Page for recommendations
+JSON format for entries									DONE
+Page for recommendations 								DONE
 Test opening or switching to tab on inactive WINDOW		DONE
 
 Removed entries
 	where do they go?
 	What happens
 
+Save options in recommendations page
 Image with info on hover
+Threshold set in options
+Double check options. Make sure Advanced has ALL options
+Improve options in interface page

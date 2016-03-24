@@ -100,7 +100,6 @@ function showRecommendation() {
 				
 				//Returns -1 if not found
 				if(urlIndex < 0) {
-					console.log("Got here!");//++++++++++++++++++++++
 					//Try and automatically categorise
 					urlIndex = guessCategory(url);
 					if(urlIndex < 0) {
@@ -219,7 +218,7 @@ function displayRecommendation(recommendationArray, categoryIndex, urlIndex) {
 	removeButton.addEventListener('click', function() {
 		//Change the 'blocked' attribute in the array
 		//Edit the object in the array and save 
-		recommendationArray[index].blocked = true;
+		recommendationArray[categoryIndex][urlIndex].blocked = true;
 
 		chrome.storage.local.set({
 			recommendations: recommendationArray

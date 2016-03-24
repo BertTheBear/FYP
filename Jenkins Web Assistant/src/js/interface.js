@@ -286,6 +286,11 @@ function addScheduleItem(schedule, time, urlText, approved) {
 		list.removeChild(line);
 		//Remove the instance from the array
 		removeFromArray(schedule, scheduleItem);
+
+		//if it's an automatic entry, add to the list of removed entries.
+		if(!approved) {
+			addToRemovedEntries(scheduleItem);
+		}
 	});
 	removal.appendChild(removeButton);
 	lastid+=1;
@@ -446,6 +451,45 @@ function validateFormURL(errorDiv, urlID, scheduleLength) {
 		console.log(urlText + " Allowed");
 		return true;
 	}
+}
+
+
+
+
+
+function addToRemovedEntries(item) {
+	chrome.storage.local.get({
+		rejectedSchedule: []
+	}, function(items) {
+		//For readability
+		var rejected = items.rejectedSchedule;
+		//Sort through rejected schedule for the url
+		var found = false;
+		for(var i = 0; i < rejected.length && !found; i++) {
+			//if found incrememnt number
+			if(rejected[i].url == item.url) {
+				found = true;
+				rejected[i].count++;
+				//If number is above threshold then block in further checks
+			}
+		}
+		
+		//If not found add to the rejected list
+		if(!found) {
+			//create object and set attributes
+			var newRejected = new Object();
+			newRejected.url = item.url;
+			newRejected.count = 1;
+
+			//add to array and save
+			rejected.push(newRejected);
+			chrome.storage.local.set({
+				rejectedSchedule: rejected
+			}, function() {
+				//Unused for now
+			});
+		}
+	})
 }
 
 
