@@ -531,13 +531,19 @@ function addToRemovedEntries(item) {
 // Saves options to chrome.storage
 function save_options() {
 	//retrieve the settings from the page
-	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
+	var autoNotifications = document.getElementById('autoNotifications').checked;//---
+	var visitSite		= document.getElementById('visitThresholdSite').value;
+	var visitPage 		= document.getElementById('visitThresholdPage').value; 	//--
+	var weight 	 		= document.getElementById('typedWeight').value; 		//--
+	var timer  	 		= document.getElementById('timeThreshold').value;
+	var ignored  		= document.getElementById('blacklist').value;
+	var checkFrequency  = document.getElementById('checkFrequency').value;		//---
 	if (checkFrequency < 1) //Default to 1 if they set it too low
 		checkFrequency = 1;
-	var timeRounding  	= document.getElementById('timeRounding').value;	//---
+	var timeRounding  	= document.getElementById('timeRounding').value;		//---
 	if (timeRounding < 1) //Default to 1 if they set it too low
 		timeRounding = 1;
-	var newZero  		= document.getElementById('newZero').value;			//---
+	var newZero  		= document.getElementById('newZero').value;				//---
 	//Make sure "trackAfter" is the smaller value
 	var trackAfter  	= document.getElementById('trackAfter').value;			//---
 	var trackBefore  	= document.getElementById('trackBefore').value;			//---
@@ -545,18 +551,24 @@ function save_options() {
 		var trackAfter  = document.getElementById('trackBefore').value;			//---
 		var trackBefore = document.getElementById('trackAfter').value;			//---
 	}
-	var autoNotifications = document.getElementById('autoNotifications').checked;//---
-	var autoCount  	= document.getElementById('autoCount').value;	//---
+	var autoCount  	= document.getElementById('autoCount').value;				//---
+	var rejectedThreshold = document.getElementById('rejectedThreshold').value; //---
 
 	//Save the settings to memory
 	chrome.storage.sync.set({
+		visitThreshold: 	visitSite,
+		pageVisitThreshold: visitPage,			//--
+		typedWeight: 		weight,				//--
+		timeThreshold: 		timer,
+		ignoreList: 		ignored,
 		checkFrequency: 	checkFrequency,		//--
 		timeRounding: 		timeRounding,		//--
-		newZero: 			newZero,		//--
-		trackAfter: 		trackAfter, //--
-		trackBefore: 		trackBefore, //--
-		autoNotifications: 	autoNotifications, //--
-		autoCount: 			autoCount//-----
+		newZero: 			newZero,			//--
+		trackAfter: 		trackAfter, 		//--
+		trackBefore: 		trackBefore, 		//--
+		autoNotifications: 	autoNotifications,  //--
+		autoCount: 			autoCount,			//--
+		rejectedThreshold: 	rejectedThreshold	//--
 	}, function() {
 		// Update status to let user know options were saved.
 		var status = document.getElementById('status');
@@ -578,37 +590,59 @@ function restore_options() {
 	
 	// Use default value of true for all and none for blacklist
 	chrome.storage.sync.get({
-		checkFrequency: 	5,	//---
-		timeRounding: 		1,	//---
-		newZero: 			4,	//---
-		trackAfter: 		"00:00", //--
-		trackBefore: 		"23:59", //--
-		autoNotifications: 	false, //---
-		autoCount: 			20 //-----
+		visitThreshold: 	3,	
+		pageVisitThreshold: 9, 		//--
+		typedWeight: 		2, 		//--
+		timeThreshold: 		28,	
+		ignoreList: 		"",	
+		checkFrequency: 	5,		//---
+		timeRounding: 		1,		//---
+		newZero: 			4,		//---
+		trackAfter: 		"00:00",//---
+		trackBefore: 		"23:59",//---
+		autoNotifications: 	false, 	//---
+		autoCount: 			20, 	//---
+		rejectedThreshold: 	3 		//---
 	}, function(items) {
 		
+		document.getElementById('visitThresholdSite').value		= items.visitThreshold;
+		document.getElementById('visitThresholdPage').value		= items.pageVisitThreshold; //--
+		document.getElementById('typedWeight').value 			= items.typedWeight; 		//--
+		document.getElementById('timeThreshold').value 			= items.timeThreshold;
+		document.getElementById('blacklist').value 				= items.ignoreList;
 		document.getElementById('checkFrequency').value 		= items.checkFrequency;
 		document.getElementById('timeRounding').value 			= items.timeRounding;
-		document.getElementById('newZero').value 				= items.newZero;
-		document.getElementById('trackAfter').value 			= items.trackAfter;
-		document.getElementById('trackBefore').value 			= items.trackBefore;
-		document.getElementById('autoNotifications').checked 	= items.autoNotifications;//--
-		document.getElementById('autoCount').value 				= items.autoCount;
+		document.getElementById('newZero').value 				= items.newZero;			//----
+		document.getElementById('trackAfter').value 			= items.trackAfter;			//---
+		document.getElementById('trackBefore').value 			= items.trackBefore;		//---
+		document.getElementById('autoNotifications').checked 	= items.autoNotifications; 	//--
+		document.getElementById('autoCount').value 				= items.autoCount;			//---
+		document.getElementById('rejectedThreshold').value 		= items.rejectedThreshold;	//---
 	});
 }/**/
 
 function reset_options() {
 	//get currently selected settings
-	
-	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
-	var timeRounding  	= document.getElementById('timeRounding').value;	//---
-	var newZero  		= document.getElementById('newZero').value;			//---
-	var trackAfter  	= document.getElementById('trackAfter').value;			//---
-	var trackBefore  	= document.getElementById('trackBefore').value;			//---
-	var autoNotifications = document.getElementById('autoNotifications').checked;//--
-	var autoCount  		= document.getElementById('autoCount').value;			//---
+	var visitSite			= document.getElementById('visitThresholdSite').value;
+	var visitPage 			= document.getElementById('visitThresholdPage').value; 	//---
+	var weight 	 			= document.getElementById('typedWeight').value; 		//---
+	var timer  	 			= document.getElementById('timeThreshold').value;
+	var ignored  			= document.getElementById('blacklist').value;
+	var checkFrequency  	= document.getElementById('checkFrequency').value;		//---
+	var timeRounding  		= document.getElementById('timeRounding').value;		//---
+	var newZero  			= document.getElementById('newZero').value;				//---
+	var trackAfter  		= document.getElementById('trackAfter').value;			//---
+	var trackBefore  		= document.getElementById('trackBefore').value;			//---
+	var autoNotifications 	= document.getElementById('autoNotifications').checked; //---
+	var autoCount  			= document.getElementById('autoCount').value;			//---
+	var rejectedThreshold  	= document.getElementById('rejectedThreshold').value;	//---
 	
 	//overwrite with default
+	document.getElementById('visitThresholdSite').value		= 3;
+	document.getElementById('visitThresholdPage').value		= 9;//--
+	document.getElementById('typedWeight').value 			= 2;//--
+	document.getElementById('timeThreshold').value 			= 28;
+	document.getElementById('blacklist').value 				= "";
 	document.getElementById('checkFrequency').value 		= 5; //--
 	document.getElementById('timeRounding').value 			= 1; //--
 	document.getElementById('newZero').value 				= 4; //--
@@ -616,6 +650,7 @@ function reset_options() {
 	document.getElementById('trackBefore').value 			= "23:59"; //--
 	document.getElementById('autoNotifications').checked 	= false;//--
 	document.getElementById('autoCount').value 				= 20; //--
+	document.getElementById('rejectedThreshold').value 		= 3; //--
 
 	// Update status to let user know options were reset.
 	var status = document.getElementById('status');
@@ -633,13 +668,19 @@ function reset_options() {
 		status.appendChild(document.createElement('br'));
 
 		//restore settings
-		document.getElementById('checkFrequency').value 		= checkFrequency;//--
-		document.getElementById('timeRounding').value 			= timeRounding;	//--
-		document.getElementById('newZero').value 				= newZero;		//--
-		document.getElementById('trackAfter').value 			= trackAfter;	//--
-		document.getElementById('trackBefore').value 			= trackBefore;	//--
+		document.getElementById('visitThresholdSite').value 	= visitSite;
+		document.getElementById('visitThresholdPage').value 	= visitPage; 	 	//--
+		document.getElementById('timeThreshold').value 			= timer; 		 	//--
+		document.getElementById('timeThreshold').value 			= timer;
+		document.getElementById('blacklist').value 				= ignored;
+		document.getElementById('checkFrequency').value 		= checkFrequency;	//--
+		document.getElementById('timeRounding').value 			= timeRounding;		//--
+		document.getElementById('newZero').value 				= newZero;			//--
+		document.getElementById('trackAfter').value 			= trackAfter;		//--
+		document.getElementById('trackBefore').value 			= trackBefore;		//--
 		document.getElementById('autoNotifications').checked  	= autoNotifications;//--
 		document.getElementById('autoCount').value 				= autoCount;		//--
+		document.getElementById('rejectedThreshold').value 		= rejectedThreshold;//--
 	});
 	status.appendChild(a);
 }/**/

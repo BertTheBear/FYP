@@ -26,7 +26,7 @@ function save_options() {
 	//Permissions
 	var historyPermission  	= document.getElementById('checkHistory').checked;
 	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
-	var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	//var topsitesPermission 	= document.getElementById('checkTopSites').checked;
 	var notifyPermission 	= document.getElementById('checkNotificions').checked;
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
 	var recommendPermission = document.getElementById('checkRecommendations').checked;

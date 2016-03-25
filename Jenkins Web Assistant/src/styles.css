@@ -38,6 +38,9 @@ h2 {
 	padding: 10px 0px 10px 140px;
 }
 
+
+
+
 .centeredList {
 	padding: 10px 0px 5px 20px;
 	margin: 0 auto;
@@ -50,6 +53,11 @@ h2 {
 .padded {
 	padding: 10px 0px 5px 0px;
 }
+
+
+
+
+
 
 
 /* popup buttons */
@@ -70,47 +78,18 @@ h2 {
 	color: White;
 	background: #777777;
 }
-/* Stops buttons looking stupid */
-.tdpopup {
-	overflow: hidden; 
-	text-align: left;
-}
 
-/* in-line buttons */
-.smallbtn {
-	-webkit-border-radius: 4;
-	-moz-border-radius: 4;
-	border-radius: 4px;
-	font-family: Arial;
-	color: #111111;
-	font-size: 12px;
-	background: #cdcdcd;
-	padding: 4px 5px 4px 5px;
-	text-decoration: none;
-}
-.smallbtn:hover {
-	/* background: #ededed;*/
-	text-decoration: none;
+
+.category-column {
+	background: #ededed;
+	font-style: italic;
 	color: White;
 	background: #777777;
+	width: 70px;	
+	text-align: center;
 }
 
 
-
-.trcheckbox:hover {
-	background: #ededed;
-}
-
-.trlist:hover {
-	background: #ededed;
-}
-
-/* Helps stop the list getting too wide */
-.trlist-Entry {
-	width: 400px;
-	max-width: 450px; 
-	word-wrap: break-word;
-}
 .popup-recommendation {
 	width: 315px;
 	max-width: 315px; 
@@ -134,6 +113,47 @@ h2 {
 	color: White;
 }
 
+
+/* in-line buttons */
+.smallbtn {
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	font-family: Arial;
+	color: #111111;
+	font-size: 12px;
+	background: #cdcdcd;
+	padding: 4px 5px 4px 5px;
+	text-decoration: none;
+}
+.smallbtn:hover {
+	/* background: #ededed;*/
+	text-decoration: none;
+	color: White;
+	background: #777777;
+}
+
+
+/* Stops buttons looking stupid */
+.tdpopup {
+	overflow: hidden; 
+	text-align: left;
+}
+
+.trcheckbox:hover {
+	background: #ededed;
+}
+
+.trlist:hover {
+	background: #ededed;
+}
+
+/* Helps stop the list getting too wide */
+.trlist-Entry {
+	width: 400px;
+	max-width: 450px; 
+	word-wrap: break-word;
+}
 
 /* Schedule buttons */
 .trlist-RemoveButton {

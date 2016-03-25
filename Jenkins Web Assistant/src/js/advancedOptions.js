@@ -29,18 +29,19 @@ function save_options() {
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
 	var recommendPermission = document.getElementById('checkRecommendations').checked;
 	//Processing
+	var autoNotifications = document.getElementById('autoNotifications').checked;//---
 	var visitSite		= document.getElementById('visitThresholdSite').value;
-	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
-	var weight 	 		= document.getElementById('typedWeight').value; //--
+	var visitPage 		= document.getElementById('visitThresholdPage').value; 	//--
+	var weight 	 		= document.getElementById('typedWeight').value; 		//--
 	var timer  	 		= document.getElementById('timeThreshold').value;
 	var ignored  		= document.getElementById('blacklist').value;
-	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
+	var checkFrequency  = document.getElementById('checkFrequency').value;		//---
 	if (checkFrequency < 1) //Default to 1 if they set it too low
 		checkFrequency = 1;
-	var timeRounding  	= document.getElementById('timeRounding').value;	//---
+	var timeRounding  	= document.getElementById('timeRounding').value;		//---
 	if (timeRounding < 1) //Default to 1 if they set it too low
 		timeRounding = 1;
-	var newZero  		= document.getElementById('newZero').value;			//---
+	var newZero  		= document.getElementById('newZero').value;				//---
 	//Make sure "trackAfter" is the smaller value
 	var trackAfter  	= document.getElementById('trackAfter').value;			//---
 	var trackBefore  	= document.getElementById('trackBefore').value;			//---
@@ -48,8 +49,8 @@ function save_options() {
 		var trackAfter  = document.getElementById('trackBefore').value;			//---
 		var trackBefore = document.getElementById('trackAfter').value;			//---
 	}
-	var autoNotifications = document.getElementById('autoNotifications').checked;//---
-	var autoCount  	= document.getElementById('autoCount').value;	//---
+	var autoCount  	= document.getElementById('autoCount').value;				//---
+	var rejectedThreshold = document.getElementById('rejectedThreshold').value; //---
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
 	var notClearedNotification = document.getElementById('notClearedNotification').checked;// ----
@@ -62,6 +63,7 @@ function save_options() {
 		notification: 		notifyPermission,
 		organiser: 			organiserPermission,
 		recommender: 		recommendPermission,//--
+		//Processing
 		visitThreshold: 	visitSite,
 		pageVisitThreshold: visitPage,			//--
 		typedWeight: 		weight,				//--
@@ -72,8 +74,10 @@ function save_options() {
 		newZero: 			newZero,			//--
 		trackAfter: 		trackAfter, 		//--
 		trackBefore: 		trackBefore, 		//--
-		autoNotifications: 	autoNotifications, //--
-		autoCount: 			autoCount,			//-----
+		autoNotifications: 	autoNotifications,  //--
+		autoCount: 			autoCount,			//--
+		rejectedThreshold: 	rejectedThreshold,  //--
+		//History Clear
 		clearhistory: 		clearhistory,
 		notClearedNotification: notClearedNotification//---
 	}, function() {
@@ -103,18 +107,21 @@ function restore_options() {
 		notification: 		true,
 		organiser: 			true,
 		recommender: 		true,
+		//Processing
 		visitThreshold: 	3,	
-		pageVisitThreshold: 9, //--
-		typedWeight: 		2, //--
+		pageVisitThreshold: 9, 		//--
+		typedWeight: 		2, 		//--
 		timeThreshold: 		28,	
 		ignoreList: 		"",	
-		checkFrequency: 	5,	//---
-		timeRounding: 		1,	//---
-		newZero: 			4,	//---
-		trackAfter: 		"00:00", //--
-		trackBefore: 		"23:59", //--
-		autoNotifications: 	false, //---
-		autoCount: 			20, //-----
+		checkFrequency: 	5,		//---
+		timeRounding: 		1,		//---
+		newZero: 			4,		//---
+		trackAfter: 		"00:00",//---
+		trackBefore: 		"23:59",//---
+		autoNotifications: 	false, 	//---
+		autoCount: 			20, 	//---
+		rejectedThreshold: 	3, 		//---
+		//History Clear
 		clearhistory: 		false,
 		notClearedNotification: false //---
 	}, function(items) {
@@ -127,8 +134,8 @@ function restore_options() {
 		document.getElementById('checkRecommendations').checked = items.recommender;
 		//Processing
 		document.getElementById('visitThresholdSite').value		= items.visitThreshold;
-		document.getElementById('visitThresholdPage').value		= items.pageVisitThreshold;//--
-		document.getElementById('typedWeight').value 			= items.typedWeight;//--
+		document.getElementById('visitThresholdPage').value		= items.pageVisitThreshold; //--
+		document.getElementById('typedWeight').value 			= items.typedWeight; 		//--
 		document.getElementById('timeThreshold').value 			= items.timeThreshold;
 		document.getElementById('blacklist').value 				= items.ignoreList;
 		document.getElementById('checkFrequency').value 		= items.checkFrequency;
@@ -136,13 +143,121 @@ function restore_options() {
 		document.getElementById('newZero').value 				= items.newZero;			//----
 		document.getElementById('trackAfter').value 			= items.trackAfter;			//---
 		document.getElementById('trackBefore').value 			= items.trackBefore;		//---
-		document.getElementById('autoNotifications').checked 	= items.autoNotifications;//--
+		document.getElementById('autoNotifications').checked 	= items.autoNotifications; 	//--
 		document.getElementById('autoCount').value 				= items.autoCount;			//---
+		document.getElementById('rejectedThreshold').value 		= items.rejectedThreshold;	//---
 		//History Clear
 		document.getElementById('checkClearHistory').checked 	= items.clearhistory;
 		document.getElementById('notClearedNotification').checked 	= items.notClearedNotification; //---
 	});
 }/**/
+
+
+
+function reset_options() {
+	//get currently selected settings
+	//Permissions
+	var historyPermission  	= document.getElementById('checkHistory').checked;
+	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
+	//var topsitesPermission 	= document.getElementById('checkTopSites').checked;
+	var notifyPermission 	= document.getElementById('checkNotificions').checked;
+	var organiserPermission = document.getElementById('checkOrganiser').checked;
+	var recommendPermission = document.getElementById('checkRecommendations').checked;
+	//Processing
+	var visitSite			= document.getElementById('visitThresholdSite').value;
+	var visitPage 			= document.getElementById('visitThresholdPage').value; 	//---
+	var weight 	 			= document.getElementById('typedWeight').value; 		//---
+	var timer  	 			= document.getElementById('timeThreshold').value;
+	var ignored  			= document.getElementById('blacklist').value;
+	var checkFrequency  	= document.getElementById('checkFrequency').value;		//---
+	var timeRounding  		= document.getElementById('timeRounding').value;		//---
+	var newZero  			= document.getElementById('newZero').value;				//---
+	var trackAfter  		= document.getElementById('trackAfter').value;			//---
+	var trackBefore  		= document.getElementById('trackBefore').value;			//---
+	var autoNotifications 	= document.getElementById('autoNotifications').checked; //---
+	var autoCount  			= document.getElementById('autoCount').value;			//---
+	var rejectedThreshold  	= document.getElementById('rejectedThreshold').value;	//---
+	//History Clear
+	var clearhistory = document.getElementById('checkClearHistory').checked;
+	var notClearedNotification = document.getElementById('notClearedNotification').checked;
+
+	//overwrite with default
+	document.getElementById('checkHistory').checked 		= true;
+	//document.getElementById('checkBookmarks').checked 		= true;
+	//document.getElementById('checkTopSites').checked 		= true;
+	document.getElementById('checkNotificions').checked 	= true;
+	document.getElementById('checkOrganiser').checked 		= true;
+	document.getElementById('checkRecommendations').checked = true;//--
+	//Processing
+	document.getElementById('visitThresholdSite').value		= 3;
+	document.getElementById('visitThresholdPage').value		= 9;//--
+	document.getElementById('typedWeight').value 			= 2;//--
+	document.getElementById('timeThreshold').value 			= 28;
+	document.getElementById('blacklist').value 				= "";
+	document.getElementById('checkFrequency').value 		= 5; //--
+	document.getElementById('timeRounding').value 			= 1; //--
+	document.getElementById('newZero').value 				= 4; //--
+	document.getElementById('trackAfter').value 			= "00:00"; //--
+	document.getElementById('trackBefore').value 			= "23:59"; //--
+	document.getElementById('autoNotifications').checked 	= false;//--
+	document.getElementById('autoCount').value 				= 20; //--
+	document.getElementById('rejectedThreshold').value 		= 3; //--
+	//Check History
+	document.getElementById('checkClearHistory').checked 	= false;
+	document.getElementById('notClearedNotification').checked 	= false; //---
+
+	// Update status to let user know options were reset.
+	var status = document.getElementById('status');
+	status.textContent = 'Options have been reset to default.';
+
+
+	//Create an "undo" option for if it is accidentally clicked
+	var a = document.createElement('a');
+	a.href = '#reset';
+	a.appendChild(document.createTextNode(" undo"));
+	a.addEventListener('click', function() {
+		//For when undo is called
+		var status = document.getElementById('status');
+		status.textContent = "";
+		status.appendChild(document.createElement('br'));
+
+		//restore settings
+		document.getElementById('checkHistory').checked 		= historyPermission;
+		//document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
+		//document.getElementById('checkTopSites').checked 		= topsitesPermission;
+		document.getElementById('checkNotificions').checked 	= notifyPermission;
+		document.getElementById('checkOrganiser').checked 		= organiserPermission;
+		document.getElementById('checkRecommendations').checked = recommendPermission;
+		//Processing
+		document.getElementById('visitThresholdSite').value 	= visitSite;
+		document.getElementById('visitThresholdPage').value 	= visitPage; 	 	//--
+		document.getElementById('timeThreshold').value 			= timer; 		 	//--
+		document.getElementById('timeThreshold').value 			= timer;
+		document.getElementById('blacklist').value 				= ignored;
+		document.getElementById('checkFrequency').value 		= checkFrequency;	//--
+		document.getElementById('timeRounding').value 			= timeRounding;		//--
+		document.getElementById('newZero').value 				= newZero;			//--
+		document.getElementById('trackAfter').value 			= trackAfter;		//--
+		document.getElementById('trackBefore').value 			= trackBefore;		//--
+		document.getElementById('autoNotifications').checked  	= autoNotifications;//--
+		document.getElementById('autoCount').value 				= autoCount;		//--
+		document.getElementById('rejectedThreshold').value 		= rejectedThreshold;//--
+		//Check History
+		document.getElementById('checkClearHistory').checked 	= clearhistory;
+		document.getElementById('notClearedNotification').checked 	= notClearedNotification;//---
+	});
+	status.appendChild(a);
+}/**/
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -169,96 +284,3 @@ function restore_options() {
 
 
 
-
-
-function reset_options() {
-	//get currently selected settings
-	//Permissions
-	var historyPermission  	= document.getElementById('checkHistory').checked;
-	//var bookmarksPermission = document.getElementById('checkBookmarks').checked;
-	//var topsitesPermission 	= document.getElementById('checkTopSites').checked;
-	var notifyPermission 	= document.getElementById('checkNotificions').checked;
-	var organiserPermission = document.getElementById('checkOrganiser').checked;
-	var recommendPermission = document.getElementById('checkRecommendations').checked;
-	//Processing
-	var visitSite		= document.getElementById('visitThresholdSite').value;
-	var visitPage 		= document.getElementById('visitThresholdPage').value; //--
-	var weight 	 		= document.getElementById('typedWeight').value; //--
-	var timer  	 		= document.getElementById('timeThreshold').value;
-	var ignored  		= document.getElementById('blacklist').value;
-	var checkFrequency  = document.getElementById('checkFrequency').value;	//---
-	var timeRounding  	= document.getElementById('timeRounding').value;	//---
-	var newZero  		= document.getElementById('newZero').value;			//---
-	var trackAfter  	= document.getElementById('trackAfter').value;			//---
-	var trackBefore  	= document.getElementById('trackBefore').value;			//---
-	var autoNotifications = document.getElementById('autoNotifications').checked;//--
-	var autoCount  		= document.getElementById('autoCount').value;			//---
-	//History Clear
-	var clearhistory = document.getElementById('checkClearHistory').checked;
-	var notClearedNotification = document.getElementById('notClearedNotification').checked;
-
-	//overwrite with default
-	document.getElementById('checkHistory').checked 		= true;
-	//document.getElementById('checkBookmarks').checked 		= true;
-	//document.getElementById('checkTopSites').checked 		= true;
-	document.getElementById('checkNotificions').checked 	= true;
-	document.getElementById('checkOrganiser').checked 		= true;
-	document.getElementById('checkRecommendations').checked = true;//--
-
-	document.getElementById('visitThresholdSite').value		= 3;
-	document.getElementById('visitThresholdPage').value		= 9;//--
-	document.getElementById('typedWeight').value 			= 2;//--
-	document.getElementById('timeThreshold').value 			= 28;
-	document.getElementById('blacklist').value 				= "";
-	document.getElementById('checkFrequency').value 		= 5; //--
-	document.getElementById('timeRounding').value 			= 1; //--
-	document.getElementById('newZero').value 				= 4; //--
-	document.getElementById('trackAfter').value 			= "00:00"; //--
-	document.getElementById('trackBefore').value 			= "23:59"; //--
-	document.getElementById('autoNotifications').checked 	= false;//--
-	document.getElementById('autoCount').value 				= 20; //--
-
-	document.getElementById('checkClearHistory').checked 	= false;
-	document.getElementById('notClearedNotification').checked 	= false; //---
-
-	// Update status to let user know options were reset.
-	var status = document.getElementById('status');
-	status.textContent = 'Options have been reset to default.';
-
-
-	//Create an "undo" option for if it is accidentally clicked
-	var a = document.createElement('a');
-	a.href = '#reset';
-	a.appendChild(document.createTextNode(" undo"));
-	a.addEventListener('click', function() {
-		//For when undo is called
-		var status = document.getElementById('status');
-		status.textContent = "";
-		status.appendChild(document.createElement('br'));
-
-		//restore settings
-		document.getElementById('checkHistory').checked 		= historyPermission;
-		//document.getElementById('checkBookmarks').checked 		= bookmarksPermission;
-		//document.getElementById('checkTopSites').checked 		= topsitesPermission;
-		document.getElementById('checkNotificions').checked 	= notifyPermission;
-		document.getElementById('checkOrganiser').checked 		= organiserPermission;
-		document.getElementById('checkRecommendations').checked = recommendPermission;
-
-		document.getElementById('visitThresholdSite').value 	= visitSite;
-		document.getElementById('visitThresholdPage').value 	= visitPage;//--
-		document.getElementById('timeThreshold').value 			= timer;//--
-		document.getElementById('timeThreshold').value 			= timer;
-		document.getElementById('blacklist').value 				= ignored;
-		document.getElementById('checkFrequency').value 		= checkFrequency;//--
-		document.getElementById('timeRounding').value 			= timeRounding;	//--
-		document.getElementById('newZero').value 				= newZero;		//--
-		document.getElementById('trackAfter').value 			= trackAfter;	//--
-		document.getElementById('trackBefore').value 			= trackBefore;	//--
-		document.getElementById('autoNotifications').checked  	= autoNotifications;//--
-		document.getElementById('autoCount').value 				= autoCount;		//--
-
-		document.getElementById('checkClearHistory').checked 	= clearhistory;
-		document.getElementById('notClearedNotification').checked 	= notClearedNotification;//---
-	});
-	status.appendChild(a);
-}/**/

@@ -540,6 +540,26 @@ function convertFromStringFormat() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ############################## PROCESSING #############################
 
 function processHistory() {
@@ -967,11 +987,29 @@ function processSinglePage(pageUrl) {
 
 function addToSchedule(url, time) {
 	chrome.storage.sync.get( {
-		autoCount: 		20,
-		timeRounding: 	1,
-		schedule: 		[]
+		autoCount: 			20,
+		timeRounding: 		1,
+		schedule: 			[],
+		rejectedSchedule: 	[],
+		rejectedThreshold: 	3
 	}, function(items) {
-		//First check if there's already an automatic entry of that url
+		//First check if it has been rejected too many times
+		for(var index = 0; index < items.rejectedSchedule.length; index++) {
+			//If found in "reject pile"
+			if(items.rejectedSchedule[index].url == url) {
+				//if above threshold
+				if(items.rejectedSchedule[index].count > threshold) {
+					//don't save
+					console.log("Prevented " + url + ". Above rejected threshold.");
+					return;
+				}
+			}
+		}
+
+
+
+
+		//Then check if there's already an automatic entry of that url
 		//Also check if we have reached the entry limit
 		var entries = countAutoEntries(items.schedule);
 		var index = findInSchedule(url, items.schedule);
@@ -1057,9 +1095,6 @@ function arrayStringIncludesCount(theString, theArray) {
 
 //Ensures all elements of an array are unique
 function uniq(array) {
-
-//PROBLEM IS HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 	var uniqueArray = [];
 	array.forEach(function(item, index, array) {

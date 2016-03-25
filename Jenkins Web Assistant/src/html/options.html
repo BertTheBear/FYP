@@ -13,6 +13,11 @@
 	<br>
 	<!-- Table for permissions -->
 		<table>
+			<tr>
+				<td class="centered">
+					Hover over the <b>?</b> to learn more about that option.
+				</td>
+			</tr>
 			<tr class="trcheckbox">
 				<td>
 					<label>
@@ -20,6 +25,9 @@
 					</label>
 				
 					Allow access to history
+				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Decides whethe to give the extension access to your history. This is used for the Automatic Scheduler.">
 				</td>
 			</tr> <!--
 			<tr class="trcheckbox">
@@ -30,6 +38,9 @@
 				
 					Allow access to bookmarks
 				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Not used right now.">
+				</td>
 			</tr> 
 			<tr class="trcheckbox">
 				<td>
@@ -38,6 +49,9 @@
 					</label>
 				
 					Allow access to top sites
+				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Not used right now.">
 				</td>
 			</tr> -->
 			<tr class="trcheckbox">
@@ -48,6 +62,9 @@
 				
 					Allow access to notifications
 				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Decides whether to allow the extension to create popup notifications in the corner of the screen.">
+				</td>
 			</tr>
 			<tr class="trcheckbox">
 				<td>
@@ -57,6 +74,9 @@
 				
 					Enable automatic organiser
 				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Decides whether to allow the extension to create automatic schedule entries when opening the extension.">
+				</td>
 			</tr>
 			<tr class="trcheckbox">
 				<td>
@@ -65,6 +85,9 @@
 					</label>
 				
 					Enable site recommendations
+				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="Decides whether to show website recommendations based upon your current tab by clicking on the extension icon in the browser bar.">
 				</td>
 			</tr>
 			<tr>
@@ -111,16 +134,20 @@
 					Automatically clear session history on close? 
 					<a href="#" id="clearHistorySettings">Settings</a>
 				</td>
+				<td>
+					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="If enabled, this will clear your previous browsing history when the browser is opened. The information cleared is dependent upon the settings above.">
+				</td>
 			</tr>
 		</table>
+		<div class='centered'>
+			<div id="status"><br></div>
+			<button id="save">Save</button> <br>
+			<a href="#" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
 
-		<div id="status"><br></div>
-		<button id="save">Save</button> <br>
-		<a href="#" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
-
-		<div class="centered">
-			<br> 
-			<a target="_blank" href="advancedOptions.html">Advanced Options Page</a>
+			<div class="centered">
+				<br> 
+				<a target="_blank" href="advancedOptions.html">Advanced Options Page</a>
+			</div>
 		</div>
 
 </body>

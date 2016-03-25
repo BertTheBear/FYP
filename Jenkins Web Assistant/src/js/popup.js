@@ -204,6 +204,8 @@ function displayRecommendation(recommendationArray, categoryIndex, urlIndex) {
 			setTimeout(function() {
 				display.textContent = "";
 				display.appendChild(document.createElement('br'));
+				//reload window after delay
+				window.location.reload();
 			}, 750);
 		});
 	});
@@ -230,6 +232,8 @@ function displayRecommendation(recommendationArray, categoryIndex, urlIndex) {
 			setTimeout(function() {
 				display.textContent = "";
 				display.appendChild(document.createElement('br'));
+				//reload window after delay
+				window.location.reload();
 			}, 750);
 		});
 	});

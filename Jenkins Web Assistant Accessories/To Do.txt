@@ -54,12 +54,13 @@ JSON format for entries									DONE
 Page for recommendations 								DONE
 Test opening or switching to tab on inactive WINDOW		DONE
 
-Removed entries
-	where do they go?
-	What happens
+Removed entries 										DONE
+	where do they go? 									DONE
+	What happens 										DONE
 
-Save options in recommendations page
-Image with info on hover
-Threshold set in options
-Double check options. Make sure Advanced has ALL options
-Improve options in interface page
+Save options in Interface page 							DONE
+Image with info on hover 								DONE
+Threshold set in options 								DONE
+Double check options. Make sure Advanced has ALL options DONE
+Improve options in interface page 						DONE
+Colour code recommendations page(Maybe rename to feedback too...) KINDA
