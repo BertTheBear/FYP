@@ -27,6 +27,32 @@ var recObject;
 var maxRecLength = 100;
 //========================================================
 
+//Default ignore list for stopping checking private details
+var defaultBlacklist = ["bank", "private", "pay", "secure"];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //Calls clearHistory when the extension is loaded
@@ -570,9 +596,6 @@ function processHistory() {
 	chrome.storage.sync.get({
 		ignoreQuery: 		true,
 		history: 			true,
-		bookmarks: 			true,
-		topsites: 			true,
-		notification: 		true,
 		organiser: 			true,
 		recommender: 		true, //--
 		visitThreshold: 	3,	
@@ -580,7 +603,6 @@ function processHistory() {
 		typedWeight: 		2, //--
 		timeThreshold: 		28,	
 		ignoreList: 		"",	
-		defaultIgnoreList: 	"",
 		clearhistory: 		false,
 		schedule: 			[]		//For adding on changes
 	}, function(items) {
@@ -678,9 +700,8 @@ function processHistory() {
 						//Check user blacklist
 						var blacklist = items.ignoreList.split(",");
 						commonSites = checkBlacklist(commonSites, blacklist);
-						//Check default blacklist
-						var defaultBlacklist = items.defaultIgnoreList.split(",");
-						commonSites = checkBlacklist(commonSites, blacklist);
+						//Check default blacklist (Defined at top of page)
+						commonSites = checkBlacklist(commonSites, defaultBlacklist);
 					}
 				}
 

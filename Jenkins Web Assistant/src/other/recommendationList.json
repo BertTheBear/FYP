@@ -298,5 +298,28 @@
 					[
 						"work"
 					]
+				],
+
+	"automaticClassification" :  
+				[
+					["cartoon", "anime", "comic", "manga", "animated"], 
+					["learn", "pedia", "tutorial"], 
+					["mail"], 
+					["entertainment", ], 
+					["bank", "finance", "trade"], 
+					["game", "play", "arcade"], 
+					["funny"], 
+					["book", "library", "read"], 
+					["songs", "lyrics", "music", ], 
+					["news"], 
+					["search"], 
+					["store", "direct", "buy"], 
+					[], 
+					["sports", "league", "match", "balls"], 
+					["tech", "soft"], 
+					["tv", "show", "watch", "flix"], 
+					["hotel", "travel", "escape"], 
+					["tube", "video"], 
+					[]
 				]
 }
