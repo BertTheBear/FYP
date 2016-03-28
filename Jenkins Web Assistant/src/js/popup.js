@@ -19,6 +19,7 @@ var notificationDiv = "notificationDiv";
 
 
 
+
 //################ For temp no notify ###################
 //set triggers 
 document.addEventListener('DOMContentLoaded', function() {
@@ -66,7 +67,8 @@ function save_options() {
 //Shows the recommendation in the popup window
 function showRecommendation() {
 	chrome.storage.local.get({
-		recommendations: []
+		recommendations: 			[],
+		automaticClassification: 	[]
 	}, function(items) {
 		//for ease of writing/reading
 		var recommendations = items.recommendations;
@@ -87,6 +89,7 @@ function showRecommendation() {
 				}
 			}
 			var url = currentTab.url;
+			//url = "Whatever for testing";
 
 
 			var selected = false;
@@ -101,7 +104,7 @@ function showRecommendation() {
 				//Returns -1 if not found
 				if(urlIndex < 0) {
 					//Try and automatically categorise
-					urlIndex = guessCategory(url);
+					urlIndex = guessCategory(url, items.automaticClassification);
 					if(urlIndex < 0) {
 						//can't find anything, 
 						console.log("Couldn't find anything for " + url);//+++++++++++++++++++++
@@ -274,31 +277,8 @@ function searchForUrlCategory(url, recommendationsArray, start) {
 
 
 //Takes words from the url and tries to guess the category
-function guessCategory(url) {
-	//Switch these for the JSON file later
-	var tagArray 			= [
-								["cartoon", "anime", "comic", "manga", "animated"], 
-	/*educationalTags   	=*/ ["learn", "pedia", "tutorial"], 
-	/*emailTags   			=*/ ["mail"], 
-	/*entertainmentNewsTags =*/ ["entertainment", ], 
-	/*financeTags   		=*/ ["bank", "finance", "trade"], 
-	/*gameTags   			=*/ ["game", "play", "arcade"], 
-	/*leisureTags   		=*/ ["funny"], 
-	/*literatureTags   		=*/ ["book", "library", "read"], 
-	/*musicTags   			=*/ ["songs", "lyrics", "music", ], 
-	/*newsTags   			=*/ ["news"], 
-	/*searchEngineTags   	=*/ ["search"], 
-	/*shoppingTags   		=*/ ["store", "direct", "buy"], 
-	/*socialMediaTags   	=*/ [], 
-	/*sportsTags   			=*/ ["sports", "league", "match", "balls"], 
-	/*technologyTags   		=*/ ["tech", "soft"], 
-	/*televisionTags   		=*/ ["tv", "show", "watch", "flix"], 
-	/*travelTags  			=*/ ["hotel", "travel", "escape"], 
-	/*videoTags    			=*/ ["tube", "video"], 
-	/*workTags				=*/ []
-							];
-
-
+function guessCategory(url, tagArray) {
+	
 	//search each array
 	for(var i = 0; i < tagArray.length; i++) {
 		//check each element or tag
@@ -312,4 +292,27 @@ function guessCategory(url) {
 	}
 	//if nothing is found return default
 	return -1;				
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ########################### RECORD PATTERN #######################
+
+function checkTabs() {
+	chrome.tabs.query({ currentWindow: true }, function (result) {
+		//Process tabs and record pattern (Alphabetically)
+	});
 }

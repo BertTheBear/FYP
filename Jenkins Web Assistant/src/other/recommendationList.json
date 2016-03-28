@@ -305,12 +305,12 @@
 					["cartoon", "anime", "comic", "manga", "animated"], 
 					["learn", "pedia", "tutorial"], 
 					["mail"], 
-					["entertainment", ], 
+					["entertainment"], 
 					["bank", "finance", "trade"], 
 					["game", "play", "arcade"], 
 					["funny"], 
 					["book", "library", "read"], 
-					["songs", "lyrics", "music", ], 
+					["songs", "lyrics", "music", "sheet"], 
 					["news"], 
 					["search"], 
 					["store", "direct", "buy"], 
@@ -321,5 +321,7 @@
 					["hotel", "travel", "escape"], 
 					["tube", "video"], 
 					[]
-				]
+				],
+
+	"defaultBlacklist" : ["bank", "private", "pay", "secure"]
 }

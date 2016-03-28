@@ -36,8 +36,9 @@
 	});
 
 	chrome.storage.local.get({
-		recommendations: 	[], 			//List of recommendations and categories
-		rejectedSchedule: 	[] 				//List of schedule items that have been rejected by the user (To be shown on the recommendations page)
+		recommendations: 			[], 		//List of recommendations and categories
+		rejectedSchedule: 			[], 		//List of schedule items that have been rejected by the user (To be shown on the recommendations page)
+		automaticClassification: 	[]			//List of words or tags to be used to automatically classify the current web page
 
 
 
@@ -70,19 +71,9 @@ recommendation objects:
 
 
 	Internal Blacklist {
-		bank
-		pay 
+		//Now in JSON file
 
 	}
-
-
-
-
-
-
-
-chrome://extensions/
-
 
 
 

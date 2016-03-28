@@ -27,8 +27,6 @@ var recObject;
 var maxRecLength = 100;
 //========================================================
 
-//Default ignore list for stopping checking private details
-var defaultBlacklist = ["bank", "private", "pay", "secure"];
 
 
 
@@ -606,6 +604,10 @@ function processHistory() {
 		clearhistory: 		false,
 		schedule: 			[]		//For adding on changes
 	}, function(items) {
+
+		//Default ignore list for stopping checking private details
+		// get this from recObject
+		var defaultBlacklist = recObject.defaultBlacklist;
 
 
 		//Convert from old format to new format
@@ -1214,7 +1216,11 @@ function sortRecommendations() {
 		var found = false;
 		var i = 0;
 
-		
+		//Get the automatic classifications and save them as an object (Automatically update each time)
+		console.log(recObject);//++++++
+		var automaticClassification = recObject.automaticClassification;
+
+		//Get the recommendations from the object too.
 		var recommendations = recObject.recommendations;
 
 						//========= TO REMOVE OLD FORMAT =============
@@ -1350,8 +1356,7 @@ function sortRecommendations() {
 					tempObject.url = url;
 
 					//if not found add tempObject to array with new url using binary sort
-					items.recommendations = addAlphabetically(tempObject, items.recommendations, lowerLimit, upperLimit);
-					thisCount++;
+					items.recommendations = addAlphabetically(tempObject, items.recommendations);
 				}
 
 			}
@@ -1360,9 +1365,11 @@ function sortRecommendations() {
 						} //==================================== ALSO THIS (See above)
 
 		//Save new array of recommendations
+		//   also always save the automatic recommendations on start up
 		//Must be stored locally due to size constraints
 		chrome.storage.local.set({
-			recommendations: items.recommendations
+			recommendations: 			items.recommendations,
+			automaticClassification: 	automaticClassification
 		}, function(){
 			console.log("Saved: "); //+++++++++++++++++++++++++++++++
 			console.log(items.recommendations);//++++++++++++++++++++
