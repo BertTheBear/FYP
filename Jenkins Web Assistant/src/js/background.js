@@ -399,7 +399,7 @@ function checkSchedule() {
 								var itemMinuteText = "" + itemMinute;
 								if (itemMinute < 10)
 									itemMinuteText = "0" + itemMinuteText;
-								var title = itemHour + ":" + itemMinuteText + " reminder";
+								var title = /*itemHour + ":" + itemMinuteText + */"Website reminder";
 								var textContent = "Click here to open tab containing " + destination;
 								//Switch to that tab when notification clicked
 								notificationFunction(title, textContent, function() {
@@ -417,7 +417,7 @@ function checkSchedule() {
 								var itemMinuteText = "" + itemMinute;
 								if (itemMinute < 10)
 									itemMinuteText = "0" + itemMinuteText;
-								var title = itemHour + ":" + itemMinuteText + " reminder";
+								var title = /*itemHour + ":" + itemMinuteText + */"Website reminder";
 								var textContent = "Click here to open " + destination + " in a new tab.";
 								//Show notification
 								notificationURL(title, textContent, destination, notificationColour);
