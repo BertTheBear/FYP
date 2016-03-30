@@ -22,7 +22,7 @@ Explicit settings
 - Save/Undo 		DONE
 Background
 - actions at times 	DONE
-- ask on startup 	
+- ask on startup 	REJECTED
 General
 - reduce hard-code 	DONE
 - call from background DONE
@@ -64,3 +64,7 @@ Threshold set in options 								DONE
 Double check options. Make sure Advanced has ALL options DONE
 Improve options in interface page 						DONE
 Colour code recommendations page(Maybe rename to feedback too...) KINDA
+
+
+Popup when help icon clicked 							DONE (Notification)
+Populate lists when button clicked for testing 			DONE

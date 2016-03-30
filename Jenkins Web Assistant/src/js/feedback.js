@@ -141,7 +141,7 @@ function addListItem(array, currentObject, tableName) {
 			var location = array.indexOf(currentObject);
 			if (location >= 0) {
 				//Means that the element was found and no errors occured
-				array.splice(i, 1);
+				array.splice(location, 1);
 			}
 			else {
 				//element not found. Abort!
@@ -174,7 +174,10 @@ function addListItem(array, currentObject, tableName) {
 
 
 	//add all of the columns to the line
-	line.appendChild(categoryEntry);
+	//Only if not Rejcected Schedule
+	if(tableName != rejectedScheduleTableName) {
+		line.appendChild(categoryEntry);
+	}
 	line.appendChild(urlEntry);
 	line.appendChild(removal);
 

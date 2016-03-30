@@ -140,6 +140,22 @@ h2 {
 	text-align: left;
 }
 
+
+
+.tooltip {
+	display: none;
+	position: absolute;
+	background: #ffe;
+	border: 1px solid #eed;
+	border-radius: 4px;
+	padding: 2px 4px;
+}
+:hover + .tooltip {
+	display: block;
+}
+
+
+
 .trcheckbox:hover {
 	background: #ededed;
 }

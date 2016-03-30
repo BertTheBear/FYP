@@ -363,6 +363,9 @@ function checkSchedule() {
 						
 						//Get all tabs open in the window
 						chrome.tabs.query({}, function (result) {
+							var tempTime = time;
+							var itemMinute = tempTime.getMinutes();
+							var itemHour = tempTime.getHours();
 							//If it found no results then the page is not open
 							if(result == null) {
 								console.log(destination + " not found in tabs. Function will open Tab.");

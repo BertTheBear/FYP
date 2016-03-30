@@ -63,6 +63,12 @@ recommendation objects:
 	accepted: , 		//boolean
 	blocked:  			//boolean
 
+rejected schedule objects:
+
+	url: 				//string
+	count: 				//int
+	
+
 
 	accepted is when they follow link
 	blocked is when the option is given to block after closing notification

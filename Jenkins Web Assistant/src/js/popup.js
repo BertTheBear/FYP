@@ -242,6 +242,8 @@ function displayRecommendation(recommendationArray, categoryIndex, urlIndex) {
 	});
 	removalColumn.appendChild(removeButton);
 
+	
+
 
 	//Add elements to the table
 	recTable.appendChild(urlColumn);
