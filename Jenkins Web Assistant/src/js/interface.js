@@ -1,5 +1,6 @@
 //id of extension
 var myid = chrome.runtime.id;
+var backgroundPage = chrome.extension.getBackgroundPage();
 
 //Global variables
 var lastid = 0;
@@ -65,6 +66,16 @@ document.addEventListener('DOMContentLoaded', function () {
 	//check for permission for notifications
 	if (Notification.permission !== "granted")
 		Notification.requestPermission();
+
+
+
+
+	//For showing tip on click
+	var icon = document.getElementById('help0');
+	icon.addEventListener("click", function() {
+		//Show a grey popup with the information
+		backgroundPage.notificationURL("Option Help", icon.title, null, GREYSUIT);
+	});
 });
 
 

@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //Show accepted in table
 function displayAcceptedRecommendations(recommendations, tableName) {
+	//For seeing if there are any rejected items
+	var count = 0;
 
 	//for each category
 	for(var i = 0; i < recommendations.length; i++) {
@@ -53,15 +55,34 @@ function displayAcceptedRecommendations(recommendations, tableName) {
 			if(currentObject.accepted) {
 				//add to the list
 				addListItem(recommendations, currentObject, tableName);
+				count++;
 			}
 		}
+	}
+
+
+
+	//If list is empty
+	if(count < 1) {
+		//Set the list
+		var list = document.getElementById(tableName);
+		var line = document.createElement('tr');
+		line.setAttribute('class', 'trcheckbox');
+
+		var column = document.createElement('td');
+		var emptyText = "No recommendations have been accepted.";
+		column.appendChild(document.createTextNode(emptyText));
+
+		//Add to the table
+		line.appendChild(column);
+		list.appendChild(line);
 	}
 }
 
 //Show rejected in table
 function displayRejectedRecommendations(recommendations, tableName) {
-	//Checks the document for the list table
-	var list = document.getElementById(tableName);
+	//For seeing if there are any rejected items
+	var count = 0;
 
 	//for each category
 	for(var i = 0; i < recommendations.length; i++) {
@@ -73,16 +94,47 @@ function displayRejectedRecommendations(recommendations, tableName) {
 			if(currentObject.blocked) {
 				//add to the list
 				addListItem(recommendations, currentObject, tableName);
+				count++;
 			}
 		}
+	}
+
+
+	//If list is empty
+	if(count < 1) {
+		//Set the list
+		var list = document.getElementById(tableName);
+		var line = document.createElement('tr');
+		line.setAttribute('class', 'trcheckbox');
+
+		var column = document.createElement('td');
+		var emptyText = "No recommendations have been rejected.";
+		column.appendChild(document.createTextNode(emptyText));
+
+		//Add to the table
+		line.appendChild(column);
+		list.appendChild(line);
 	}
 }
 
 
 //Show rejected automatic schedule items in table
 function displayRejectedSchedule(rejectedSchedule, tableName, threshold) {
-	//Checks the document for the list table
-	var list = document.getElementById(tableName);
+	//If list is empty
+	if(rejectedSchedule.length < 1) {
+		//Set the list
+		var list = document.getElementById(tableName);
+		var line = document.createElement('tr');
+		line.setAttribute('class', 'trcheckbox');
+
+		var column = document.createElement('td');
+		var emptyText = "There are no rejected schedule items.";
+		column.appendChild(document.createTextNode(emptyText));
+
+		//Add to the table
+		line.appendChild(column);
+		list.appendChild(line);
+	}
 
 	//for each category
 	for(var i = 0; i < rejectedSchedule.length; i++) {

@@ -9,7 +9,7 @@ var GREYSUIT  = 5
 
 //For listeners
 var helpIconCount = 5;
-var divID = "info";
+var helpIconID = 'help';
 var backgroundPage = chrome.extension.getBackgroundPage();
 
 
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('save').addEventListener('click', save_options);
 	document.getElementById('reset').addEventListener('click', reset_options);
 	document.getElementById('clearHistorySettings').addEventListener('click', chrome.extension.getBackgroundPage().open_history_options);	
-	setHelpTips(helpIconCount, divID);
+	setHelpTips(helpIconCount);
 });
 
 

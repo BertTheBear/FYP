@@ -179,3 +179,9 @@ Daylight Savings
 
 Array on startup
 	Wrong array
+
+Categorising all tabs
+	causes failure (-1) on multiples of the same category
+		Turns out to be any lower category will not be found
+		Initialise as -1 to prevent this
+		(Not initialising at -1 was stupid to be honest...)

@@ -56,19 +56,24 @@ Test opening or switching to tab on inactive WINDOW		DONE
 Removed entries 										DONE
 	where do they go? 									DONE
 	What happens 										DONE
+===========================================================================
 Save options in Interface page 							DONE
 Image with info on hover 								DONE
 Threshold set in options 								DONE
-Double check options. Make sure Advanced has ALL options DONE
+Double check options Make sure Advanced has ALL options DONE
 Improve options in interface page 						DONE
 Colour code recommendations page(Maybe rename to feedback too...) KINDA
-
-
+===========================================================================
 Popup when help icon clicked 							DONE (Notification)
 Populate lists when button clicked for testing 			DONE
+===========================================================================
 Check meta tags 										
 Tutorial												DONE
 Recommendations bug on startup							DONE
 DLS time bug 											
-Feedback page default message 							
-Check submissions 										
+Feedback page default message 							DONE
+Check submissions 										DONE (Submitted Demo Day version as test)
+Tutorial page link 										DONE
+Help tip popups on other pages 							DONE
+===========================================================================
+Profiling systems 										

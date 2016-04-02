@@ -302,25 +302,25 @@
 
 	"automaticClassification" :  
 				[
-					["cartoon", "anime", "comic", "manga", "animated"], 
-					["learn", "pedia", "tutorial"], 
-					["mail"], 
-					["entertainment"], 
-					["bank", "finance", "trade"], 
+					["animation", "cartoon", "anime", "comic", "manga", "animate"], 
+					["educational", "learn", "pedia", "tutorial", "university", "college"], 
+					["email", "mail"], 
+					["entertainmentNews", "entertainment"], 
+					["finance", "bank", "trade"], 
 					["game", "play", "arcade"], 
-					["funny"], 
-					["book", "library", "read"], 
-					["songs", "lyrics", "music", "sheet"], 
+					["leisure", "funny", "internet", "talking", "chat"], 
+					["literature", "book", "library", "read"], 
+					["music", "songs", "lyrics", "sheet"], 
 					["news"], 
-					["search"], 
-					["store", "direct", "buy"], 
-					[], 
-					["sports", "league", "match", "balls"], 
-					["tech", "soft"], 
-					["tv", "show", "watch", "flix"], 
-					["hotel", "travel", "escape"], 
-					["tube", "video"], 
-					[]
+					["searchEngine", "search"], 
+					["shopping", "store", "direct", "buy"], 
+					["socialMedia"], 
+					["sports", "league", "match", "ball"], 
+					["technology", "tech", "soft", "interface", "systems", "engine", "framework", "computer", "google"], 
+					["television", "tv", "show", "watch", "flix"], 
+					["travel", "hotel", "travel", "escape"], 
+					["video", "tube"], 
+					["work"]
 				],
 
 	"defaultBlacklist" : ["bank", "private", "pay", "secure"]

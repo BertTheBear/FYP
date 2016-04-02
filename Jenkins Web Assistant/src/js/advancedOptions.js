@@ -8,12 +8,21 @@ var GREYSUIT  = 5
 
 
 
+//For listeners
+var helpIconCount = 6;
+var helpIconID = 'help';
+var backgroundPage = chrome.extension.getBackgroundPage();
+
+
 //set triggers 
 document.addEventListener('DOMContentLoaded', function() {
 	restore_options();
 	document.getElementById('save').addEventListener('click', save_options);
 	document.getElementById('reset').addEventListener('click', reset_options);
 	document.getElementById('clearHistorySettings').addEventListener('click', chrome.extension.getBackgroundPage().open_history_options);	
+
+		
+	setHelpTips(helpIconCount);
 });
 
 
@@ -294,3 +303,28 @@ function reset_options() {
 
 
 
+
+
+
+
+
+
+//++++++++++++++++++ HELP TIPS +++++++++++++++++++++++++++++++++++++++++++
+
+function setHelpTips(numberofIcons) {
+	for(var i = 0; i < numberofIcons; i++) {
+		//get the icon ID from the document
+		var icon = document.getElementById('help' + i);
+
+		//Set listeners
+		setListener(icon);
+	}
+}
+
+
+function setListener(icon) {
+	icon.addEventListener("click", function() {
+		//Show a grey popup with the information
+		backgroundPage.notificationURL("Option Help", icon.title, null, GREYSUIT);
+	});
+}

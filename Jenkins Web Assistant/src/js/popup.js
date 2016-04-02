@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	//Show recommendation table
 	showRecommendation();
+
+
+	//Check all tabs
+	checkTabs();
 });
 
 function restore_checkbox() {
@@ -70,7 +74,7 @@ function showRecommendation() {
 		recommendations: 			[],
 		automaticClassification: 	[]
 	}, function(items) {
-		//for ease of writing/reading
+		//For ease of reading/writing
 		var recommendations = items.recommendations;
 
 		//get current tab url
@@ -88,69 +92,46 @@ function showRecommendation() {
 					currentTab = result[i];
 				}
 			}
-			var url = currentTab.url;
-			//url = "Whatever for testing";
+
+			//For testing the function
+			//currentTab.url = "department of computer and information systems ul";
+			//currentTab.title = "Games and stuff";
 
 
 			var selected = false;
-			var urlIndex = 0;
-			var count = 0;
+			var categoryIndex = -1;
 			//Loops through this until it finds a recommendation 
 			while(!selected) {
 
-				//Find the category containing the url starting from the previous index (Usually 0)
-				urlIndex = searchForUrlCategory(url, recommendations, urlIndex);
+				//categorise the website starting from the previous recommendation
+				categoryIndex = categoriseTab(currentTab, items, categoryIndex);
 				
-				//Returns -1 if not found
-				if(urlIndex < 0) {
-					//Try and automatically categorise
-					urlIndex = guessCategory(url, items.automaticClassification);
-					if(urlIndex < 0) {
-						//can't find anything, 
-						console.log("Couldn't find anything for " + url);//+++++++++++++++++++++
-						return;
-					}
-					else {
-						//Finds the first result that has not yet been viewed or is current and returns it
-						for(var i = 1; i <= recommendations[urlIndex].length && !selected; i++) {
-							//Make sure it has not been blocked or accepted
-							if(!(recommendations[urlIndex][i].accepted || recommendations[urlIndex][i].blocked)) {
-								//Make sure it's not the current tab
-								if(!url.includes(recommendations[i].url)) {
-									selected = true;
-									//Send array and item location to another function for printing
-									displayRecommendation(recommendations, urlIndex, i);
-								}
+				if(categoryIndex >= 0) {
+
+					//Finds the first result that has not yet been viewed or is current and returns it
+					for(var i = 1; i <= recommendations[categoryIndex].length && !selected; i++) {
+
+						//Make sure it has not been blocked or accepted
+						if(!(recommendations[categoryIndex][i].accepted || recommendations[categoryIndex][i].blocked)) {
+
+							//Make sure it's not the current tab
+							if(!currentTab.url.includes(recommendations[categoryIndex][i].url)) {
+
+								//Send array and item location to another function for printing
+								displayRecommendation(recommendations, categoryIndex, i);
+
+								//Then stop looping through
+								selected = true;
 							}
 						}
 					}
 				}
-				//must be not accepted and not blocked
-				else if(recommendations[urlIndex].accepted || recommendations[urlIndex].blocked) {
-					//If accepted or blocked end the function
+				else {
+					//No category was found, end function
+					console.log("Couldn't find anything for " + currentTab.url);//+++++++++++++++++++++
 					return;
 				}
-
-				//Finds the first result that has not yet been viewed or is current and returns it
-				for(var i = 1; i <= recommendations[urlIndex].length && !selected; i++) {
-					console.log("Got here!");//++++++++++++++++++++++
-					//Make sure it has not been blocked or accepted
-					if(!(recommendations[urlIndex][i].accepted || recommendations[urlIndex][i].blocked)) {
-						//Make sure it's not the current tab
-						if(!url.includes(recommendations[urlIndex][i].url)) {
-							selected = true;
-							//Send array and item location to another function for printing
-							displayRecommendation(recommendations, urlIndex, i);
-						}
-					}
-				}
-				if(count == 5 ) {
-					selected = true;
-				}
-				count++;
-			}/**/
-			//Else do nothing?
-			// Maybe do something else such as allow adding to a category?
+			}
 		});
 	});
 }
@@ -254,21 +235,46 @@ function displayRecommendation(recommendationArray, categoryIndex, urlIndex) {
 
 
 
+function categoriseTab(tab, items, previousCategory) {
+	//For ease of reading and writing etc.
+	var recommendations = items.recommendations;
+	var tags = items.automaticClassification;
+	var url = tab.url;
+	var title = tab.title;
+
+	var categoryIndex = -1
+
+	//Find the category containing the url starting from just after the previous index (Usually 0 or (-1)+1)
+	categoryIndex = searchForUrlCategory(url, recommendations, previousCategory);
+	
+	//Returns -1 if not found
+	if(categoryIndex < 0) {
+		//Try and automatically categorise using url
+		categoryIndex = guessCategory(url, tags, previousCategory);
+	}
+	//If still not found
+	if(categoryIndex < 0) {
+		//can't find anything in url. Try title
+		categoryIndex = guessCategory(title, tags, previousCategory);
+	}
+	//If those don't work try meta tags
+
+	return categoryIndex;
+}
+
 
 //Functionality functions. Used in previous functions simply for ease of reading/modification
-function searchForUrlCategory(url, recommendationsArray, start) {
-	//start is for trying again later for a different category.
+function searchForUrlCategory(url, recommendationsArray, previousCategory) {
+	//previousCategory is for trying again later for a different category.
 
-	var recommendedUrl = "";
 	//Search array for url
-	for(var categoryIndex = start; categoryIndex < recommendationsArray.length; categoryIndex++) {
+	for(var returnIndex = previousCategory + 1; returnIndex < recommendationsArray.length; returnIndex++) {
 		//search each element of each category.
 		// (Might switch this for a binary search later)
-		for(var urlIndex = 1; urlIndex < recommendationsArray[categoryIndex].length; urlIndex++) {
-			recommendedUrl = recommendationsArray[categoryIndex][urlIndex].url;
+		for(var urlIndex = 1; urlIndex < recommendationsArray[returnIndex].length; urlIndex++) {
+			var recommendedUrl = recommendationsArray[returnIndex][urlIndex].url;
 			if(url.includes(recommendedUrl)) {
-				console.log("Returned " + categoryIndex);//+++++++++++++++++++++++
-				return categoryIndex;
+				return returnIndex;
 			}
 		}
 	}
@@ -278,22 +284,27 @@ function searchForUrlCategory(url, recommendationsArray, start) {
 }
 
 
-//Takes words from the url and tries to guess the category
-function guessCategory(url, tagArray) {
+//Takes words from the url or title and tries to guess the category
+function guessCategory(tabInfo, tagArray, previousCategory) {
+	//previousCategory is for trying again later for a different category.
+
+	//make lower case
+	tabInfo = tabInfo.toLowerCase();
 	
-	//search each array
-	for(var i = 0; i < tagArray.length; i++) {
+	//search each array, previousCategorying AFTER the previous
+	for(var returnIndex = previousCategory + 1; returnIndex < tagArray.length; returnIndex++) {
 		//check each element or tag
-		for(var j = 0; j < tagArray[i].length; j++) {
-			//If the url contains the tags
-			if(url.includes(tagArray[i][j])) {
+		for(var tagIndex = 0; tagIndex < tagArray[returnIndex].length; tagIndex++) {
+			var tag = tagArray[returnIndex][tagIndex];
+			//If the tabInfo contains the tags
+			if(tabInfo.includes(tag)) {
 				//return the index of the category
-				return i;
+				return returnIndex;
 			}
 		}
 	}
 	//if nothing is found return default
-	return -1;				
+	return -1;
 }
 
 
@@ -311,10 +322,27 @@ function guessCategory(url, tagArray) {
 
 
 
-// ########################### RECORD PATTERN #######################
+// ########################### RECORD PATTERN #############################
 
 function checkTabs() {
-	chrome.tabs.query({ currentWindow: true }, function (result) {
-		//Process tabs and record pattern (Alphabetically)
+	//get necessary variables etc.
+
+	chrome.storage.local.get({
+		recommendations: 			[],
+		automaticClassification: 	[]
+	}, function(items) {
+		//get ALL tabs
+		chrome.tabs.query({ }, function (result) {
+			//Process tabs and record pattern (Alphabetically?)
+			for(var tabIndex = 0; tabIndex < result.length; tabIndex++) {
+				//For ease of reading/writing.thinking etc.
+				var currentTab = result[tabIndex];
+				var categoryIndex = -1;//Initialising as -1 prevents errors when going to a lower category
+
+				//Categorise using the same function as the recommendations
+				categoryIndex = categoriseTab(currentTab, items, categoryIndex);
+				console.log("Tab " + tabIndex + ", Category : " + categoryIndex); //++++++++++++++++++++++++++++++
+			}
+		});
 	});
 }
