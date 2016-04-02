@@ -77,3 +77,4 @@ Tutorial page link 										DONE
 Help tip popups on other pages 							DONE
 ===========================================================================
 Profiling systems 										
+Skewness completed 										DONE
