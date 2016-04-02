@@ -28,6 +28,26 @@ h2 {
 }
 
 
+h3 { 
+	margin: 0; 
+	padding: 24px 0px 7px 10px; 
+	font-family: "trebuchet ms",arial,tahoma,verdana,sans-serif; 
+	font-weight: bold; 
+	letter-spacing: .005em; 
+	color: Black; 
+	font-size: 13pt; 
+}
+
+p {
+	padding: 0px 0px 7px 15px; 
+	font-size: 12pt; 
+}
+
+ul {
+	font-size: 11pt; 
+}
+
+
 #status {
 	color: Red;
 	padding: 10px 0px 5px 0px;

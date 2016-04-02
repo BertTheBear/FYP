@@ -9,7 +9,7 @@ Bookmarks
 Top Sites 			DONE
 Clear history 		DONE
 	Auto trigger	DONE
-Profiles/Identity 	
+Profiles/Identity 	DONE
 Process Information 
 - history 			DONE
 - refresh
@@ -37,12 +37,12 @@ PERMISSIONS USED:
 unlimitedStorage	?
 storage				o
 notifications		o
-activeTab			
+activeTab			o
 tabs				o
-bookmarks			
+bookmarks			x
 browsingData		o
-identity			
-topSites			o
+identity			o
+topSites			x
 history				o
 
 EDGE extension 		NO GO. NO CAN DO.
@@ -53,11 +53,9 @@ EDGE extension 		NO GO. NO CAN DO.
 JSON format for entries									DONE
 Page for recommendations 								DONE
 Test opening or switching to tab on inactive WINDOW		DONE
-
 Removed entries 										DONE
 	where do they go? 									DONE
 	What happens 										DONE
-
 Save options in Interface page 							DONE
 Image with info on hover 								DONE
 Threshold set in options 								DONE
@@ -68,3 +66,9 @@ Colour code recommendations page(Maybe rename to feedback too...) KINDA
 
 Popup when help icon clicked 							DONE (Notification)
 Populate lists when button clicked for testing 			DONE
+Check meta tags 										
+Tutorial												DONE
+Recommendations bug on startup							DONE
+DLS time bug 											
+Feedback page default message 							
+Check submissions 										

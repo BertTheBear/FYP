@@ -36,11 +36,16 @@ function save_options() {
 	var organiserPermission = document.getElementById('checkOrganiser').checked;
 	var recommendPermission = document.getElementById('checkRecommendations').checked;
 	//Processing
-	var visitSite	= document.getElementById('visitThresholdSite').value;
-	var timer  	 	= document.getElementById('timeThreshold').value;
-	var ignored  	= document.getElementById('blacklist').value;
+	var visitSite		= document.getElementById('visitThresholdSite').value;
+	if (visitSite < 1) //Default to 1 if they set it too low
+		visitSite = 1;
+	var timer  	 		= document.getElementById('timeThreshold').value;
+	if (timer < 0) //Default to 0 if they set it too low
+		timer = 0;
+	var ignored  		= document.getElementById('blacklist').value;
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
+
 
 	//Save the settings to memory
 	chrome.storage.sync.set({

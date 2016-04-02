@@ -252,7 +252,7 @@ function addScheduleItem(schedule, time, urlText, approved) {
 	if(type.includes("auto")) {
 		var acceptButton = document.createElement('a');
 		acceptButton.appendChild(document.createTextNode("Accept"));
-		acceptButton.setAttribute('href', '#');
+		acceptButton.setAttribute('href', '#' + listID);
 		acceptButton.setAttribute('class', 'trlist-AcceptButton');
 		acceptButton.addEventListener('click', function() {
 			//Add the new instance to the array 
@@ -279,7 +279,7 @@ function addScheduleItem(schedule, time, urlText, approved) {
 	var removal = document.createElement('td');
 	var removeButton = document.createElement('a');
 	removeButton.appendChild(document.createTextNode("X"));
-	removeButton.setAttribute('href', '#');
+	removeButton.setAttribute('href', '#' + listID);
 	removeButton.setAttribute('class', 'trlist-RemoveButton');
 	removeButton.addEventListener('click', function() {
 		//Removes the whole line if the X is clicked
@@ -437,6 +437,7 @@ function validateFormURL(errorDiv, urlID, scheduleLength) {
 	}
 	else if (!pattern.test(urlText)) {
 		eDiv.textContent = 'Invalid URL Entered.';
+		valid = false;
 	}
 
 
@@ -531,11 +532,18 @@ function addToRemovedEntries(item) {
 // Saves options to chrome.storage
 function save_options() {
 	//retrieve the settings from the page
+	//Processing
 	var autoNotifications = document.getElementById('autoNotifications').checked;//---
 	var visitSite		= document.getElementById('visitThresholdSite').value;
+	if (visitSite < 1) //Default to 1 if they set it too low
+		visitSite = 1;
 	var visitPage 		= document.getElementById('visitThresholdPage').value; 	//--
-	var weight 	 		= document.getElementById('typedWeight').value; 		//--
+	if (visitPage < 1) //Default to 1 if they set it too low
+		visitPage = 1;
+	var weight 	 		= document.getElementById('typedWeight').value; 		//-- No default because they may want typed values to remove visits
 	var timer  	 		= document.getElementById('timeThreshold').value;
+	if (timer < 0) //Default to 0 if they set it too low
+		timer = 0;
 	var ignored  		= document.getElementById('blacklist').value;
 	var checkFrequency  = document.getElementById('checkFrequency').value;		//---
 	if (checkFrequency < 1) //Default to 1 if they set it too low
@@ -552,7 +560,12 @@ function save_options() {
 		var trackBefore = document.getElementById('trackAfter').value;			//---
 	}
 	var autoCount  	= document.getElementById('autoCount').value;				//---
+	if (autoCount < 1) //Default to 1 if they set it too low
+		autoCount = 1;
 	var rejectedThreshold = document.getElementById('rejectedThreshold').value; //---
+	if (rejectedThreshold < 0) //Default to 0 if they set it too low
+		rejectedThreshold = 0;
+
 
 	//Save the settings to memory
 	chrome.storage.sync.set({

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Jenkins Tutorial Page</title>
+
+		<!-- CSS Stylesheet reference -->
+		<link rel="stylesheet" type="text/css" href="/src/styles.css">
+			<script src="/src/js/tutorial.js"></script>
+	</head>
+	<body>
+		<h1>Jenkins Tutorial Page</h1>
+		<div class='centeredList'>
+			<h2>Sections</h2>
+			<ul>
+				<li><a href="#Explanation">		Explanation</a></li>
+				<li><a href="#Scheduler">		Scheduler</a>
+				<ul>
+					<li><a href="#SampleSchedule">Sample Schedule</a></li>
+				</ul>
+				</li>
+				<li><a href="#Recommendations">	Recommendations</a></li>
+				<li><a href="#Something">		Something</a></li>
+		</div>
+
+		<div id='Explanation' class='centeredList'>
+			<h2>Explanation</h2>
+			<p>
+				Jenkins Web Assistant is an Extension for chrome aimed at aiding web usage. The application is intended to be able to provide a scheduling system that will prompt users at certain times with site recommendations, and will also provide recommendations for similar sites to those being browsed. 
+				All capabilities of the extension are fully customisable and may be switched on or off in the <a href="advancedOptions.html" target="_blank">Advanced Options Page</a>.<br>
+			</p>
+			<p>
+				A brief tutorial for the major functions is given below.
+			</p>
+		</div>
+
+		<div id='Scheduler' class='centeredList'>
+			<h2>Scheduler</h2>
+			<p>
+				The scheduler is the mechanism by which the extension will prompt the user at certain times with certain recommendations. A sample schedule is given below.
+			</p>
+			<p>
+				Entries are divided into <i>User Entries</i> and <i>Automatic Entries</i>.
+			</p>
+			<ul>
+				<li>
+					<i><b>User</b></i> entries are in green.
+					<ul>
+						<li>These are created by the user using a form like that below. This is done on the <a href="interface.html" target="_blank">Interface Page</a>. </li>
+						<li>These entries can be removed by clicking on the <b class='trlist-RemoveButton'>X</b> on the right-hand side of the schedule entry. </li>
+						<li>Removing an entry will prompt a notification window asking if you would like to undo the operation, in case you make a mistake. </li>
+						<li>These will prompt notifications that can be clicked to open that website in a new or existing tab.</li>
+						<li>Notifications can be turned on and off in the Options page, and may be temporarily turned off by selecting the "Prevent notifications this session" option in the popup window by clicking the icon in the extension bar at the top of the screen.</li>
+						<li><a href='#userNotification' id='userNotification'>Click here for a sample User notification</a></li>
+					</ul>
+				</li>
+				<li>
+					<i><b>Automatic</b></i> entries are in blue.
+					<ul>
+						<li>These are created automatically by the extension if the option is selected. This can be selected on the <a href="#" id='option'>Options Page</a></li>
+						<li>This is done when the web browser is opened and if the <a href="#example" id="example" class="smallbtn">Process History</a> at the top of the <a href="interface.html">Interface Page</a> button is pressed.</li>
+						<li>These entries can be removed by clicking on the <b class='trlist-RemoveButton'>X</b> on the right-hand side of the schedule entry similar to User entries.</li>
+						<li>Clicking the <a href='#Scheduler' class='trlist-AcceptButton'>Accept</a> button will accept the recommendation and change the colour to green. This will show a notification upon successful validation of the schedule item.</li>
+						<li>Notifications for automatic schedule entries are turned off by default. These will need to be turned on using the <a href="advancedOptions.html" target="_blank">Advanced Options Page</a> or the <a href="interface.html" target="_blank">Interface Page</a> </li>
+						<li><a href='#autoNotification' id='autoNotification'>Click here for a sample Automatic notification</a></li>
+					</ul>
+				</li>
+			</ul>
+
+			<h3>Sample Schedule</h3>
+			<p>
+				Below is a sample scheduler that you can use to test inputting, accepting, and removing entries. This schedule will not modify any entries to your schedule found on the <a href="interface.html">Interface Page.</a> These schedule items will not create popup notifications.<br>
+				This schedule will reset each time this page is loaded. Just refresh to make a new schedule. Have fun!
+			</p>
+			<div id='Scheduler' class='padded'>
+				<table id="itemList" class="centeredList">
+				</table>
+			</div>
+
+			<div class='centered'>
+				<form name="scheduleForm">
+					Time: <input type="time" id="enteredTime" value="00:00">
+					URL: <input type="text" id="enteredURL" placeholder="Enter a valid url">
+					<button id="submitButton">Submit</button>
+				</form>
+				<div id="formErrorDiv"> <br> </div>
+			</div>
+		</div>
+
+		<div id='Recommendations' class='centeredList'>
+			<h2>Recommendations</h2>
+			<p>
+				Another capability of the Extension is the <i>Recommender</i>. This function provides you with example websites based upon the site you are currently viewing. This can be seen by clicking on the icon in the extension bar at the top of the screen. This will process the current web page and assign it to a category. The extension will then select a similar website in the same category and show it to you. Clicking on these recommendations will open the website in a new tab. Not all websites will have recommendations.
+			</p>
+			<p>
+				These recommendations can be accepted or rejected using the <a href='#Recommendations' id='accept' class='trlist-AcceptButton'>Accept</a> and <b class='trlist-RemoveButton'>X</b> buttons. Accepted and rejected recommendations can also be viewed on the <a href="feedback.html" id="feedback" class="smallbtn" target="_blank">Recommendations Feedback Page</a> <br>
+			</p>
+			<p>
+				An example is shown in the image below, and can also be seen by clicking the icon at the top of the browser now.
+			</p>
+				
+			<div class='centered'>
+				<img src="/images/tutorial/recommendation.png" alt="Recommendation display example" title="Example of Recommendations for the 'Television' category.">
+			</div>
+
+
+
+		</div>
+
+
+
+	</body>
+</html>

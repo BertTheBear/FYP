@@ -361,69 +361,9 @@ function checkSchedule() {
 							notificationColour = BLUESUIT;
 						}
 						
-						//Get all tabs open in the window
-						chrome.tabs.query({}, function (result) {
-							var tempTime = time;
-							var itemMinute = tempTime.getMinutes();
-							var itemHour = tempTime.getHours();
-							//If it found no results then the page is not open
-							if(result == null) {
-								console.log(destination + " not found in tabs. Function will open Tab.");
-								//Appropriate function...
-							}
 
-							var tabToOpen;
-							var current = false;
-							//Check whether the website is already open.
-							for (var index = 0; index < result.length && !current; index++) {
-								//For ease of reading
-								var item = result[index];
-								//If this tab contains url to be opened
-								if(item.url.includes(destination)) {
-									//If tabToOpen has no value
-									if(tabToOpen == null) {
-										tabToOpen = item;
-									}
-									else if(item.currentWindow) {
-										//Window is open. Ignore?
-										//Notify?
-										current = true;//?
-										return;
-									}
-								}
-							}
-
-							//If tab was found in loop above
-							if(tabToOpen != null) {
-								//To prevent 12:7 etc.
-								var itemMinuteText = "" + itemMinute;
-								if (itemMinute < 10)
-									itemMinuteText = "0" + itemMinuteText;
-								var title = /*itemHour + ":" + itemMinuteText + */"Website reminder";
-								var textContent = "Click here to open tab containing " + destination;
-								//Switch to that tab when notification clicked
-								notificationFunction(title, textContent, function() {
-									//Switch to that tab
-									chrome.tabs.update(tabToOpen.id, { active: true });
-								}, null, notificationColour);
-							}
-							else { //Tab not found to be open
-								//Open url in a new tab
-
-								//Make sure the url works
-								destination = makeURL(destination);
-
-								//To prevent 12:7 etc.
-								var itemMinuteText = "" + itemMinute;
-								if (itemMinute < 10)
-									itemMinuteText = "0" + itemMinuteText;
-								var title = /*itemHour + ":" + itemMinuteText + */"Website reminder";
-								var textContent = "Click here to open " + destination + " in a new tab.";
-								//Show notification
-								notificationURL(title, textContent, destination, notificationColour);
-							}
-							
-						});
+						//Do with a function now to prevent bugs
+						checkTabs(time, destination, notificationColour);
 						
 					}
 				}
@@ -444,6 +384,78 @@ function makeURL(destination) {
 	}
 }/**/
 
+
+function checkTabs(time, destination, notificationColour) {
+	var itemHour = time.getHours();
+	var itemMinute = time.getMinutes();
+	//Get all tabs open in the window
+	chrome.tabs.query({}, function (result) {
+		var tabToOpen;
+		var current = false;
+		//If it found no results then the page is not open
+		if(result == null) {
+			console.log(destination + " not found in tabs. Function will open Tab.");
+			//Appropriate function...
+			tabToOpen = null;
+			current = true;
+		}
+
+		//Check whether the website is already open.
+		for (var index = 0; index < result.length && !current; index++) {
+			//For ease of reading
+			var item = result[index];
+			//If this tab contains url to be opened
+			if(item.url.includes(destination)) {
+				//if it's the current window+tab
+				if(item.currentWindow && item.active) {
+					//Window is open. Ignore?
+					//Notify?
+					current = true;//?
+					return;
+				}
+
+
+				//If tabToOpen has no value
+				if(tabToOpen == null) {
+					tabToOpen = item;
+				}
+			}
+		}
+
+		//If tab was found in loop above
+		if(tabToOpen != null) {
+			//To prevent 12:7 etc.
+			var itemMinuteText = "" + itemMinute;
+			if (itemMinute < 10)
+				itemMinuteText = "0" + itemMinuteText;
+			var title = itemHour + ":" + itemMinuteText + " reminder";
+			//var title = "Website reminder";
+			var textContent = "Click here to open tab containing " + destination;
+			//Switch to that tab when notification clicked
+			notificationFunction(title, textContent, function() {
+				//Switch to that tab
+				chrome.tabs.update(tabToOpen.id, { active: true });
+			}, null, notificationColour);
+		}
+		else { //Tab not found to be open
+			//Open url in a new tab
+
+			//Make sure the url works
+			destination = makeURL(destination);
+
+			//To prevent 12:7 etc.
+			var itemMinuteText = "" + itemMinute;
+			if (itemMinute < 10)
+				itemMinuteText = "0" + itemMinuteText;
+			var title = itemHour + ":" + itemMinuteText + " reminder";
+			//var title = "Website reminder";
+			var textContent = "Click here to open " + destination + " in a new tab.";
+			//Show notification
+			notificationURL(title, textContent, destination, notificationColour);
+		}
+		
+	});
+}
 
 
 
@@ -1226,42 +1238,42 @@ function sortRecommendations() {
 		//Get the recommendations from the object too.
 		var recommendations = recObject.recommendations;
 
-						//========= TO REMOVE OLD FORMAT =============
-						if(items.recommendations.length > maxRecLength) {
-							//Just switch in the whole array
-							console.log("RESET THE WHOLE REC ARRAY");//+++++++++++++++++
+		//========= TO REMOVE OLD FORMAT or initial formatting errors on start up =============
+		if(items.recommendations.length > maxRecLength || items.recommendations.length <= 1) {
+			//Just switch in the whole array
+			console.log("RESET THE WHOLE REC ARRAY");//+++++++++++++++++
 
-							// empty existing array and enter all of the new objects into it.
-							items.recommendations = [];
+			// empty existing array and enter all of the new objects into it.
+			items.recommendations = [];
 
-							//make the array into objects
-							for(var i = 0; i < recommendations.length; i++) {
-								//First element is the category name
-								var thisCategory = recommendations[i][0]; 
-								var categoryArray = [];
+			//make the array into objects
+			for(var i = 0; i < recommendations.length; i++) {
+				//First element is the category name
+				var thisCategory = recommendations[i][0]; 
+				var categoryArray = [];
 
-								//first element is just category name
-								categoryArray[0] = recommendations[i][0]
+				//first element is just category name
+				categoryArray[0] = recommendations[i][0]
 
-								//in each category make the objects
-								for(var j = 1; j < recommendations[i].length; j++) {
-									var tempObject = new Object();
-									tempObject.category = categoryArray[0];
-									tempObject.accepted = false;
-									tempObject.blocked = false;
-									//set url as the contents of recommendations array
-									tempObject.url = recommendations[i][j];
+				//in each category make the objects
+				for(var j = 1; j < recommendations[i].length; j++) {
+					var tempObject = new Object();
+					tempObject.category = categoryArray[0];
+					tempObject.accepted = false;
+					tempObject.blocked = false;
+					//set url as the contents of recommendations array
+					tempObject.url = recommendations[i][j];
 
-									categoryArray.push(tempObject);
-									//push() not append() ...
-								}
+					categoryArray.push(tempObject);
+					//push() not append() ...
+				}
 
-								//Now add array as element of recommendations array
-								items.recommendations[i] = categoryArray;
-							}
-						}
-						else {
-						//============================================
+				//Now add array as element of recommendations array
+				items.recommendations[i] = categoryArray;
+			}
+		}
+		else {
+		//============================================
 		
 
 
@@ -1476,4 +1488,5 @@ function show() {
 
 	//Anything else?
 	//Don't think so
+	console.log(recObject);//++++++++++++++++++++++
 }

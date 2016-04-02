@@ -12,7 +12,7 @@
 		<h1>Jenkins Interface</h1>
 
 		<div class="padded">
-			<a href="#" id="processHistory" class="smallbtn" >Process History</a>
+			<a href="#" id="processHistory" class="smallbtn">Process History</a>
 		</div>
 		
 		<h2>Schedule List</h2>
@@ -21,7 +21,7 @@
 
 			<form name="scheduleForm">
 				Time: <input type="time" id="enteredTime" value="00:00">
-				URL: <input type="text" id="enteredURL" placeholder="Enter a valid url" required>
+				URL: <input type="text" id="enteredURL" placeholder="Enter a valid url">
 				<button id="submitButton">Submit</button>
 			</form>
 			<div id="formErrorDiv"> <br> </div>
@@ -38,6 +38,10 @@
 
 
 
+		<div class="centered">
+			<br> 
+			<a href="feedback.html" id="feedback" class="smallbtn" target="_blank">Recommendations Feedback Page</a>
+		</div>
 
 
 
@@ -143,7 +147,7 @@
 						<input type="number" id="newZero" style="width:40px">
 					</label>
 
-					New Zero <br>
+					Logical Midnight <br>
 					<i>The delay (In hours after 00:00) before a "new day" will start. This is designed to adapt schedules towards late night browsing.</i> (<b>Default 4.</b>)
 				</td>
 			</tr>
@@ -202,10 +206,6 @@
 		</div>
 
 
-		<div class="centered">
-			<br> 
-			<a target="_blank" href="feedback.html">Recommendations Feedback Page</a>
-		</div>
 
 	</div>
 </body>

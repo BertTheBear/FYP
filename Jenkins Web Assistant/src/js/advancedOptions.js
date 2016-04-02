@@ -31,9 +31,15 @@ function save_options() {
 	//Processing
 	var autoNotifications = document.getElementById('autoNotifications').checked;//---
 	var visitSite		= document.getElementById('visitThresholdSite').value;
+	if (visitSite < 1) //Default to 1 if they set it too low
+		visitSite = 1;
 	var visitPage 		= document.getElementById('visitThresholdPage').value; 	//--
-	var weight 	 		= document.getElementById('typedWeight').value; 		//--
+	if (visitPage < 1) //Default to 1 if they set it too low
+		visitPage = 1;
+	var weight 	 		= document.getElementById('typedWeight').value; 		//-- No default because they may want typed values to remove visits
 	var timer  	 		= document.getElementById('timeThreshold').value;
+	if (timer < 0) //Default to 0 if they set it too low
+		timer = 0;
 	var ignored  		= document.getElementById('blacklist').value;
 	var checkFrequency  = document.getElementById('checkFrequency').value;		//---
 	if (checkFrequency < 1) //Default to 1 if they set it too low
@@ -50,7 +56,11 @@ function save_options() {
 		var trackBefore = document.getElementById('trackAfter').value;			//---
 	}
 	var autoCount  	= document.getElementById('autoCount').value;				//---
+	if (autoCount < 1) //Default to 1 if they set it too low
+		autoCount = 1;
 	var rejectedThreshold = document.getElementById('rejectedThreshold').value; //---
+	if (rejectedThreshold < 0) //Default to 0 if they set it too low
+		rejectedThreshold = 0;
 	//History Clear
 	var clearhistory = document.getElementById('checkClearHistory').checked;
 	var notClearedNotification = document.getElementById('notClearedNotification').checked;// ----

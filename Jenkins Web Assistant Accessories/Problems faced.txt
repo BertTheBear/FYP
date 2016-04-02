@@ -167,3 +167,15 @@ Storing information
 	Information was also initially sotred as a single array. 
 		May make it into a 2D array for ease of searching etc.
 			No real reason not to...
+			I did
+
+Popup times and websites
+	Times and websites shown by notification popup are incorrect
+		was caused by asynchronous functions and scope
+		Fixed by calling a function rather than just performing process inside loop
+
+Daylight Savings
+	daylight savings causes auto-processing to be off by an hour when using just microseconds
+
+Array on startup
+	Wrong array
