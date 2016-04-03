@@ -835,6 +835,167 @@ function processSinglePage(pageUrl) {
 	});
 }
 
+
+//Time processing function. Will loop (Usually only) once to optimise if necessary.
+function processTime(url, items, historyArray, type) {
+	//to account for late night browsing (New Zero Modification)
+	var NZModification = items.newZero * microsecondsPerHour;
+
+
+	//Process tracking times into a more easily manipulated format
+	//lower limit first
+	var index = items.trackAfter.indexOf(":");
+	var itemHour = parseInt(items.trackAfter.substring(index-2, index));		//2 values before : character
+	var itemMinute = parseInt(items.trackAfter.substring(index+1, index+3));	//2 values after  : character
+	var lowerLimit = itemHour + (itemMinute / 60);//Time as a double
+	//Make modification
+	lowerLimit -= items.newZero; //not NZModification because that's too big
+
+	//then upper limit
+	index = items.trackBefore.indexOf(":");
+	itemHour = parseInt(items.trackBefore.substring(index-2, index));	
+	itemMinute = parseInt(items.trackBefore.substring(index+1, index+3));
+	var upperLimit = itemHour + (itemMinute / 60);//Time as a double
+	//Make modification
+	upperLimit -= items.newZero;
+
+
+
+	var timeSum = 0;
+	var maxTime = 0;
+	var initialTime = 0;
+
+	//Different types use different object variable names
+	if(type == "domain") {
+		//Get the time and make the logical midnight modification
+		initialTime = historyArray[0].lastVisitTime - NZModification;
+	}
+	else if(type == "single") {
+		//Get the time and make the logical midnight modification
+		initialTime = historyArray[0].visitTime - NZModification;
+	}
+	else {
+		//error
+		return;
+	}
+
+	//Set the first element as the min time
+	minTime = initialTime % microsecondsPerDay; //Gets as microseconds in that day
+
+	//Make sure the new hours aren't different to the original hours
+		//This is mostly to deal with Daylight Savings
+	if(new Date(minTime).getHours() != new Date(initialTime).getHours()) {
+		minTime += microsecondsPerHour;
+		minTime = minTime % microsecondsPerDay;
+	}
+
+
+	//for finding average
+	var itemCount = 0;
+
+
+	//Process using last visited times for all domain pages
+	// Using all times for single pages
+	historyArray.forEach(function (item, index, array) {
+		//For simplicity it only counts hours
+		var modifiedTime = 0;
+		if(type == "domain") {
+			modifiedTime = item.lastVisitTime - NZModification;
+		}
+		else if(type == "single") {
+			modifiedTime = item.visitTime - NZModification;
+		}
+		else {
+			//error
+			return;
+		}
+
+		var time = modifiedTime % microsecondsPerDay;
+		//Make sure the new hours aren't different to the original hours
+			//This is mostly to deal with Daylight Savings
+		if(new Date(time).getHours() != new Date(modifiedTime).getHours()) {
+			time += microsecondsPerHour;
+			time = time % microsecondsPerDay;
+		}
+
+
+
+
+
+
+		var timeCheck = time / microsecondsPerHour;
+
+
+
+		//Make sure the time is within the limits
+		if((lowerLimit < timeCheck && timeCheck < upperLimit) || (lowerLimit > timeCheck && timeCheck > upperLimit)) {
+			//Get just the time of day from the date
+			//May make this work by week instead at some point
+			timeSum += (time % microsecondsPerDay);
+			itemCount++;
+
+			//Set new min and max if changed
+			if(time < minTime) {
+				minTime = time;
+			} else if (time > maxTime) {
+				maxTime = time;
+			}
+		}
+	});
+
+	//If no visits fall within range then stop
+	if(itemCount <= 0) {
+		return; // Exits function
+	}
+
+
+	//Get average visit time
+	var averageTime = timeSum / itemCount;
+	//Round to the preset number
+	averageTime -= (averageTime % (items.timeRounding * microsecondsPerMinute));
+
+
+	//Check if it needs to be broken up further
+	// if the min and max are more than X hours apart and the average is close to the middle
+	//  then we'll split it up further.
+	var difference = (maxTime - minTime) / microsecondsPerHour;
+	if(difference > items.timeDeviation) {
+		var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
+		var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
+		var positiveSkew = lower / upper;
+		var negativeSkew = upper / lower;
+
+
+		if(positiveSkew > items.skewnessThreshold) {
+			//If skewed positively, set the average to be the new upperThreshold
+			var tempDate = new Date(averageTime + NZModification);
+			var newUpperThreshold = tempDate.getHours() + ":" + tempDate.getMinutes();
+			items.trackBefore = newUpperThreshold;
+
+			//THen run the process again with the new limit
+			processTime(url, items, historyArray, type);
+		}
+		else if(negativeSkew > items.skewnessThreshold) {
+			//If skewed negatively, set the average to be the new lower limit
+			var tempDate = new Date(averageTime + NZModification);
+			var newLowerThreshold = tempDate.getHours() + ":" + tempDate.getMinutes();
+			items.trackAfter = newLowerThreshold;
+
+			//Then run the process again with the new limit
+			processTime(url, items, historyArray, type);
+		}
+		else {
+			var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+			addToSchedule(url, scheduleTime);
+		}
+	}
+	else {
+		var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
+		addToSchedule(url, scheduleTime);
+	}
+}
+
+
 function addToSchedule(url, time) {
 	chrome.storage.sync.get( {
 		autoCount: 			20,
@@ -908,130 +1069,6 @@ function addToSchedule(url, time) {
 }
 
 
-//Time processing function. Will loop once to optimise if necessary.
-function processTime(url, items, historyArray, type) {
-	//to account for late night browsing (New Zero Modification)
-	var NZModification = items.newZero * microsecondsPerHour;
-
-
-	//Process tracking times into a more easily manipulated format
-	//lower limit first
-	var index = items.trackAfter.indexOf(":");
-	var itemHour = parseInt(items.trackAfter.substring(index-2, index));		//2 values before : character
-	var itemMinute = parseInt(items.trackAfter.substring(index+1, index+3));	//2 values after  : character
-	var lowerLimit = itemHour + (itemMinute / 60);//Time as a double
-	//Make modification
-	lowerLimit -= items.newZero; //not NZModification because that's too big
-
-	//then upper limit
-	index = items.trackBefore.indexOf(":");
-	itemHour = parseInt(items.trackBefore.substring(index-2, index));	
-	itemMinute = parseInt(items.trackBefore.substring(index+1, index+3));
-	var upperLimit = itemHour + (itemMinute / 60);//Time as a double
-	//Make modification
-	upperLimit -= items.newZero;
-
-
-
-	var timeSum = 0;
-	var maxTime = 0;
-	//Set first as min
-	var minTime = 0;
-	if(type == "domain") {
-		minTime = (historyArray[0].lastVisitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
-	}
-	else if(type == "single") {
-		minTime = (historyArray[0].visitTime - NZModification) % microsecondsPerDay; //Gets as microseconds in that day
-	}
-
-
-	//for finding average
-	var itemCount = 0;
-
-
-	//Process using last visited times for all domain pages
-	// Using all times for single pages
-	historyArray.forEach(function (item, index, array) {
-		//For simplicity it only counts hours
-		var time = 0;
-		if(type == "domain") {
-			time = (item.lastVisitTime - NZModification) % microsecondsPerDay;
-		}
-		else if(type == "single") {
-			time = (item.visitTime - NZModification) % microsecondsPerDay;
-		}
-
-		var timeCheck = time / microsecondsPerHour;
-
-
-
-		//Make sure the time is within the limits
-		if((lowerLimit < timeCheck && timeCheck < upperLimit) || (lowerLimit > timeCheck && timeCheck > upperLimit)) {
-			//Get just the time of day from the date
-			//May make this work by week instead at some point
-			timeSum += (time % microsecondsPerDay);
-			itemCount++;
-
-			//Set new min and max if changed
-			if(time < minTime) {
-				minTime = time;
-			} else if (time > maxTime) {
-				maxTime = time;
-			}
-		}
-	});
-
-	//If no visits fall within range then stop
-	if(itemCount <= 0) {
-		return; // Exits function
-	}
-
-
-	//Get average visit time
-	var averageTime = timeSum / itemCount;
-	//Round to the preset number
-	averageTime -= (averageTime % (items.timeRounding * microsecondsPerMinute));
-
-
-	//Check if it needs to be broken up further
-	// if the min and max are more than X hours apart and the average is close to the middle
-	//  then we'll split it up further.
-	var difference = (maxTime - minTime) / microsecondsPerHour;
-	if(difference > items.timeDeviation) {
-		var lower = ((averageTime - minTime) / microsecondsPerHour) / difference;
-		var upper = ((maxTime - averageTime) / microsecondsPerHour) / difference;
-		var positiveSkew = lower / upper;
-		var negativeSkew = upper / lower;
-
-
-		if(positiveSkew > items.skewnessThreshold) {
-			//If skewed positively, set the average to be the new upperThreshold
-			var tempDate = new Date(averageTime + NZModification);
-			var newUpperThreshold = tempDate.getHours() + ":" + tempDate.getMinutes();
-			items.trackBefore = newUpperThreshold;
-
-			//THen run the process again with the new limit
-			processTime(url, items, historyArray, type);
-		}
-		else if(negativeSkew > items.skewnessThreshold) {
-			//If skewed negatively, set the average to be the new lower limit
-			var tempDate = new Date(averageTime + NZModification);
-			var newLowerThreshold = tempDate.getHours() + ":" + tempDate.getMinutes();
-			items.trackAfter = newLowerThreshold;
-
-			//Then run the process again with the new limit
-			processTime(url, items, historyArray, type);
-		}
-		else {
-			var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
-			addToSchedule(url, scheduleTime);
-		}
-	}
-	else {
-		var scheduleTime = new Date(averageTime + NZModification);//Important to add back on the change
-		addToSchedule(url, scheduleTime);
-	}
-}
 
 
 function findInSchedule(url, schedule) {

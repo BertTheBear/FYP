@@ -185,3 +185,8 @@ Categorising all tabs
 		Turns out to be any lower category will not be found
 		Initialise as -1 to prevent this
 		(Not initialising at -1 was stupid to be honest...)
+
+Checking Meta Tags
+	Difficult to view page because of how tabs are checked
+	Unable to view content scripts
+	Unable to get content scripts to work

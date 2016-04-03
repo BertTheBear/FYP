@@ -8,211 +8,212 @@
 	<script src='/src/js/interface.js'></script>
 </head>
 <body>
-	<div class="centered" >
-		<h1>Jenkins Interface</h1>
-		<br>
+	<div class="greyedges">
+		<div class="whitecentre">
+			<div class="centered" >
+				<h1>Jenkins Interface</h1>
+				<br>
 
-		<div class="centered">
-			<a href="tutorial.html" target='_blank' class='trlist-AcceptButton'>Click here for Tutorial Page</a>
-		</div>
-		<br>
-		<br>
-		<div class="padded">
-			<a href="#" id="processHistory" class="smallbtn">Process History</a>
-		</div>
-		
-		<h2>Schedule List</h2>
-			<table id="itemList" class="centeredList">
-			</table>
-
-			<form name="scheduleForm">
-				Time: <input type="time" id="enteredTime" value="00:00">
-				URL: <input type="text" id="enteredURL" placeholder="Enter a valid url">
-				<button id="submitButton">Submit</button>
-			</form>
-			<div id="formErrorDiv"> <br> </div>
-
-
-		<div>
-			<label>
-				<input type="checkbox" id="undoNotifications">
-			</label>
+				<div class="centered">
+					<a href="tutorial.html" target='_blank' class='trlist-AcceptButton'>Click here for Tutorial Page</a>
+				</div>
+				<br>
+				<br>
+				<div class="padded">
+					<a href="#" id="processHistory" class="smallbtn">Process History</a>
+				</div>
 				
-			Allow undo notifications on this page.
+				<h2>Schedule List</h2>
+					<table id="itemList" class="centeredList">
+					</table>
+
+					<form name="scheduleForm">
+						Time: <input type="time" id="enteredTime" value="00:00">
+						URL: <input type="text" id="enteredURL" placeholder="Enter a valid url">
+						<button id="submitButton">Submit</button>
+					</form>
+					<div id="formErrorDiv"> <br> </div>
+
+
+				<div>
+					<label>
+						<input type="checkbox" id="undoNotifications">
+					</label>
+						
+					Allow undo notifications on this page.
+				</div>
+
+
+
+
+				<div class="centered">
+					<br> 
+					<a href="feedback.html" id="feedback" class="smallbtn" target="_blank">Recommendations Feedback Page</a>
+				</div>
+
+
+
+
+
+
+				<h2>Processing Settings</h2>
+				<table class="centeredList" style="width:500px">
+					
+					<tr class="trcheckbox">
+						<td>
+							<label>
+								<input type="checkbox" id="autoNotifications">
+							</label>
+						
+							Allow automatically created schedules to create notifications.
+						</td>
+						<td>
+							<img src="/images/helpIcon.png" alt="Help/Info Icon" title="This determines whether Automatic entries (Blue) will create popup notifications. (If notifications are enabled)" id='help0'>
+							<span class="tooltip">Hover for Information</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="visitThresholdSite" style="width:40px">
+							</label>
+
+							Website visit threshold <br>
+							<i>Minimum number of visits before a website is recorded.</i> (<b>Default 3.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="visitThresholdPage" style="width:40px">
+							</label>
+
+							Webpage visit threshold <br>
+							<i>Minimum number of visits to a single webpage before it is recorded.</i> (<b>Default 9.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="typedWeight" style="width:40px">
+							</label>
+
+							Typed visit weight <br>
+							<i>Additional value given to an address typed directly into URL bar.</i> (<b>Default 2.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="timeThreshold" style="width:40px">
+							</label>
+
+							History time threshold <br>
+							<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>) <br>
+							<i>Set as 0 to process all history</i>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							Keywords to ignore:
+						
+							<label>
+								<input type="textbox" id="blacklist">
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate) <br>
+							Page URL and title will both be checked.</i>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="checkFrequency" style="width:40px">
+							</label>
+
+							Schedule check frequency <br>
+							<i>How often (In minutes) the system will check the schedule. <br>
+							Higher frequency (Lower times) may slow down your browsing. Requires restart to take effect.</i> (<b>Default 5. Minimum 1.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="timeRounding" style="width:40px">
+							</label>
+
+							Time Rounding <br>
+							<i>To what number (In minutes) the system will round the schedule times. (eg. to the nearest 5 minutes)</i> (<b>Default 1. Minimum 1.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="newZero" style="width:40px">
+							</label>
+
+							Logical Midnight <br>
+							<i>The delay (In hours after 00:00) before a "new day" will start. This is designed to adapt schedules towards late night browsing.</i> (<b>Default 4.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="time" id="trackAfter">
+							</label>
+
+							Lower Time limit <br>
+							<i>The time that the system will limit to tracking all visits after.</i> (<b>Default 00:00.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="time" id="trackBefore">
+							</label>
+
+							Upper Time limit <br>
+							<i>The time that the system will limit to tracking all visits before.</i> (<b>Default 23:59.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="autoCount" style="width:40px">
+							</label>
+
+							Max auto schedule entries <br>
+							<i>How many automatic schedule entries the system will create.</i>
+							(<b>Default 20.</b>)
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>
+								<input type="number" id="rejectedThreshold" style="width:40px">
+							</label>
+
+							Rejected Recommendation Threshold <br>
+							<i>How many times an automatic recommendation url needs to be rejected before it will be blocked.</i>
+							(<b>Default 3.</b>)
+						</td>
+					</tr>
+
+				</table>
+				<div id="status"><br></div>
+					<button id="save">Save</button> <br>
+					<a href="#reset" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
+				</div>
+
+				<div class="centered">
+					<br> 
+					<a target="_blank" href="advancedOptions.html">Advanced Options Page</a>
+				</div>
+			</div>
 		</div>
-
-
-
-
-		<div class="centered">
-			<br> 
-			<a href="feedback.html" id="feedback" class="smallbtn" target="_blank">Recommendations Feedback Page</a>
-		</div>
-
-
-
-
-
-
-		<h2>Processing Settings</h2>
-		<table class="centeredList" style="width:500px">
-			
-			<tr class="trcheckbox">
-				<td>
-					<label>
-						<input type="checkbox" id="autoNotifications">
-					</label>
-				
-					Allow automatically created schedules to create notifications.
-				</td>
-				<td>
-					<img src="/images/helpIcon.png" alt="Help/Info Icon" title="This determines whether Automatic entries (Blue) will create popup notifications. (If notifications are enabled)" id='help0'>
-					<span class="tooltip">Hover for Information</span>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="visitThresholdSite" style="width:40px">
-					</label>
-
-					Website visit threshold <br>
-					<i>Minimum number of visits before a website is recorded.</i> (<b>Default 3.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="visitThresholdPage" style="width:40px">
-					</label>
-
-					Webpage visit threshold <br>
-					<i>Minimum number of visits to a single webpage before it is recorded.</i> (<b>Default 9.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="typedWeight" style="width:40px">
-					</label>
-
-					Typed visit weight <br>
-					<i>Additional value given to an address typed directly into URL bar.</i> (<b>Default 2.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="timeThreshold" style="width:40px">
-					</label>
-
-					History time threshold <br>
-					<i>How far back (in days) the extension will process your history.</i> (<b>Default 28.</b>) <br>
-					<i>Set as 0 to process all history</i>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					Keywords to ignore:
-				
-					<label>
-						<input type="textbox" id="blacklist">
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<i>Set words or websites to be ignored by automatic search function (Eg. facebook, pirate) <br>
-					Page URL and title will both be checked.</i>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="checkFrequency" style="width:40px">
-					</label>
-
-					Schedule check frequency <br>
-					<i>How often (In minutes) the system will check the schedule. <br>
-					Higher frequency (Lower times) may slow down your browsing. Requires restart to take effect.</i> (<b>Default 5. Minimum 1.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="timeRounding" style="width:40px">
-					</label>
-
-					Time Rounding <br>
-					<i>To what number (In minutes) the system will round the schedule times. (eg. to the nearest 5 minutes)</i> (<b>Default 1. Minimum 1.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="newZero" style="width:40px">
-					</label>
-
-					Logical Midnight <br>
-					<i>The delay (In hours after 00:00) before a "new day" will start. This is designed to adapt schedules towards late night browsing.</i> (<b>Default 4.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="time" id="trackAfter">
-					</label>
-
-					Lower Time limit <br>
-					<i>The time that the system will limit to tracking all visits after.</i> (<b>Default 00:00.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="time" id="trackBefore">
-					</label>
-
-					Upper Time limit <br>
-					<i>The time that the system will limit to tracking all visits before.</i> (<b>Default 23:59.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="autoCount" style="width:40px">
-					</label>
-
-					Max auto schedule entries <br>
-					<i>How many automatic schedule entries the system will create.</i>
-					(<b>Default 20.</b>)
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label>
-						<input type="number" id="rejectedThreshold" style="width:40px">
-					</label>
-
-					Rejected Recommendation Threshold <br>
-					<i>How many times an automatic recommendation url needs to be rejected before it will be blocked.</i>
-					(<b>Default 3.</b>)
-				</td>
-			</tr>
-
-		</table>
-		<div id="status"><br></div>
-			<button id="save">Save</button> <br>
-			<a href="#reset" style="size:8px; color:Red;" id="reset">Reset all settings to default</a>
-		</div>
-
-		<div class="centered">
-			<br> 
-			<a target="_blank" href="advancedOptions.html">Advanced Options Page</a>
-		</div>
-
-
-
 	</div>
 </body>
 </html>

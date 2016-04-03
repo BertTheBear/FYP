@@ -19,6 +19,18 @@ var notificationDiv = "notificationDiv";
 
 
 
+//Microsecond amounts
+var microsecondsPerMinute = 1000 * 60;
+var microsecondsPerHour = 1000 * 60 * 60;
+var microsecondsPerDay = 1000 * 60 * 60 * 24;
+var patternCheckFrequency = 5;
+
+
+//The index of the music category. Just for audible tabs
+var MUSIC_CATEGORY = 8;
+
+
+
 
 //################ For temp no notify ###################
 //set triggers 
@@ -257,7 +269,14 @@ function categoriseTab(tab, items, previousCategory) {
 		//can't find anything in url. Try title
 		categoryIndex = guessCategory(title, tags, previousCategory);
 	}
-	//If those don't work try meta tags
+	//If it's playing sound it might be music???
+	if(categoryIndex < 0 && tab.audible) {
+		categoryIndex = MUSIC_CATEGORY;
+	}
+	//If none of these work try meta tags
+	if(categoryIndex < 0) {
+		chrome.tabs.sendMessage(tab.id, {text: 'get_meta_tags'}, checkMetaTags);
+	}
 
 	return categoryIndex;
 }
@@ -308,6 +327,28 @@ function guessCategory(tabInfo, tagArray, previousCategory) {
 }
 
 
+function checkMetaTags(metaTags) {
+	//First, in case of errors
+	if(metaTags == null) {
+		//error
+		return;
+	}
+
+	//Testing
+	console.log(metaTags);//++++++++++++++++++++
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -324,25 +365,153 @@ function guessCategory(tabInfo, tagArray, previousCategory) {
 
 // ########################### RECORD PATTERN #############################
 
+/*
+	At the moment this triggers whenever the popup is opened.
+	I should probably set this to trigger whenever the use opens/closes a tab (But with the frequency check)
+	The frequency check is simply to prevent too much of the SAME pattern from triggering with the check.
+
+	I might make this able to be set but I'll leave it for now.
+*/
+
 function checkTabs() {
 	//get necessary variables etc.
 
 	chrome.storage.local.get({
 		recommendations: 			[],
-		automaticClassification: 	[]
+		automaticClassification: 	[],
+		patternLastChecked: 		0,
+		browsingPatterns: 			[]
 	}, function(items) {
-		//get ALL tabs
-		chrome.tabs.query({ }, function (result) {
-			//Process tabs and record pattern (Alphabetically?)
-			for(var tabIndex = 0; tabIndex < result.length; tabIndex++) {
-				//For ease of reading/writing.thinking etc.
-				var currentTab = result[tabIndex];
-				var categoryIndex = -1;//Initialising as -1 prevents errors when going to a lower category
+		var rightNow = Date.now();
+		//Only check it it has been some time since the previous check
+		if((rightNow - items.patternLastChecked) > (patternCheckFrequency * microsecondsPerMinute)) {
+			//Change when last checked
+			items.patternLastChecked = rightNow;
+			//get ALL tabs
+			chrome.tabs.query({ }, function (result) {
+				//to save results
+				var tabArray = [];
 
-				//Categorise using the same function as the recommendations
-				categoryIndex = categoriseTab(currentTab, items, categoryIndex);
-				console.log("Tab " + tabIndex + ", Category : " + categoryIndex); //++++++++++++++++++++++++++++++
-			}
-		});
+
+				//Process tabs and record pattern (Alphabetically?)
+				for(var tabIndex = 0; tabIndex < result.length; tabIndex++) {
+					//For ease of reading/writing.thinking etc.
+					var currentTab = result[tabIndex];
+					var categoryIndex = -1;//Initialising as -1 prevents errors when going to the same or lower category
+
+					//Categorise using the same function as the recommendations
+					categoryIndex = categoriseTab(currentTab, items, categoryIndex);
+					//Print for testing
+					console.log("Tab " + tabIndex + ", Category : " + categoryIndex); //++++++++++++++++++++++++++++++
+
+					//Add elements to array
+					tabArray.push(categoryIndex);
+				}
+
+				//Sort the array
+				tabArray.sort();
+
+				//Add to patterns array as an object
+				var pattern = new Object();
+				pattern.pattern = tabArray;
+				pattern.time = getNow();
+				pattern.count = 1;
+
+
+
+				//Check existing and save
+				savePattern(pattern, items);
+			});
+		}
 	});
+}
+
+function savePattern(tabs, items) {
+	//For ease of reading/writing etc.
+	var existingPatterns = items.browsingPatterns;
+	var found = false;
+
+	//Simplify the pattern into just 
+	var simplified = removeDuplicates(tabs.pattern);
+
+	//Scan through existing patterns to see if it exists
+	for(var patternIndex = 0; !found && patternIndex < existingPatterns.length; patternIndex++) {
+		var currentObject = existingPatterns[patternIndex];
+
+		//See if patterns are equal OR if the pattern exists with different numbers of tabs
+		if(equalArrays(tabs.pattern, currentObject.pattern) || equalArrays(simplified, currentObject.pattern)) {
+			currentObject.count += 1;
+			found = true;
+			//Also change the average time
+			// Multiply the existing time by previous count, add on new time and divide by new count
+			currentObject.time = ((currentObject.time * (currentObject.count - 1)) + getNow()) / currentObject.count;
+		}
+
+		//else keep looping
+	}
+
+	//If not found, add to the array
+	if(!found) {
+		existingPatterns.push(tabs);
+		//Also save simplified version?
+	}
+
+	//Then save the changed existing patterns array
+	// and also the last checked value
+	chrome.storage.local.set({
+		browsingPatterns: 	existingPatterns,
+		patternLastChecked: items.patternLastChecked
+	}, function() {
+		//Successfully saved
+	})
+
+
+}
+
+//Ensures all elements of an array are unique
+// inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
+function removeDuplicates(array) {
+	var seen = {};
+	return array.filter(function(item) {
+		// for each element checks whether it already contains that element, 
+		//   if it does then it skips, if it doesn't then it adds it
+		if (seen.hasOwnProperty(item))
+			return false;
+		else
+			return seen[item] = true;
+	});
+}
+
+
+//Compares two arrays
+// inspired by http://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript
+function equalArrays(arrayOne, arrayTwo) {
+	// compare lengths - can save a lot of time 
+	if (arrayOne.length != arrayTwo.length)
+		return false;
+
+	for (var i = 0; i < arrayOne.length; i++) {
+		// Check if we have nested arrays
+		if (arrayOne[i] instanceof Array && arrayTwo[i] instanceof Array) {
+			// recurse into the nested arrays
+			if (!arrayOne[i].equals(arrayTwo[i]))
+				return false;
+		}
+		else if (arrayOne[i] != arrayTwo[i]) { 
+			// Warning - two different object instances will never be equal: {x:20} != {x:20}
+			return false;
+		}
+	}
+	return true;
+}
+
+//for finding the current time as milliseconds in the day (rounded to the nearest minute)
+function getNow() {
+	//Get current time in milliseconds since epoch
+	var time = Date.now();
+
+	time = time % microsecondsPerDay;
+	time -= time % microsecondsPerMinute
+
+	return time;
 }

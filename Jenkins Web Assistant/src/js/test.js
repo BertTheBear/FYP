@@ -42,12 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		chrome.storage.sync.clear();
 	});
 	document.getElementById('local').addEventListener('click', function(){
-		chrome.storage.local.clear();		
+		chrome.storage.local.clear();
 	});
-
-	//check for permission for notifications
-	if (Notification.permission !== "granted")
-		Notification.requestPermission();
 
 });
 
@@ -205,8 +201,13 @@ function populate() {
 	now = now - (now % oneMinute);
 
 	//STUPID DAYLIGHT SAVINGS
-	now = now + oneHour;
+	if(new Date(now).getHours() != new Date().getHours()) {
+			now += microsecondsPerHour;
+			now = now % microsecondsPerDay;
+		}
 
+
+		
 
 	//Get time rounder
 	chrome.storage.sync.get({
@@ -275,5 +276,63 @@ function populate() {
 
 	})
 	
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-------------------------- GENERAL TESTING LINE ---------------------------------
+// 						DO NOT CROSS FOR FEAR OF INJURY
+
+
+
+
+function checkTabs() {
+	chrome.tabs.query({ currentWindow: true }, function (result) {
+		for(var i = 0; i < result.length; i++) {
+			var tab = result[i];
+			chrome.tabs.sendMessage(tab.id, {text: 'get_meta_tags'}, checkMetaTags);
+		}
+	});
+}
+
+
+
+function checkMetaTags(metaTags) {
+	//First, in case of errors
+	if(metaTags == null) {
+		//error
+		console.log("error");
+		return;
+	}
+
+	//Testing
+	console.log(metaTags);//++++++++++++++++++++
 
 }

@@ -67,14 +67,16 @@ Colour code recommendations page(Maybe rename to feedback too...) KINDA
 Popup when help icon clicked 							DONE (Notification)
 Populate lists when button clicked for testing 			DONE
 ===========================================================================
-Check meta tags 										
+Check meta tags 										TOO DIFFICULT
 Tutorial												DONE
 Recommendations bug on startup							DONE
-DLS time bug 											
+DLS time bug 											DONE
 Feedback page default message 							DONE
 Check submissions 										DONE (Submitted Demo Day version as test)
 Tutorial page link 										DONE
 Help tip popups on other pages 							DONE
 ===========================================================================
-Profiling systems 										
+Profiling systems 										DONE
 Skewness completed 										DONE
+===========================================================================
+User Timing??? 													(TBD)

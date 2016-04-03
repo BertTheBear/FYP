@@ -21,6 +21,16 @@
 		"scripts": ["src/js/background.js"]
 	},
 
+	"content_scripts": [{
+		"js": ["src/js/DOMReader.js"],
+		"matches" : [
+			"*://*/*",
+			"http://*/*",
+			"https://*/*"
+		]
+	}],
+	"web_accessible_resources": ["src/js/DOMReader.js"],
+
 	"icons": {
 		"128": "images/128.png",
 		"64" : "images/64.png",
@@ -37,6 +47,9 @@
 		"browsingData",
 		"identity",
 		"topSites",
-		"history"
+		"history",
+		"*://*/*",
+		"http://*/*",
+		"https://*/*"
 	]
 }

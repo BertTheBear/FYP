@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //Ensures all elements of an array are unique
 // inspired from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array
-/*function uniq(array) {
+/*function removeDuplicates(array) {
 	var seen = {};
 	return array.filter(function(item) {
 		// for each element checks whether it already contains that element, 
